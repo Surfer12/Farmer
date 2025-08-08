@@ -38,20 +38,8 @@ final class SteinGradLogP {
 
     /** Returns ∇ log p(x) where x∈R^4 corresponds to ModelParameters. */
     double[] gradLogPosterior(double[] x) {
-        // log p(params|data) ∝ logLik + logPrior
-        double[] g = new double[4];
-        double eps = 1e-4;
-        double base = model.logPosteriorPrepared(prep, toParams(x), parallel);
-        for (int i = 0; i < 4; i++) {
-            double old = x[i];
-            x[i] = old + eps;
-            double up = model.logPosteriorPrepared(prep, toParams(x), parallel);
-            x[i] = old - eps;
-            double dn = model.logPosteriorPrepared(prep, toParams(x), parallel);
-            x[i] = old;
-            g[i] = (up - dn) / (2.0 * eps);
-        }
-        return g;
+        // Use model's analytic gradient with prepared dataset for speed and stability
+        return model.gradientLogPosteriorPrepared(prep, toParams(x), parallel);
     }
 }
 

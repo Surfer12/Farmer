@@ -122,7 +122,7 @@ final class HmcSampler {
     private double[] gradLogTarget(double[] z) {
         // Analytic gradient via chain rule: ∇_z logPost(θ(z)) + ∇_z log|J|
         ModelParameters p = zToParams(z);
-        double[] dLogPost_dTheta = model.gradientLogPosterior(dataset, p);
+        double[] dLogPost_dTheta = model.gradientLogPosteriorPrepared(prep, p, parallel);
         double S = p.S(), N = p.N(), A = p.alpha(), B = p.beta();
 
         // Jacobians dθ/dz
