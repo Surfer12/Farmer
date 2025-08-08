@@ -21,5 +21,7 @@ default = "GPL-3.0-only"
 "**/internal/**" = "LicenseRef-Internal-Use-Only"
 "**/*.sty" = "LicenseRef-Internal-Use-Only"
 "**/audit-logs/**" = "LicenseRef-Internal-Use-Only"
+"examples/**" = "CC0-1.0"
+"docs/public/**" = "CC0-1.0"
 
 

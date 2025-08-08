@@ -52,6 +52,26 @@ CI wiring (concept)
 echo "Recent status entries:" && tail -n 5 internal/StatusUpdate/status.jsonl | jq -rc '.ts+" | "+.component+" | "+.status+" | "+.summary'
 ```
 
+Or use the helper script (preferred):
+```sh
+scripts/status_summary.sh -n 8 --format table | column -t -s '|'
+```
+
+Example GitHub Actions step:
+```yaml
+- name: Publish status summary
+  run: |
+    chmod +x scripts/status_summary.sh
+    scripts/status_summary.sh -n 10 --format table | column -t -s '|'
+  shell: bash
+
+- name: Upload status.jsonl artifact
+  uses: actions/upload-artifact@v4
+  with:
+    name: status-jsonl
+    path: internal/StatusUpdate/status.jsonl
+```
+
 Notes
 - `REUSE.toml` marks `internal/**` as `LicenseRef-Internal-Use-Only`; no SPDX line inside JSONL needed.
 - Keep entries terse; the goal is coherence and quick situational awareness.

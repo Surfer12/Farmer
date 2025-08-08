@@ -1,4 +1,4 @@
-% SPDX-License-Identifier: GPL-3.0-only
+% SPDX-License-Identifier: LicenseRef-Internal-Use-Only
 % SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
 
 \documentclass[11pt]{article}
@@ -26,13 +26,21 @@
 Classification: Confidential — Internal Use Only.\\
 
 \section*{Purpose}
-This document explains how \proj{} is licensed for (1) internal collaboration and (2) public distribution. Public releases are licensed under \textbf{GPL-3.0-only}. CC0 is \textbf{not used}. Internal, non-public artifacts are licensed under a custom internal-use license (\texttt{LicenseRef-Internal-Use-Only v1.0}).
+This document explains how \proj{} is licensed for (1) internal collaboration and (2) public distribution. Public releases of code are licensed under \textbf{GPL-3.0-only}. Select non-code assets may optionally use \textbf{CC0-1.0} when explicitly annotated and directory-scoped. Internal, non-public artifacts are licensed under a custom internal-use license (\texttt{LicenseRef-Internal-Use-Only v1.0}).
 
 \section*{Public License: GPL-3.0-only}
 \begin{itemize}[leftmargin=*]
   \item All public source code and accompanying materials intended for distribution are licensed under \textbf{GNU General Public License, version 3.0 only (GPL-3.0-only)}.
   \item Rationale: copyleft protects improvements and ensures downstream users receive the same freedoms.\footnote{Official text: \url{https://www.gnu.org/licenses/gpl-3.0.txt}}
   \item Attribution: use SPDX headers to mark files. Example headers appear in Section~\ref{sec:spdx}.
+\end{itemize}
+
+\section*{Optional: CC0-1.0 for Non-Code Materials}
+For select non-code assets (e.g., examples, figures, small datasets) you may optionally release under \textbf{CC0-1.0} to maximize reusability. The default remains GPL-3.0-only for code. If CC0 is chosen, clearly segregate directories and annotate files with the appropriate SPDX header. Place the CC0 text at \texttt{LICENSES/CC0-1.0.txt}.
+\begin{itemize}[leftmargin=*]
+  \item When to use: standalone examples, figures, or small datasets that benefit from public domain dedication.
+  \item When not to use: source code, core libraries, or documentation that should inherit copyleft.
+  \item Governance: CC0 use must be intentional and directory-scoped (e.g., \texttt{examples/}, \texttt{docs/public/}).
 \end{itemize}
 
 \section*{Internal License: LicenseRef-Internal-Use-Only v1.0}
@@ -52,7 +60,7 @@ Internal, non-public artifacts (drafts, private notes, evaluation datasets, conf
 
 \section*{Distribution Rules}
 \begin{itemize}[leftmargin=*]
-  \item Public releases: GPL-3.0-only. No CC0.\footnote{If desired, documentation may also be GPL-3.0-only for consistency.}
+  \item Public releases: GPL-3.0-only for code. CC0-1.0 is allowed for designated non-code directories when explicitly annotated.\footnote{If desired, documentation may also be GPL-3.0-only for consistency.}
   \item Internal artifacts: LicenseRef-Internal-Use-Only v1.0. Do not distribute outside authorized collaborators.
   \item Mixed repositories: clearly segregate internal-only materials (folders, file patterns) and mark with correct SPDX identifiers.
 \end{itemize}
@@ -72,7 +80,9 @@ Use SPDX headers at the top of each file. Examples:
         \verb|// SPDX-FileCopyrightText: 2025 Jumping Quail Solutions|
   \item Swift: \verb|// SPDX-License-Identifier: GPL-3.0-only|
   \item Markdown (internal): \verb|SPDX-License-Identifier: LicenseRef-Internal-Use-Only|
-  \item LaTeX: \verb|% SPDX-License-Identifier: GPL-3.0-only|
+  \item LaTeX (internal docs like this file): \verb|% SPDX-License-Identifier: LicenseRef-Internal-Use-Only|
+        \\LaTeX (public docs): \verb|% SPDX-License-Identifier: GPL-3.0-only|\\
+  Markdown/Assets (optional CC0 areas): \verb|SPDX-License-Identifier: CC0-1.0|
 \end{itemize}
 REUSE layout:\footnote{\url{https://reuse.software/}} place license texts under \texttt{LICENSES/}. Optionally add \texttt{REUSE.toml} to document defaults and patterns.
 
@@ -88,8 +98,9 @@ REUSE layout:\footnote{\url{https://reuse.software/}} place license texts under 
 \begin{tabular}{ll}
 Scope & License \\
 \hline
-Public code/docs & GPL-3.0-only (no CC0) \\
+Public code/docs & GPL-3.0-only \\
 Internal-only materials & LicenseRef-Internal-Use-Only v1.0 \\
+Optional examples/public assets & CC0-1.0 (only if explicitly annotated) \\
 \end{tabular}
 \end{center}
 
