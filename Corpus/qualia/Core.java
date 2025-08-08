@@ -30,6 +30,7 @@ public final class Core {
             case "jdbc" -> runJdbc();
             case "stein" -> runStein();
             case "hmc" -> runHmc();
+            case "mcda" -> runMcda();
             case "rmala" -> runRmala();
             default -> printUsageAndExit();
         }
@@ -111,7 +112,7 @@ public final class Core {
     }
 
     private static void printUsageAndExit() {
-        System.err.println("Usage: java -cp <cp> qualia.Core <console|file|jdbc|stein|hmc|rmala>");
+        System.err.println("Usage: java -cp <cp> qualia.Core <console|file|jdbc|stein|hmc|mcda|rmala>");
         System.exit(1);
     }
 
@@ -217,6 +218,46 @@ public final class Core {
         double eps = 1e-12;
         double clamped = Math.max(eps, Math.min(1.0 - eps, x));
         return Math.log(clamped / (1.0 - clamped));
+    }
+
+    private static void runMcda() {
+        // Define alternatives with raw criteria and Ψ
+        Mcda.Alternative a = new Mcda.Alternative(
+                "A",
+                java.util.Map.of("cost", 100.0, "value", 0.8),
+                0.85 // Ψ(A)
+        );
+        Mcda.Alternative b = new Mcda.Alternative(
+                "B",
+                java.util.Map.of("cost", 80.0, "value", 0.7),
+                0.80 // Ψ(B)
+        );
+        Mcda.Alternative c = new Mcda.Alternative(
+                "C",
+                java.util.Map.of("cost", 120.0, "value", 0.9),
+                0.78 // Ψ(C)
+        );
+
+        java.util.List<Mcda.Alternative> alts = java.util.List.of(a, b, c);
+
+        // Gate by confidence threshold τ
+        double tau = 0.79;
+        java.util.List<Mcda.Alternative> Ftau = Mcda.gateByPsi(alts, tau);
+        System.out.println("mcda: feasible after gate(τ=" + tau + ") = " + Ftau);
+
+        // Define criteria specs; include Ψ as criterion "psi"
+        java.util.List<Mcda.CriterionSpec> specs = java.util.List.of(
+                new Mcda.CriterionSpec("psi", Mcda.Direction.BENEFIT, 0.4),
+                new Mcda.CriterionSpec("value", Mcda.Direction.BENEFIT, 0.4),
+                new Mcda.CriterionSpec("cost", Mcda.Direction.COST, 0.2)
+        );
+        Mcda.validateWeights(specs);
+
+        // Rank by WSM and TOPSIS
+        java.util.List<Mcda.Ranked> wsm = Mcda.rankByWSM(Ftau, specs);
+        java.util.List<Mcda.Ranked> topsis = Mcda.rankByTOPSIS(Ftau, specs);
+        System.out.println("mcda: WSM ranking: " + wsm);
+        System.out.println("mcda: TOPSIS ranking: " + topsis);
     }
 
     private static double getEnvDouble(String key, double fallback) {
