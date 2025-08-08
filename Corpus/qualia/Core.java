@@ -43,6 +43,7 @@ public final class Core {
             case "rmala" -> runRmala();
             case "hmc_adapt" -> runHmcAdaptive(args);
             case "hmcmulti" -> runHmcMulti(args);
+            case "unified" -> runUnifiedDetector(args);
             default -> printUsageAndExit();
         }
     }
@@ -125,7 +126,7 @@ public final class Core {
     }
 
     private static void printUsageAndExit() {
-        System.err.println("Usage: java -cp <cp> qualia.Core <console|file|jdbc|stein|hmc|hmc_adapt|hmcmulti|mcda|rmala> [key=value ...]");
+        System.err.println("Usage: java -cp <cp> qualia.Core <console|file|jdbc|stein|hmc|hmc_adapt|hmcmulti|unified|mcda|rmala> [key=value ...]");
         System.exit(1);
     }
 
@@ -272,6 +273,27 @@ public final class Core {
         HmcMultiChainRunner.Summary summary = runner.run();
         System.out.println("hmcmulti: wrote to " + out);
         System.out.println("hmcmulti: " + summary.toJson());
+    }
+
+    private static void runUnifiedDetector(String[] args) {
+        // Simple harmonic oscillator demo: y'' + ω^2 y = 0
+        double omega = 2.0 * Math.PI;
+        UnifiedDetector.Dynamics dyn = (t, y, dy) -> { dy[0] = y[1]; dy[1] = -omega * omega * y[0]; };
+        UnifiedDetector.Invariant energy = new UnifiedDetector.Invariant() {
+            @Override public double value(double t, double[] y) { return 0.5 * (y[1]*y[1] + omega*omega*y[0]*y[0]); }
+            @Override public double reference() { return 0.5; }
+            @Override public double tolerance() { return 1e-3; }
+        };
+        UnifiedDetector ud = new UnifiedDetector();
+        double t = 0.0; double[] y = new double[] {1.0, 0.0};
+        double h = 1e-3; double eps = 1e-4; long budgetNs = 500_000; // 0.5 ms
+        for (int i = 0; i < 1000; i++) {
+            UnifiedDetector.Result r = ud.step(dyn, t, y, h, eps, budgetNs, new UnifiedDetector.Invariant[]{ energy });
+            t = r.tNext; y = r.yNext; h = r.hUsed;
+            if ((i % 100) == 0) {
+                System.out.println(String.format(java.util.Locale.ROOT, "unified: t=%.4f x=%.5f v=%.5f psi=%.3f err=%.2e", t, y[0], y[1], r.psi, r.errLocal));
+            }
+        }
     }
 
     private static double logit(double x) {

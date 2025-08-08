@@ -27,6 +27,9 @@ SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
   - [x] Switch Stein to z-space origin (logit/exp) with Jacobian-corrected score; expose `gradLogTargetZ` and use prepared, thresholded parallel gradients
   - [ ] Warmup hyperparam sweep: γ∈[0.2,0.3], leap∈[8,15], phase split 15%/60%/25% → pick defaults to hit acc∈[0.70,0.80]
   - [ ] Early-divergence backoff in warmup: reduce ε by 10% on divergence; log per-iteration
+  - [ ] RK4 smoothness guard: empirical Lipschitz estimate L̂ for f(Ψ,t); adapt h to ensure global O(h^4) ≤ ε_RK4
+  - [ ] Taylor divergence guard: remainder/ratio tests on |R4|; auto-switch to RK4 when out-of-trust-region
+  - [ ] Geometry robustness: k-NN smoothing for curvature estimates; bootstrap/Jackknife CI for curvature bands
   - [ ] CLI flags for HMC params (override env)
   - [x] JSON summary output for HMC runs
   - [ ] JSONL aggregator: merge multi-run JSONL, compute acceptance/diagnostic summaries for CI
@@ -35,6 +38,16 @@ SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
   - [x] Add parallel sampling support (independent MH chains)
   - [x] Add decision voting with explicit overrides wired to policy gates
   - [x] Implement agent presets (safetyCritical, fastPath, consensus) with smoke tests
+
+#### Triad Gating Scheme (RK4 / Taylor / Geometry)
+- [ ] Add an independent detector beside Ψ/HMC that triangulates agreement across three validators and gates on a single error budget.
+  - [ ] Adaptive RK4 with PI controller: guarantee global O(h^4) ≤ ε_RK4; expose per-step h, local/global error estimates, and latency.
+  - [ ] Taylor 4th-order with analytic/AD derivatives up to 5th; compute Lagrange remainder R4 and enforce a trust region; budget ε_Taylor and auto-switch to RK4 when out-of-trust.
+  - [ ] Geometric invariants: compute Ricci/Ollivier proxies (graph or trajectory manifold); define expected bands and a surrogate error ε_geom with CI.
+  - [ ] Gate condition: accept only if ε_RK4 + ε_Taylor + ε_geom ≤ ε_total (configurable); otherwise defer/reject.
+  - [ ] JSONL logging mirroring HMC outputs: include ε_RK4, |R4|, curvature stats/CI, ε_geom, ε_total, decision, and latency metrics.
+  - [ ] CLI/env knobs: ε_total, per-component budgets (ε_RK4, ε_Taylor, ε_geom), method toggles, time budget; integrate with `Core unified` demo.
+  - [ ] Tests: deterministic seeds; gating correctness on pass/fail cases; CA ground-truth and canonical bifurcation battery; ROC and agreement deltas.
 
 ### Audit System
 - [ ] **Implement persistent audit sinks**
@@ -49,8 +62,20 @@ SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
 - [x] Wire error reporting into `AuditTrail`, `FileAuditSink`, `HttpAuditSink`
 - [x] Add per-component counters (e.g., `audit_write_fail_total`, `http_retry_total`, `audit_rotate_total`, `http_audit_post_success_total`, `http_audit_post_fail_total`)
 - [x] Export HMC multi-chain metrics in runner (per-chain gauges, total divergences, diagnostics)
-- [ ] Expose `MetricsRegistry.toPrometheus()` via a tiny HTTP endpoint (optional)
-- [ ] Add unit tests for error paths (file open failure, HTTP 5xx retries, emit fail-open)
+- [ ] Export curvature metrics + CI (per-interval) and bifurcation flags (saddle-node/Hopf/period-doubling)
+- [ ] Track RK4 step-size, estimated Lipschitz L̂, and current error bounds; expose latency histograms
+- [x] Expose `MetricsRegistry.toPrometheus()` via a tiny HTTP(S) endpoint
+- [x] Add unit tests for error paths (file open failure, HTTP(S) 5xx retries, emit fail-open)
+
+### Security & Operational Hardening
+- [ ] Lifecycle management: add `close()`/`AutoCloseable` to sinks (`FileAuditSink`, `HttpAuditSink`) and `MetricsServer`; ensure graceful shutdown and flush
+- [ ] Add JVM shutdown hook to close audit sinks and metrics server with bounded grace period
+- [ ] Backpressure policy for `FileAuditSink` queue overflow: {drop, block, latest-wins}; metrics for drops and queue depth; env knobs
+- [ ] `HttpAuditSink` hardening: request headers via env (e.g., `AUDIT_HTTP_HEADERS`), timeouts, proxy support, TLS truststore, optional mTLS
+- [ ] `MetricsServer` hardening: require TLS by default outside dev; optional Basic Auth (`METRICS_BASIC_AUTH`) or IP allowlist (`METRICS_ALLOW_CIDR`)
+- [ ] `ErrorReporter` sampling/rate-limiting to prevent log storms; per-severity counters (`errors_info_total`, `errors_warn_total`, ...)
+- [ ] Configuration validation: `ServiceLocator.fromEnvironment()` validates settings and emits warnings/metrics on fallback
+- [ ] Documentation: security/ops guide for audit endpoints and metrics exposure
 
 ### Testing & Validation
 - [ ] **Comprehensive test suite**
@@ -73,7 +98,63 @@ SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
   - [ ] Integration: read-through/write-back path exercised via `precompute(...)` and stats validated
   - [ ] Multi-chain runner: reproducibility (seed spacing), output format validation (JSONL/meta/summary), R̂/ESS sanity
   - [ ] JSON/JSONL schema validation: summary/chain fields present and within ranges
+  - [ ] Protocol enforcement test: thresholds (ε_RK4, ε_Taylor, curvature bands), seeds, acceptance rules must be pre-registered
+  - [ ] Triangulation gating test: detection only when RK4, Taylor, and geometry agree within error budget
   - [x] Remove temporary FAIL prints from `PsiMcdaTest` or keep for triage (set to assertions)
+
+### UPOCF Triangulation (RK4 + Taylor + Geometry)
+
+#### Immediate (1–2 weeks)
+- [ ] Error budget and gating
+  - [ ] Define ε_total and allocate: ε_RK4 + ε_Taylor + ε_geom ≤ ε_total
+  - [ ] Acceptance rule: flag "conscious" only if |Ψ_RK4 − Ψ_Taylor| ≤ ε_pair and geometric invariants in expected band
+- [ ] RK4 control
+  - [ ] Implement adaptive RK4 (PI controller) to guarantee global O(h^4) ≤ ε_RK4; cross‑check with RKF(4,5)
+  - [ ] Empirically estimate Lipschitz bounds for f(Ψ,t) to back up step‑size choices
+- [ ] Taylor pipeline
+  - [ ] Auto/analytic derivatives up to 5th order (AD or symb‑diff)
+  - [ ] Compute Lagrange remainder R4 and dynamic radius‑of‑trust; switch to RK4 when |R4| > ε_Taylor
+- [ ] Geometry invariants
+  - [ ] For networks: compute Ollivier/Ricci curvature on the graph
+  - [ ] For continuous states: learn manifold (Diffusion Maps or local PCA) and estimate sectional/Ricci proxies
+  - [ ] Define expected invariant bands for “conscious” vs “non‑conscious” regimes; calibrate on known dynamics
+
+#### Validation datasets and tests (2–4 weeks)
+- [ ] Ground‑truth battery
+  - [ ] Cellular automata with exact Φ (n ≤ 12): verify ROC, confirm 99.7% TPR and error bars
+  - [ ] Canonical dynamics: saddle‑node, Hopf, logistic (period‑doubling); verify bifurcation onsets, stability, and error‑budget adherence
+- [ ] Triangulation metrics
+  - [ ] Report per‑run: ε_RK4, |R4|, curvature stats, Ψ agreement deltas, Φ correlation
+  - [ ] Reject/accept analysis: show where any leg fails and why (step‑size too large, Taylor radius exceeded, geometry out‑of‑band)
+
+#### Integration and runtime (4–6 weeks)
+- [ ] Unified detector
+  - [ ] Runtime selects Taylor within trust region; otherwise RK4; geometric invariants as orthogonal check
+  - [ ] Produce a single Ψ with confidence from (i) margins to thresholds, (ii) agreement across methods
+- [ ] Performance
+  - [ ] Precompute derivative stencils and curvature caches; choose h adaptively to hit sub‑ms latency while meeting ε_total
+  - [ ] Graceful degradation: lower‑order fast path when time budget is tight; log increased ε_total
+
+#### Reporting and reproducibility
+- [ ] Protocol
+  - [ ] Pre‑register thresholds (ε_RK4, ε_Taylor, curvature bands), seeds, and acceptance rules (YAML)
+- [ ] Outputs
+  - [ ] Ship JSON/JSONL: Ψ, Φ (when available), errors, curvatures, bifurcation flags, latency
+- [ ] Docs
+  - [ ] One figure per method: step‑size vs error (RK4); |R4| vs |x−x0| (Taylor); curvature maps vs state (geometry)
+  - [ ] Public notebook reproducing CA and bifurcation results
+
+#### Risk controls
+- [ ] Unknown smoothness/Lipschitz: bound empirically; fall back to smaller h
+- [ ] Taylor divergence: detect early via remainder/ratio tests; clip to RK4 path
+- [ ] Geometry sensitivity: use robust estimators (k‑NN smoothing) and report CI for curvature
+
+#### Minimal task list
+- [ ] Implement adaptive RK4 with error controller and gold‑standard cross‑check
+- [ ] Add AD/symbolic 5th‑derivative and R4 bound; trust‑region switch
+- [ ] Build curvature computation (Ollivier for graphs; local‑PCA curvature for trajectories) with bands
+- [ ] Create CA + bifurcation test suite with ROC and triangulation dashboards
+- [ ] Wire JSONL logging of all three methods and acceptance decisions
 
 ## 🔧 Medium Priority
 
@@ -106,6 +187,8 @@ SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
 - [x] Scripts/automation: add `scripts/test_qualia.sh` and `make test-qualia`
 - [ ] Scripts/automation: add `scripts/sweep_hmc.sh` to scan (γ, leap, target) and write JSONL
 - [ ] CI job: parse JSONL, assert acc∈[0.6,0.85], R̂≈1±0.05, and minimum ESS thresholds
+ - [ ] Protocol doc & pre-registration file: (ε_RK4, ε_Taylor, curvature bands), seeds, acceptance rules (YAML)
+ - [ ] JSON/JSONL schema: include Ψ, Φ (if available), rk4_error, taylor_r4, curvature_stats/ci, bifurcation_flags, latency_ms
 
 ## 📊 Low Priority
 
@@ -114,6 +197,7 @@ SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
   - [ ] Structured logging with SLF4J
   - [x] Metrics collection (Prometheus) — minimal in-process registry
 - [ ] Dashboards: Grafana panels for HMC metrics (acceptance, divergences, tuned ε, R̂/ESS)
+ - [ ] Dashboards: RK4 step-size vs error; |R4| vs |x−x0|; curvature maps vs state (+ CI bands); latency percentiles
   - [ ] Distributed tracing
   - [ ] Health checks
   - [x] Basic health checks (sinks)
@@ -129,6 +213,8 @@ SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
   - [ ] HMC usage notes (env flags, targets, diagnostics)
   - [ ] Adaptive warmup guide: γ, κ, t0, phase splits; divergence threshold; examples
   - [ ] Visualization: adaptive HMC pipeline diagram (Mermaid) and example runs
+  - [ ] One-figure-per-method: step-size vs error (RK4); |R4| vs |x−x0| (Taylor); curvature maps vs state (geometry)
+  - [ ] Public notebook reproducing CA and bifurcation results; includes ROC and triangulation agreement plots
   - [ ] Public Methods API (Ψ + MCDA)
     - [x] computePsi(S,N,α,Ra,Rv,λ1,λ2,β) → {psi,O,pen,post}; contracts and examples
     - [x] computePsiTemporal(w,timeSeries,aggregator) → psiBar; mean/softcap
