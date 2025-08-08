@@ -1,7 +1,12 @@
 package qualia;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Core model implementation for Hierarchical Bayesian inference.
@@ -94,8 +99,11 @@ public final class HierarchicalBayesianModel {
      * @return log p(params)
      */
     public double logPriors(ModelParameters params) {
-        // Placeholder: treat as uniform for now
-        return 0.0;
+        double lpS = Stats.logBetaPdf(params.S(), priors.s_alpha(), priors.s_beta());
+        double lpN = Stats.logBetaPdf(params.N(), priors.n_alpha(), priors.n_beta());
+        double lpAlpha = Stats.logBetaPdf(params.alpha(), priors.alpha_alpha(), priors.alpha_beta());
+        double lpBeta = Stats.logLogNormalPdf(params.beta(), priors.beta_mu(), priors.beta_sigma());
+        return lpS + lpN + lpAlpha + lpBeta;
     }
 
     /**
@@ -110,18 +118,91 @@ public final class HierarchicalBayesianModel {
     }
 
     /**
-     * Posterior inference via MCMC (placeholder).
+     * Posterior inference via a simple Random-Walk Metropolis-Hastings prototype.
      *
-     * <p>Integrate with a Java sampling library if needed.
-     *
-     * @param dataset observations
-     * @param sampleCount desired number of posterior samples
-     * @return list of parameter samples (currently empty)
+     * <p>This is a minimal, dependency-free scaffold useful for tests and
+     * baselines. For production use, prefer HMC/NUTS via a dedicated library.
      */
     public List<ModelParameters> performInference(List<ClaimData> dataset, int sampleCount) {
-        System.out.println("Starting inference (placeholder)...");
-        // TODO: Integrate HMC/NUTS or other samplers
-        System.out.println("Inference placeholder finished.");
-        return List.of();
+        return runMhChain(dataset, sampleCount, 42L);
+    }
+
+    /**
+     * Runs multiple independent MH chains in parallel and returns per-chain samples.
+     */
+    public List<List<ModelParameters>> performInferenceParallel(List<ClaimData> dataset, int chains, int samplesPerChain) {
+        if (chains <= 0 || samplesPerChain <= 0) return List.of();
+        int poolSize = Math.min(chains, Math.max(1, Runtime.getRuntime().availableProcessors()));
+        ExecutorService pool = Executors.newFixedThreadPool(poolSize, r -> {
+            Thread t = new Thread(r, "qualia-mh-");
+            t.setDaemon(true);
+            return t;
+        });
+
+        try {
+            List<CompletableFuture<List<ModelParameters>>> futures = new ArrayList<>(chains);
+            for (int c = 0; c < chains; c++) {
+                final long seed = 42L + c * 17L;
+                futures.add(CompletableFuture.supplyAsync(() -> runMhChain(dataset, samplesPerChain, seed), pool));
+            }
+            List<List<ModelParameters>> results = new ArrayList<>(chains);
+            for (CompletableFuture<List<ModelParameters>> f : futures) {
+                results.add(f.join());
+            }
+            return results;
+        } finally {
+            pool.shutdown();
+            try { pool.awaitTermination(5, TimeUnit.SECONDS); } catch (InterruptedException ignored) { Thread.currentThread().interrupt(); }
+        }
+    }
+
+    /**
+     * Convenience wrapper to compute convergence diagnostics from chains.
+     */
+    public Diagnostics diagnose(List<List<ModelParameters>> chains) {
+        return Diagnostics.fromChains(chains);
+    }
+
+    private List<ModelParameters> runMhChain(List<ClaimData> dataset, int sampleCount, long seed) {
+        System.out.println("Starting MH chain (seed=" + seed + ")...");
+        if (sampleCount <= 0) return List.of();
+
+        ModelParameters current = new ModelParameters(0.7, 0.6, 0.5, 1.0);
+        double currentLogPost = logPosterior(dataset, current);
+        ArrayList<ModelParameters> samples = new ArrayList<>(sampleCount);
+
+        java.util.Random rng = new java.util.Random(seed);
+        double stepS = 0.05, stepN = 0.05, stepAlpha = 0.05, stepBeta = 0.10;
+
+        int burn = Math.min(500, Math.max(0, sampleCount / 5));
+        int thin = Math.max(1, sampleCount / Math.max(1, Math.min(100, sampleCount)));
+        int kept = 0;
+        for (int iter = 0; kept < sampleCount; ) {
+            double propS = clamp01(current.S() + stepS * (rng.nextDouble() * 2 - 1));
+            double propN = clamp01(current.N() + stepN * (rng.nextDouble() * 2 - 1));
+            double propAlpha = clamp01(current.alpha() + stepAlpha * (rng.nextDouble() * 2 - 1));
+            double propBeta = Math.max(1e-6, current.beta() * Math.exp(stepBeta * (rng.nextDouble() * 2 - 1)));
+
+            ModelParameters proposal = new ModelParameters(propS, propN, propAlpha, propBeta);
+            double propLogPost = logPosterior(dataset, proposal);
+            double acceptProb = Math.min(1.0, Math.exp(propLogPost - currentLogPost));
+            if (rng.nextDouble() < acceptProb) {
+                current = proposal;
+                currentLogPost = propLogPost;
+            }
+
+            iter++;
+            if (iter > burn && (iter - burn) % thin == 0) {
+                samples.add(current);
+                kept++;
+            }
+        }
+        return samples;
+    }
+
+    private static double clamp01(double x) {
+        if (x < 0.0) return 0.0;
+        if (x > 1.0) return 1.0;
+        return x;
     }
 }

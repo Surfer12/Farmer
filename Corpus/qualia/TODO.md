@@ -5,13 +5,13 @@
 ### Core Model Implementation
 - [ ] **Complete MCMC inference in `HierarchicalBayesianModel`**
   - [ ] Integrate HMC/NUTS sampler library (e.g., Stan4j, JAGS Java bindings)
-  - [ ] Implement proper log-prior calculations for all parameters
-  - [ ] Add convergence diagnostics and effective sample size calculations
-  - [ ] Add parallel sampling support
+  - [x] Implement proper log-prior calculations for all parameters
+  - [x] Add convergence diagnostics and effective sample size calculations (prototype)
+  - [x] Add parallel sampling support (independent MH chains)
 
 ### Audit System
 - [ ] **Implement persistent audit sinks**
-  - [ ] Database-backed audit sink (PostgreSQL/MySQL)
+  - [x] Database-backed audit sink (PostgreSQL/MySQL)
   - [x] File-based audit sink with rotation
   - [x] Network audit sink (HTTP/REST) with retry/backoff
   - [x] Add audit record serialization/deserialization (JSON Lines)
