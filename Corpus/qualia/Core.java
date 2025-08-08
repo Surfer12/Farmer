@@ -163,28 +163,52 @@ public final class Core {
 
         // Unconstrained z0 corresponding to params ~ [0.7, 0.6, 0.5, 1.0]
         double[] z0 = new double[] { logit(0.7), logit(0.6), logit(0.5), Math.log(1.0) };
-        HmcSampler.Result res = hmc.sample(
-                4000,      // total iterations
+        HmcSampler.Result res1 = hmc.sample(
+                3000,      // total iterations
                 1000,      // burn-in
-                5,         // thinning
+                3,         // thinning
                 20240808L, // seed
                 z0,
-                0.02,      // step size
-                20         // leapfrog steps
+                0.01,      // step size (tuned down)
+                30         // leapfrog steps (tuned up)
+        );
+        // Second chain (different seed)
+        HmcSampler.Result res2 = hmc.sample(
+                3000, 1000, 3, 20240809L, z0,
+                0.01, 30
         );
 
-        // Report acceptance and mean Ψ
-        double meanPsi = 0.0; int m = 0;
-        for (ModelParameters p : res.samples) {
+        // Report acceptance and mean Ψ per chain
+        double meanPsi1 = 0.0; int m1 = 0;
+        for (ModelParameters p : res1.samples) {
             double s = 0.0;
             for (ClaimData c : dataset) s += model.calculatePsi(c, p);
-            meanPsi += s / dataset.size();
-            m++;
+            meanPsi1 += s / dataset.size();
+            m1++;
         }
-        if (m > 0) meanPsi /= m;
-        System.out.println("hmc: kept " + res.samples.size() + " samples");
-        System.out.println("hmc: acceptanceRate = " + String.format("%.3f", res.acceptanceRate));
-        System.out.println("hmc: mean Ψ over HMC samples = " + String.format("%.6f", meanPsi));
+        if (m1 > 0) meanPsi1 /= m1;
+        double meanPsi2 = 0.0; int m2 = 0;
+        for (ModelParameters p : res2.samples) {
+            double s = 0.0;
+            for (ClaimData c : dataset) s += model.calculatePsi(c, p);
+            meanPsi2 += s / dataset.size();
+            m2++;
+        }
+        if (m2 > 0) meanPsi2 /= m2;
+        System.out.println("hmc: chain1 kept=" + res1.samples.size() + ", acc=" + String.format("%.3f", res1.acceptanceRate) + ", meanΨ=" + String.format("%.6f", meanPsi1));
+        System.out.println("hmc: chain2 kept=" + res2.samples.size() + ", acc=" + String.format("%.3f", res2.acceptanceRate) + ", meanΨ=" + String.format("%.6f", meanPsi2));
+
+        // Diagnostics R̂/ESS on Ψ across chains (quick scalar view)
+        java.util.List<java.util.List<ModelParameters>> chains = java.util.List.of(res1.samples, res2.samples);
+        Diagnostics diag = model.diagnose(chains);
+        System.out.println("hmc: R̂ S=" + String.format("%.3f", diag.rHatS)
+                + ", N=" + String.format("%.3f", diag.rHatN)
+                + ", alpha=" + String.format("%.3f", diag.rHatAlpha)
+                + ", beta=" + String.format("%.3f", diag.rHatBeta));
+        System.out.println("hmc: ESS S=" + String.format("%.1f", diag.essS)
+                + ", N=" + String.format("%.1f", diag.essN)
+                + ", alpha=" + String.format("%.1f", diag.essAlpha)
+                + ", beta=" + String.format("%.1f", diag.essBeta));
     }
 
     private static double logit(double x) {

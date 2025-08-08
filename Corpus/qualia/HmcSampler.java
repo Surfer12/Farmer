@@ -120,17 +120,30 @@ final class HmcSampler {
     }
 
     private double[] gradLogTarget(double[] z) {
-        double[] g = new double[4];
-        double eps = 1e-5;
-        double base = logTarget(z);
-        for (int i = 0; i < 4; i++) {
-            double old = z[i];
-            z[i] = old + eps; double up = logTarget(z);
-            z[i] = old - eps; double dn = logTarget(z);
-            z[i] = old;
-            g[i] = (up - dn) / (2.0 * eps);
-        }
-        return g;
+        // Analytic gradient via chain rule: ∇_z logPost(θ(z)) + ∇_z log|J|
+        ModelParameters p = zToParams(z);
+        double[] dLogPost_dTheta = model.gradientLogPosterior(dataset, p);
+        double S = p.S(), N = p.N(), A = p.alpha(), B = p.beta();
+
+        // Jacobians dθ/dz
+        double dSdz = S * (1.0 - S);
+        double dNdz = N * (1.0 - N);
+        double dAdz = A * (1.0 - A);
+        double dBdz = B; // beta = exp(z3)
+
+        // Chain rule for logPosterior term
+        double g0 = dLogPost_dTheta[0] * dSdz; // d/dz0
+        double g1 = dLogPost_dTheta[1] * dNdz; // d/dz1
+        double g2 = dLogPost_dTheta[2] * dAdz; // d/dz2
+        double g3 = dLogPost_dTheta[3] * dBdz; // d/dz3
+
+        // Plus gradient of log|J| wrt z: for sigmoid, d/dz log(sig(1-sig)) = 1 - 2*sig(z)
+        g0 += (1.0 - 2.0 * S);
+        g1 += (1.0 - 2.0 * N);
+        g2 += (1.0 - 2.0 * A);
+        g3 += 1.0; // d/dz log exp(z) = 1
+
+        return new double[] { g0, g1, g2, g3 };
     }
 
     private static ModelParameters zToParams(double[] z) {
