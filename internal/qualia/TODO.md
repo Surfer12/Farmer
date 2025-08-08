@@ -8,6 +8,14 @@ SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
 ### Core Model Implementation
 - [ ] **Complete MCMC inference in `HierarchicalBayesianModel`**
   - [ ] Integrate HMC/NUTS sampler library (e.g., Stan4j, JAGS Java bindings)
+  - [x] Implement internal HMC sampler (unconstrained reparam + Jacobian)
+  - [x] Env-based tuning knobs for `stepSize`/`leapfrogSteps` (HMC_STEP_SIZE/HMC_LEAP)
+  - [ ] Dual-averaging step-size adaptation to target 0.65–0.80 acceptance
+  - [ ] Diagonal mass-matrix adaptation (momentum preconditioning)
+  - [ ] Dynamic trajectory length (NUTS-style) and simple divergence checks
+  - [ ] Multi-chain runner: warmup schedule, seed control, persistent draws
+  - [ ] Analytic gradient for SteinGradLogP (replace finite-diff; reuse dlogPost)
+  - [ ] CLI flags for HMC params (override env); JSON summary output
   - [x] Implement proper log-prior calculations for all parameters
   - [x] Add convergence diagnostics and effective sample size calculations (prototype)
   - [x] Add parallel sampling support (independent MH chains)
@@ -25,6 +33,10 @@ SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
 - [ ] **Comprehensive test suite**
   - [ ] Unit tests for all model components
   - [ ] Integration tests for audit pipeline
+  - [ ] Gradient check: `gradientLogPosterior` vs. finite-diff (tolerance 1e-5)
+  - [ ] HMC regression: acceptance in target band under default seeds
+  - [ ] Diagnostics: R̂ close to 1 and ESS reasonable on synthetic data
+  - [ ] MC vs Stein c_N sanity check on toy integrands
   - [ ] Performance benchmarks
   - [ ] Property-based testing with QuickCheck-style library
   - [ ] Tests for VotingPolicy (override precedence, weighted majorities, ties)
@@ -69,16 +81,17 @@ SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
   - [ ] User guide with examples
   - [x] Mathematical model documentation
   - [x] Architecture diagrams
+  - [ ] HMC usage notes (env flags, targets, diagnostics)
   - [ ] Public Methods API (Ψ + MCDA)
     - [ ] computePsi(S,N,α,Ra,Rv,λ1,λ2,β) → {psi,O,pen,post}; contracts and examples
     - [ ] computePsiTemporal(w,timeSeries,aggregator) → psiBar; mean/softcap
     - [ ] thresholdTransfer(κ,τ,mode) → τ′; subcap/softcap mapping
-    - [ ] normalizeCriterion(values,direction) → z∈[0,1]
+    - [x] normalizeCriterion(values,direction) → z∈[0,1]
     - [ ] mapGovernanceWeights(baseWeights,gΨ,η) → w (Δ^m)
-    - [ ] gateByPsi(alternatives,ψLower,τ) → feasible set
-    - [ ] wsmScore(w,z) / wsmScoreRobust(w,zLower)
-    - [ ] wpmScore(w,z) / wpmScoreRobust(w,zLower)
-    - [ ] topsisScore(w,z,dir) / topsisScoreRobust(w,zLower,zUpper,dir)
+    - [x] gateByPsi(alternatives,ψLower,τ) → feasible set
+    - [ ] wsmScore(w,z) / wsmScoreRobust(w,zLower) (wrap `rankByWSM`)
+    - [ ] wpmScore(w,z) / wpmScoreRobust(w,zLower) (wrap `rankByWPM`)
+    - [ ] topsisScore(w,z,dir) / topsisScoreRobust(w,zLower,zUpper,dir) (wrap `rankByTOPSIS`)
     - [ ] ahpWeights(pairwise) → {w,CR}
     - [ ] outrankingFlows(Pj,w) / outrankingFlowsRobust(...)
     - [ ] zBoundsFromXBounds(xLower,xUpper,direction)
@@ -88,6 +101,17 @@ SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
     - [ ] invariants/contracts (ranges, determinism) and complexity notes
     - [ ] error handling semantics (degenerate normalization, floors)
     - [ ] unit tests for all public methods
+
+### MCDA Implementation
+- [x] Implement WSM/WPM/TOPSIS ranking with Ψ gating demo
+- [ ] Implement AHP pairwise weights and consistency ratio
+- [ ] Implement outranking flows (PROMETHEE-like) with monotone Ψ channel
+- [ ] Add robust variants (floors/intervals) for WSM/WPM/TOPSIS
+
+### Configuration & Deployment
+- [ ] CLI command(s) to run HMC/MCDA demos with JSON output
+- [ ] CI: REUSE/license check + build + run HMC acceptance sanity + MCDA demo
+- [ ] Release notes template (diagnostics reported, params)
 
 ### Performance Optimization
 - [ ] **Performance improvements**

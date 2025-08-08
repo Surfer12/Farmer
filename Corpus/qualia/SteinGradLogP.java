@@ -21,25 +21,10 @@ final class SteinGradLogP {
         this.parallel = model.shouldParallelize(dataset.size());
     }
 
-    /** Maps double[4] -> ModelParameters with clamping for domain constraints. */
-    private static ModelParameters toParams(double[] x) {
-        double S = clamp01(x[0]);
-        double N = clamp01(x[1]);
-        double a = clamp01(x[2]);
-        double b = Math.max(1e-6, x[3]);
-        return new ModelParameters(S, N, a, b);
-    }
-
-    private static double clamp01(double v) {
-        if (v < 0.0) return 0.0;
-        if (v > 1.0) return 1.0;
-        return v;
-    }
-
     /** Returns ∇ log p(x) where x∈R^4 corresponds to ModelParameters. */
     double[] gradLogPosterior(double[] x) {
-        // Use model's analytic gradient with prepared dataset for speed and stability
-        return model.gradientLogPosteriorPrepared(prep, toParams(x), parallel);
+        // Interpret x as z-coordinates: z = [logit(S), logit(N), logit(alpha), log(beta)]
+        return model.gradLogTargetZ(prep, x, parallel);
     }
 }
 

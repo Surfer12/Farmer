@@ -11,7 +11,7 @@ import java.util.List;
 public final class SteinEstimator {
     private final SteinKernel base;
     private final SteinGradLogP gradLogP;
-    private final double[][] nodes; // collocation nodes in R^4 (S,N,alpha,beta)
+    private final double[][] nodes; // collocation nodes in R^4 (z-space)
 
     public SteinEstimator(double lengthScale,
                           HierarchicalBayesianModel model,
@@ -22,7 +22,12 @@ public final class SteinEstimator {
         this.nodes = new double[samples.size()][];
         for (int i = 0; i < samples.size(); i++) {
             ModelParameters p = samples.get(i);
-            nodes[i] = new double[] { p.S(), p.N(), p.alpha(), p.beta() };
+            // Map to z: [logit(S), logit(N), logit(alpha), log(beta)]
+            double S = clamp01(p.S());
+            double N = clamp01(p.N());
+            double a = clamp01(p.alpha());
+            double b = Math.max(1e-12, p.beta());
+            nodes[i] = new double[] { logit(S), logit(N), logit(a), Math.log(b) };
         }
     }
 
@@ -32,10 +37,10 @@ public final class SteinEstimator {
         java.util.Arrays.fill(out, 0.0);
         for (int i = 0; i < n; i++) {
             double[] xi = nodes[i];
-            double[] gi = gradLogP.gradLogPosterior(xi.clone());
+                double[] gi = gradLogP.gradLogPosterior(xi.clone());
             for (int j = 0; j < n; j++) {
                 double[] xj = nodes[j];
-                double[] gj = gradLogP.gradLogPosterior(xj.clone());
+                    double[] gj = gradLogP.gradLogPosterior(xj.clone());
                 double k = base.k(xi, xj);
                 double[] g1 = new double[gi.length];
                 double[] g2 = new double[gi.length];
@@ -78,6 +83,18 @@ public final class SteinEstimator {
             double pre = (Math.abs(diag) > 1e-12) ? (1.0 / diag) : 1.0;
             out[i] = pre * r[i];
         }
+    }
+
+    private static double logit(double x) {
+        double eps = 1e-12;
+        double c = Math.max(eps, Math.min(1.0 - eps, x));
+        return Math.log(c / (1.0 - c));
+    }
+
+    private static double clamp01(double v) {
+        if (v < 0.0) return 0.0;
+        if (v > 1.0) return 1.0;
+        return v;
     }
 
     /** Returns c_N given values f(x_i). */

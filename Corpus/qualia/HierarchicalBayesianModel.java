@@ -318,6 +318,54 @@ public final class HierarchicalBayesianModel {
     }
 
     /**
+     * Gradient in z-space of logTarget(z) = logPosterior(θ(z)) + log|J(z)| where
+     * θ(z) = (sigmoid(z0), sigmoid(z1), sigmoid(z2), exp(z3)).
+     */
+    public double[] gradLogTargetZ(Prepared prep, double[] z, boolean parallel) {
+        ModelParameters theta = new ModelParameters(
+                sigmoid(z[0]),
+                sigmoid(z[1]),
+                sigmoid(z[2]),
+                Math.exp(z[3])
+        );
+        double[] dLogPost_dTheta = gradientLogPosteriorPrepared(prep, theta, parallel);
+        double S = theta.S();
+        double N = theta.N();
+        double A = theta.alpha();
+        double B = theta.beta();
+
+        // dθ/dz
+        double dSdz = S * (1.0 - S);
+        double dNdz = N * (1.0 - N);
+        double dAdz = A * (1.0 - A);
+        double dBdz = B; // beta = exp(z3)
+
+        // Chain rule for logPosterior term
+        double g0 = dLogPost_dTheta[0] * dSdz;
+        double g1 = dLogPost_dTheta[1] * dNdz;
+        double g2 = dLogPost_dTheta[2] * dAdz;
+        double g3 = dLogPost_dTheta[3] * dBdz;
+
+        // Gradient of log|J| wrt z
+        g0 += (1.0 - 2.0 * S);
+        g1 += (1.0 - 2.0 * N);
+        g2 += (1.0 - 2.0 * A);
+        g3 += 1.0;
+
+        return new double[] { g0, g1, g2, g3 };
+    }
+
+    private static double sigmoid(double x) {
+        if (x >= 0) {
+            double ex = Math.exp(-x);
+            return 1.0 / (1.0 + ex);
+        } else {
+            double ex = Math.exp(x);
+            return ex / (1.0 + ex);
+        }
+    }
+
+    /**
      * Log-priors for a given parameter draw. Placeholder (returns 0.0).
      * In a full implementation, provide log-PDFs for Beta, LogNormal, etc.
      *
