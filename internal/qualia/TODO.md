@@ -69,6 +69,25 @@ SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
   - [ ] User guide with examples
   - [x] Mathematical model documentation
   - [x] Architecture diagrams
+  - [ ] Public Methods API (Ψ + MCDA)
+    - [ ] computePsi(S,N,α,Ra,Rv,λ1,λ2,β) → {psi,O,pen,post}; contracts and examples
+    - [ ] computePsiTemporal(w,timeSeries,aggregator) → psiBar; mean/softcap
+    - [ ] thresholdTransfer(κ,τ,mode) → τ′; subcap/softcap mapping
+    - [ ] normalizeCriterion(values,direction) → z∈[0,1]
+    - [ ] mapGovernanceWeights(baseWeights,gΨ,η) → w (Δ^m)
+    - [ ] gateByPsi(alternatives,ψLower,τ) → feasible set
+    - [ ] wsmScore(w,z) / wsmScoreRobust(w,zLower)
+    - [ ] wpmScore(w,z) / wpmScoreRobust(w,zLower)
+    - [ ] topsisScore(w,z,dir) / topsisScoreRobust(w,zLower,zUpper,dir)
+    - [ ] ahpWeights(pairwise) → {w,CR}
+    - [ ] outrankingFlows(Pj,w) / outrankingFlowsRobust(...)
+    - [ ] zBoundsFromXBounds(xLower,xUpper,direction)
+    - [ ] sensitivities: gradWSM, gradPsi partials
+    - [ ] tieBreak(alternatives, keys) → winner (lexicographic)
+    - [ ] auditTrail(event,payload) → recordId (usage + guarantees)
+    - [ ] invariants/contracts (ranges, determinism) and complexity notes
+    - [ ] error handling semantics (degenerate normalization, floors)
+    - [ ] unit tests for all public methods
 
 ### Performance Optimization
 - [ ] **Performance improvements**

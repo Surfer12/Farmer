@@ -122,7 +122,36 @@ public final class HierarchicalBayesianModel {
         int size() { return pen.length; }
     }
 
+    // In-memory LRU cache for prepared datasets with TTL and stats.
+    // Keyed by dataset identity+content hash+params+algoVersion fingerprint.
+    private static final SimpleCaffeineLikeCache<DatasetCacheKey, Prepared> PREP_CACHE =
+            new SimpleCaffeineLikeCache<>(256, java.time.Duration.ofHours(6), true, 128L * 1024L * 1024L,
+                    prep -> prep == null ? 0L : estimatePreparedWeight(prep));
+
+    private static long estimatePreparedWeight(Prepared p) {
+        if (p == null) return 0L;
+        // Approximate: 3 arrays of length n: double(8B), double(8B), boolean(1B ~ padded but approx)
+        long n = p.size();
+        return n * (8L + 8L + 1L);
+    }
+
     Prepared precompute(List<ClaimData> dataset) {
+        // Build cache key (algoVersion ties to preparation logic and priors affecting pen)
+        String datasetId = "anon"; // caller can extend API later to pass a real id
+        String datasetHash = DatasetCacheKey.hashDatasetContent(dataset);
+        String paramsHash = Long.toHexString(Double.doubleToLongBits(priors.lambda1())) + ":" +
+                Long.toHexString(Double.doubleToLongBits(priors.lambda2()));
+        DatasetCacheKey key = new DatasetCacheKey(datasetId, datasetHash, paramsHash, "precompute-v1");
+
+        try {
+            return PREP_CACHE.get(key, k -> computePrepared(dataset));
+        } catch (Exception e) {
+            // Fallback to direct compute on cache failure
+            return computePrepared(dataset);
+        }
+    }
+
+    private Prepared computePrepared(List<ClaimData> dataset) {
         int n = dataset.size();
         double[] pen = new double[n];
         double[] pHe = new double[n];

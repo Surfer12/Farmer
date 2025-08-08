@@ -5005,7 +5005,7 @@ with $\lambda_1>0,\ \lambda_2>0$, and $\Sx,N(x)\in[0,1]$. Typically $N>S$ once c
 \subsection*{Operational Fit to UOIF}
 \begin{itemize}[leftmargin=1.25em]
   \item \textbf{Decoupled levers map to events.} Observable triggers drive parameters: $\alpha\downarrow$ on canonical posting; $(R_a,R_v)\downarrow$ when official URLs are present; $\beta\uparrow$ with certification. Design ensures near-orthogonal updates, yielding reproducible promotions.
-  \item \textbf{Auditability.} Each step exposes inputs (sources), transforms (hybrid/penalty/posterior), and output ($\Px$), with one-line proofs (affinity, boundedness, cap). Stability follows from the diagonal-dominant Jacobian and factors in $(0,1]$.
+  \item \textbf{Auditability.} Each step exposes inputs (sources), transforms (hybrid/penalty/posterior), and output ($\Px$), with one-line proofs (affinity, boundedness, cap). Stability follows from componentwise monotone and bounded maps and factors in $(0,1]$.
 \end{itemize}
 \textbf{Keystone reflection.} The framework emulates scientific peer review: artifacts arrive, levers adjust, $\Px$ updates transparently.
 
