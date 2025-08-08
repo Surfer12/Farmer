@@ -1,0 +1,25 @@
+# SPDX-License-Identifier: GPL-3.0-only
+# SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
+
+version = 1
+
+[settings]
+annotations = true
+style = "spdx"
+
+[license]
+default = "GPL-3.0-only"
+
+[path_license]
+"Corpus/**" = "GPL-3.0-only"
+"Sources/**" = "GPL-3.0-only"
+"Farmer/**" = "GPL-3.0-only"
+"**/*.md" = "GPL-3.0-only"
+"**/*.tex" = "GPL-3.0-only"
+
+[path_license_overrides]
+"**/internal/**" = "LicenseRef-Internal-Use-Only"
+"**/*.sty" = "LicenseRef-Internal-Use-Only"
+"**/audit-logs/**" = "LicenseRef-Internal-Use-Only"
+
+

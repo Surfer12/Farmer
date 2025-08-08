@@ -1,0 +1,9 @@
+SPDX-License-Identifier: GPL-3.0-only
+
+Please see the official text of the GNU General Public License v3.0 (Only):
+
+https://www.gnu.org/licenses/gpl-3.0.txt
+
+For compliance, include the full license text in distributions. If you are packaging a release, vendor the text above into this file.
+
+

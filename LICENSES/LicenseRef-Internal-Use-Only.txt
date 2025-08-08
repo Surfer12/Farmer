@@ -1,0 +1,19 @@
+SPDX-License-Identifier: LicenseRef-Internal-Use-Only
+
+LicenseRef-Internal-Use-Only v1.0
+
+Grant: The Owner grants Collaborators a non-exclusive, non-transferable, revocable, royalty-free license to use, reproduce, and modify this work solely for internal evaluation and collaboration on this project.
+
+Restrictions: No distribution outside the collaboration; no sublicensing; retain copyright and license notices; treat non-public materials as confidential.
+
+Contributions: Each Contributor grants the Owner a non-exclusive, perpetual, irrevocable license to use and relicense their contributions for the project. Contributors represent they have the right to contribute.
+
+IP/Patents: No patent license is granted beyond what is necessary to use the contribution internally. No trademark rights.
+
+Termination: This license terminates automatically upon breach or upon written notice. On termination, stop all use except archival records.
+
+No Warranty / No Liability: The work is provided “AS IS” without warranties. To the extent permitted by law, the Owner disclaims liability.
+
+Governing Law: [Your jurisdiction].
+
+

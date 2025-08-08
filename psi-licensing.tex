@@ -1,0 +1,101 @@
+% SPDX-License-Identifier: GPL-3.0-only
+% SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
+
+\documentclass[11pt]{article}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{upquote}
+\usepackage{inconsolata}
+\usepackage{relsize}
+\hypersetup{colorlinks=true,linkcolor=black,citecolor=black,urlcolor=blue}
+
+\title{Ψ Licensing: Internal vs. Public Distribution}
+\author{Jumping Quail Solutions}
+\date{2025}
+
+\newcommand{\proj}{Ψ Framework}
+
+\begin{document}
+\maketitle
+
+\noindent\textbf{Copyright} \\[-0.3em]
+\\© 2025 Jumping Quail Solutions. All rights reserved.\\
+Classification: Confidential — Internal Use Only.\\
+
+\section*{Purpose}
+This document explains how \proj{} is licensed for (1) internal collaboration and (2) public distribution. Public releases are licensed under \textbf{GPL-3.0-only}. CC0 is \textbf{not used}. Internal, non-public artifacts are licensed under a custom internal-use license (\texttt{LicenseRef-Internal-Use-Only v1.0}).
+
+\section*{Public License: GPL-3.0-only}
+\begin{itemize}[leftmargin=*]
+  \item All public source code and accompanying materials intended for distribution are licensed under \textbf{GNU General Public License, version 3.0 only (GPL-3.0-only)}.
+  \item Rationale: copyleft protects improvements and ensures downstream users receive the same freedoms.\footnote{Official text: \url{https://www.gnu.org/licenses/gpl-3.0.txt}}
+  \item Attribution: use SPDX headers to mark files. Example headers appear in Section~\ref{sec:spdx}.
+\end{itemize}
+
+\section*{Internal License: LicenseRef-Internal-Use-Only v1.0}
+Internal, non-public artifacts (drafts, private notes, evaluation datasets, confidential documentation) are licensed under the following custom license. Store this text at \texttt{LICENSES/LicenseRef-Internal-Use-Only.txt} and reference it via SPDX.
+
+\subsection*{Full Text}
+\begin{quote}\small
+\textbf{LicenseRef-Internal-Use-Only v1.0}\\[0.3em]
+\textbf{Grant:} The Owner grants Collaborators a non-exclusive, non-transferable, revocable, royalty-free license to use, reproduce, and modify this work solely for internal evaluation and collaboration on this project.\\
+\textbf{Restrictions:} No distribution outside the collaboration; no sublicensing; retain copyright and license notices; treat non-public materials as confidential.\\
+\textbf{Contributions:} Each Contributor grants the Owner a non-exclusive, perpetual, irrevocable license to use and relicense their contributions for the project. Contributors represent they have the right to contribute.\\
+\textbf{IP/Patents:} No patent license is granted beyond what is necessary to use the contribution internally. No trademark rights.\\
+\textbf{Termination:} This license terminates automatically upon breach or upon written notice. On termination, stop all use except archival records.\\
+\textbf{No Warranty / No Liability:} The work is provided “AS IS” without warranties. To the extent permitted by law, the Owner disclaims liability.\\
+\textbf{Governing Law:} [Your jurisdiction].
+\end{quote}
+
+\section*{Distribution Rules}
+\begin{itemize}[leftmargin=*]
+  \item Public releases: GPL-3.0-only. No CC0.\footnote{If desired, documentation may also be GPL-3.0-only for consistency.}
+  \item Internal artifacts: LicenseRef-Internal-Use-Only v1.0. Do not distribute outside authorized collaborators.
+  \item Mixed repositories: clearly segregate internal-only materials (folders, file patterns) and mark with correct SPDX identifiers.
+\end{itemize}
+
+\section*{Notices}
+Include the following files at the repository root:
+\begin{itemize}[leftmargin=*]
+  \item \texttt{COPYRIGHT}: ``© 2025 Jumping Quail Solutions. All rights reserved.'' and classification line.
+  \item \texttt{NOTICE}: project name, primary public license (GPL-3.0-only), and pointer to \texttt{LICENSES/}.
+  \item \texttt{LICENSES/}: contains \texttt{GPL-3.0-only.txt} (verbatim GPLv3) and \texttt{LicenseRef-Internal-Use-Only.txt} (text above).
+\end{itemize}
+
+\section*{SPDX Headers and REUSE}\label{sec:spdx}
+Use SPDX headers at the top of each file. Examples:
+\begin{itemize}[leftmargin=*]
+  \item Java: \verb|// SPDX-License-Identifier: GPL-3.0-only|\\
+        \verb|// SPDX-FileCopyrightText: 2025 Jumping Quail Solutions|
+  \item Swift: \verb|// SPDX-License-Identifier: GPL-3.0-only|
+  \item Markdown (internal): \verb|SPDX-License-Identifier: LicenseRef-Internal-Use-Only|
+  \item LaTeX: \verb|% SPDX-License-Identifier: GPL-3.0-only|
+\end{itemize}
+REUSE layout:\footnote{\url{https://reuse.software/}} place license texts under \texttt{LICENSES/}. Optionally add \texttt{REUSE.toml} to document defaults and patterns.
+
+\section*{Contribution Policy}
+\begin{itemize}[leftmargin=*]
+  \item External contributions are accepted under GPL-3.0-only. By submitting, contributors certify they have the right to do so and license their changes under GPL-3.0-only.
+  \item Internal contributions to non-public artifacts are licensed under LicenseRef-Internal-Use-Only v1.0.
+  \item Sign-off or CLA/DCO may be required; see \texttt{CONTRIBUTING.md}.
+\end{itemize}
+
+\section*{At-a-Glance}
+\begin{center}
+\begin{tabular}{ll}
+Scope & License \\
+\hline
+Public code/docs & GPL-3.0-only (no CC0) \\
+Internal-only materials & LicenseRef-Internal-Use-Only v1.0 \\
+\end{tabular}
+\end{center}
+
+\bigskip
+\noindent This policy ensures strong copyleft for public releases while reserving confidentiality for internal work products.
+
+\end{document}
+
+

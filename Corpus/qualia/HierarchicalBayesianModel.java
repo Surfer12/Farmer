@@ -7,6 +7,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ThreadLocalRandom;
+import java.security.SecureRandom;
 
 /**
  * Core model implementation for Hierarchical Bayesian inference.
@@ -124,13 +126,35 @@ public final class HierarchicalBayesianModel {
      * baselines. For production use, prefer HMC/NUTS via a dedicated library.
      */
     public List<ModelParameters> performInference(List<ClaimData> dataset, int sampleCount) {
-        return runMhChain(dataset, sampleCount, 42L);
+        long seed = ThreadLocalRandom.current().nextLong();
+        System.out.println("performInference: seed=" + seed + ", samples=" + sampleCount);
+        return runMhChain(dataset, sampleCount, seed);
+    }
+
+    /**
+     * Overload allowing explicit seed control for reproducibility.
+     */
+    public List<ModelParameters> performInference(List<ClaimData> dataset, int sampleCount, long seed) {
+        System.out.println("performInference(explicit): seed=" + seed + ", samples=" + sampleCount);
+        return runMhChain(dataset, sampleCount, seed);
     }
 
     /**
      * Runs multiple independent MH chains in parallel and returns per-chain samples.
      */
     public List<List<ModelParameters>> performInferenceParallel(List<ClaimData> dataset, int chains, int samplesPerChain) {
+        if (chains <= 0 || samplesPerChain <= 0) return List.of();
+        // Choose a cryptographically-strong base seed to reduce collision risk across invocations
+        long baseSeed = new SecureRandom().nextLong();
+        System.out.println("performInferenceParallel: baseSeed=" + baseSeed + ", chains=" + chains + ", samplesPerChain=" + samplesPerChain);
+        return performInferenceParallel(dataset, chains, samplesPerChain, baseSeed);
+    }
+
+    /**
+     * Overload allowing an explicit baseSeed. Per-chain seeds are derived as
+     * baseSeed + c * PHI64 where PHI64 is a large odd constant to avoid collisions.
+     */
+    public List<List<ModelParameters>> performInferenceParallel(List<ClaimData> dataset, int chains, int samplesPerChain, long baseSeed) {
         if (chains <= 0 || samplesPerChain <= 0) return List.of();
         int poolSize = Math.min(chains, Math.max(1, Runtime.getRuntime().availableProcessors()));
         ExecutorService pool = Executors.newFixedThreadPool(poolSize, r -> {
@@ -142,7 +166,9 @@ public final class HierarchicalBayesianModel {
         try {
             List<CompletableFuture<List<ModelParameters>>> futures = new ArrayList<>(chains);
             for (int c = 0; c < chains; c++) {
-                final long seed = 42L + c * 17L;
+                // Use the 64-bit golden ratio odd constant for good spacing in Z/2^64Z
+                final long PHI64 = 0x9E3779B97F4A7C15L;
+                final long seed = baseSeed + (PHI64 * (long) c);
                 futures.add(CompletableFuture.supplyAsync(() -> runMhChain(dataset, samplesPerChain, seed), pool));
             }
             List<List<ModelParameters>> results = new ArrayList<>(chains);

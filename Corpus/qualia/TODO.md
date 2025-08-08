@@ -8,7 +8,8 @@
   - [x] Implement proper log-prior calculations for all parameters
   - [x] Add convergence diagnostics and effective sample size calculations (prototype)
   - [x] Add parallel sampling support (independent MH chains)
-  - [ ] Add decision voting with explicit overrides wired to policy gates
+  - [x] Add decision voting with explicit overrides wired to policy gates
+  - [x] Implement agent presets (safetyCritical, fastPath, consensus) with smoke tests
 
 ### Audit System
 - [ ] **Implement persistent audit sinks**
@@ -24,6 +25,7 @@
   - [ ] Performance benchmarks
   - [ ] Property-based testing with QuickCheck-style library
   - [ ] Tests for VotingPolicy (override precedence, weighted majorities, ties)
+  - [ ] Unit tests for AgentPresets rule stacks
 
 ## 🔧 Medium Priority
 
@@ -53,9 +55,10 @@
 ### Monitoring & Observability
 - [ ] **Add comprehensive logging**
   - [ ] Structured logging with SLF4J
-  - [ ] Metrics collection (Prometheus)
+  - [x] Metrics collection (Prometheus) — minimal in-process registry
   - [ ] Distributed tracing
   - [ ] Health checks
+  - [x] Basic health checks (sinks)
 
 ### Documentation
 - [ ] **API documentation**
@@ -113,6 +116,7 @@
 - [x] Console audit sink implementation
 - [x] Package consolidation to `qualia` and removal of legacy `core.java`
 - [x] Detailed JavaDoc across public APIs
+- [x] Voting/override framework and agent presets implemented
 
 ---
 

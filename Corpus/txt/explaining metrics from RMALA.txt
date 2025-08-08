@@ -1,0 +1,12 @@
+xplaining metrics from RMALA
+I need to provide explanations for the metrics printed after running the RMALA chain. The user is looking for concise descriptions for each metric. 
+I'll outline the following: 
+Kept 400 samples: This indicates the number of samples retained after burn-in and thinning.
+Acceptance Rate (0.062): A low acceptance rate suggests an overly large step size or poor preconditioning; typically, a rate of 0.2-0.4 is expected.
+Avg CDLB (0.110575): This likely stands for the average Conditional Debiased Lower Bound, giving insight into model performance.
+Mean Ψ (0.494214): Represents the average over the RMALA samples, reflecting certain model characteristics. 
+Let’s keep it clear and informative!
+kept: Number of posterior draws retained after burn‑in and thinning. It’s your effective sample count for downstream summaries.
+acceptanceRate: Fraction of proposed moves accepted by the RMALA chain (accepted proposals / total iterations). Lower means proposals are often rejected; higher means more moves succeed.
+avgCDLB: Average of the per‑step CDLB “reward” used in your sampler. It’s computed from the acceptance probability and log‑densities (in nats) to proxy expected information gain/efficiency per iteration; higher typically indicates a more effective proposal policy.
+mean Ψ over RMALA samples: Posterior mean of Ψ computed over the retained samples (i.e., average Ψ when parameters are drawn from the RMALA posterior).

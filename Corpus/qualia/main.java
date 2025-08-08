@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-only
+// SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
 package qualia;
 
 import java.util.Date;
@@ -7,27 +9,38 @@ import java.util.Date;
  */
 final class Main {
     public static void main(String[] args) {
-        AuditSink jdbcSink = new JdbcAuditSink(
-            "jdbc:postgresql://localhost:5432/qualia", // or MySQL URL
-            "dbuser",
-            "dbpass"
+        String dbUrl = System.getenv("QUALIA_DB_URL");
+        JdbcAuditSink jdbcSink = null;
+        if (dbUrl != null && !dbUrl.isEmpty()) {
+            jdbcSink = new JdbcAuditSink(
+                dbUrl,
+                System.getenv("QUALIA_DB_USER"),
+                System.getenv("QUALIA_DB_PASS")
+            );
+            AuditRecord rec1 = new AuditRecordImpl("rec-123", new Date());
+            AuditOptions opts1 = AuditOptions.builder()
+                .idempotencyKey("rec-123")
+                .dryRun(false)
+                .build();
+            try {
+                jdbcSink.write(rec1, opts1).join();
+            } catch (Exception e) {
+                System.err.println("JDBC sink disabled (" + e.getMessage() + ")");
+            }
+        }
+        
+        // Minimal smoke tests for agent presets
+        var now = java.time.Instant.now();
+        java.util.List<Vote> votes = java.util.List.of(
+                new Vote("u1", Role.SECURITY, "q1", Decision.REJECT, 1.0, true, 1.0, now.plusSeconds(3600), null, java.util.Map.of()),
+                new Vote("u2", Role.LEGAL, "q1", Decision.APPROVE, 1.0, false, 0.9, now.plusSeconds(3600), null, java.util.Map.of()),
+                new Vote("u3", Role.ENGINEERING, "q1", Decision.APPROVE, 1.0, false, 0.9, now.plusSeconds(3600), null, java.util.Map.of())
         );
+        System.out.println("safetyCritical: " + AgentPresets.safetyCritical(votes));
+        System.out.println("fastPath: " + AgentPresets.fastPath(votes));
+        System.out.println("consensus: " + AgentPresets.consensus(votes));
         
-        AuditRecord rec1 = new AuditRecordImpl("rec-123", new Date());
-        AuditOptions opts1 = AuditOptions.builder()
-            .idempotencyKey("rec-123") // optional
-            .dryRun(false)
-            .build();
-        
-        jdbcSink.write(rec1, opts1).join(); // wait if you need to ensure durability now
-        
-        // Optional: when shutting down your app
-        if (jdbcSink instanceof JdbcAuditSink j) j.close();
-        AuditSink consoleSink = new ConsoleAuditSink(AuditOptions.builder().dryRun(true).build());
-        AuditRecord rec2 = new AuditRecordImpl("rec-123", new Date());
-        consoleSink.write(rec2, AuditOptions.builder().dryRun(true).build()).join();
-        // AuditSink sink = new ConsoleAuditSink(AuditOptions.builder().dryRun(true).build());
-        // AuditRecord rec = new AuditRecordImpl("rec-123", new Date());
-        // sink.write(rec, AuditOptions.builder().dryRun(true).build()).join();
+        // Optional: shutdown JDBC sink
+        if (jdbcSink != null) jdbcSink.close();
     }
 }
