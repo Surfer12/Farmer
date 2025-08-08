@@ -29,6 +29,7 @@ public final class Core {
             case "file" -> runFile();
             case "jdbc" -> runJdbc();
             case "stein" -> runStein();
+            case "hmc" -> runHmc();
             case "rmala" -> runRmala();
             default -> printUsageAndExit();
         }
@@ -110,7 +111,7 @@ public final class Core {
     }
 
     private static void printUsageAndExit() {
-        System.err.println("Usage: java -cp <cp> qualia.Core <console|file|jdbc|stein|rmala>");
+        System.err.println("Usage: java -cp <cp> qualia.Core <console|file|jdbc|stein|hmc|rmala>");
         System.exit(1);
     }
 
@@ -144,6 +145,52 @@ public final class Core {
         }
         if (!res.samples.isEmpty()) meanPsi /= res.samples.size();
         System.out.println("rmala: mean Ψ over RMALA samples = " + String.format("%.6f", meanPsi));
+    }
+
+    private static void runHmc() {
+        // small synthetic dataset
+        java.util.List<ClaimData> dataset = new java.util.ArrayList<>();
+        java.util.Random rng = new java.util.Random(11);
+        for (int i = 0; i < 60; i++) {
+            dataset.add(new ClaimData("h-" + i, rng.nextBoolean(),
+                    Math.abs(rng.nextGaussian()) * 0.3,
+                    Math.abs(rng.nextGaussian()) * 0.3,
+                    Math.min(1.0, Math.max(0.0, 0.5 + 0.2 * rng.nextGaussian()))));
+        }
+
+        HierarchicalBayesianModel model = new HierarchicalBayesianModel();
+        HmcSampler hmc = new HmcSampler(model, dataset);
+
+        // Unconstrained z0 corresponding to params ~ [0.7, 0.6, 0.5, 1.0]
+        double[] z0 = new double[] { logit(0.7), logit(0.6), logit(0.5), Math.log(1.0) };
+        HmcSampler.Result res = hmc.sample(
+                4000,      // total iterations
+                1000,      // burn-in
+                5,         // thinning
+                20240808L, // seed
+                z0,
+                0.02,      // step size
+                20         // leapfrog steps
+        );
+
+        // Report acceptance and mean Ψ
+        double meanPsi = 0.0; int m = 0;
+        for (ModelParameters p : res.samples) {
+            double s = 0.0;
+            for (ClaimData c : dataset) s += model.calculatePsi(c, p);
+            meanPsi += s / dataset.size();
+            m++;
+        }
+        if (m > 0) meanPsi /= m;
+        System.out.println("hmc: kept " + res.samples.size() + " samples");
+        System.out.println("hmc: acceptanceRate = " + String.format("%.3f", res.acceptanceRate));
+        System.out.println("hmc: mean Ψ over HMC samples = " + String.format("%.6f", meanPsi));
+    }
+
+    private static double logit(double x) {
+        double eps = 1e-12;
+        double clamped = Math.max(eps, Math.min(1.0 - eps, x));
+        return Math.log(clamped / (1.0 - clamped));
     }
 }
 
