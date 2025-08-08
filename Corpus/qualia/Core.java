@@ -20,6 +20,15 @@ import java.util.Random;
  */
 public final class Core {
     public static void main(String[] args) {
+        // Start metrics server if enabled (defaults to enabled)
+        try {
+            if (Boolean.parseBoolean(System.getenv().getOrDefault("METRICS_ENABLE", "true"))) {
+                MetricsServer.startFromEnv();
+            }
+        } catch (Throwable t) {
+            System.err.println("metrics: failed to start (continuing): " + t.getMessage());
+        }
+
         if (args == null || args.length == 0) {
             printUsageAndExit();
         }
@@ -33,7 +42,7 @@ public final class Core {
             case "mcda" -> runMcda();
             case "rmala" -> runRmala();
             case "hmc_adapt" -> runHmcAdaptive(args);
-            case "hmcmulti" -> runHmcMulti();
+            case "hmcmulti" -> runHmcMulti(args);
             default -> printUsageAndExit();
         }
     }
@@ -207,6 +216,11 @@ public final class Core {
         if (m2 > 0) meanPsi2 /= m2;
         System.out.println("hmc: chain1 kept=" + a1.samples.size() + ", acc=" + String.format("%.3f", a1.acceptanceRate) + ", ε*=" + String.format("%.5f", a1.tunedStepSize));
         System.out.println("hmc: chain2 kept=" + a2.samples.size() + ", acc=" + String.format("%.3f", a2.acceptanceRate) + ", ε*=" + String.format("%.5f", a2.tunedStepSize));
+
+        // Export simple metrics for single-run
+        MetricsRegistry mr = MetricsRegistry.get();
+        mr.setGauge("hmc_single_acc1_ppm", (long) Math.round(a1.acceptanceRate * 1_000_000.0));
+        mr.setGauge("hmc_single_acc2_ppm", (long) Math.round(a2.acceptanceRate * 1_000_000.0));
         System.out.println("hmc: meanΨ ch1=" + String.format("%.6f", meanPsi1) + ", ch2=" + String.format("%.6f", meanPsi2));
 
         // Diagnostics R̂/ESS on Ψ across chains (quick scalar view)
@@ -222,7 +236,10 @@ public final class Core {
                 + ", beta=" + String.format("%.1f", diag.essBeta));
     }
 
-    private static void runHmcMulti() {
+    private static void runHmcMulti(String[] args) {
+        // Parse CLI key=value to override env
+        java.util.Map<String, String> kv = parseKvArgs(args, 1);
+
         // small synthetic dataset
         java.util.List<ClaimData> dataset = new java.util.ArrayList<>();
         java.util.Random rng = new java.util.Random(13);
@@ -233,19 +250,19 @@ public final class Core {
                     Math.min(1.0, Math.max(0.0, 0.5 + 0.2 * rng.nextGaussian()))));
         }
 
-        ServiceLocator sl = ServiceLocator.builder().build();
+        ServiceLocator sl = ServiceLocator.builder().fromEnvironment().build();
         HierarchicalBayesianModel model = (HierarchicalBayesianModel) sl.psiModel(ModelPriors.defaults(), 2048);
 
-        // Defaults with env overrides
-        int chains = getEnvInt("HMC_CHAINS", 4);
-        int warm = getEnvInt("HMC_WARMUP", 1000);
-        int iters = getEnvInt("HMC_ITERS", 3000);
-        int thin = getEnvInt("HMC_THIN", 3);
-        double eps0 = getEnvDouble("HMC_STEP_SIZE", 0.01);
-        int leap = getEnvInt("HMC_LEAP", 32);
-        double target = getEnvDouble("HMC_TARGET_ACC", 0.75);
-        long seed = (long) getEnvInt("HMC_SEED", 20240810);
-        String out = System.getenv().getOrDefault("HMC_OUT", "hmc-out");
+        // Defaults with env overrides, then CLI overrides
+        int chains = parseInt(kv.get("chains"), getEnvInt("HMC_CHAINS", 4));
+        int warm = parseInt(kv.get("warmup"), getEnvInt("HMC_WARMUP", 1000));
+        int iters = parseInt(kv.get("iters"), getEnvInt("HMC_ITERS", 3000));
+        int thin = parseInt(kv.get("thin"), getEnvInt("HMC_THIN", 3));
+        double eps0 = parseDouble(kv.get("eps"), getEnvDouble("HMC_STEP_SIZE", 0.01));
+        int leap = parseInt(kv.get("leap"), getEnvInt("HMC_LEAP", 32));
+        double target = parseDouble(kv.get("target"), getEnvDouble("HMC_TARGET_ACC", 0.75));
+        long seed = parseLong(kv.get("baseSeed"), (long) getEnvInt("HMC_SEED", 20240810));
+        String out = kv.getOrDefault("out", System.getenv().getOrDefault("HMC_OUT", "hmc-out"));
         double[] z0 = new double[] { logit(0.7), logit(0.6), logit(0.5), Math.log(1.0) };
 
         HmcMultiChainRunner runner = new HmcMultiChainRunner(
@@ -253,6 +270,7 @@ public final class Core {
                 new java.io.File(out)
         );
         HmcMultiChainRunner.Summary summary = runner.run();
+        System.out.println("hmcmulti: wrote to " + out);
         System.out.println("hmcmulti: " + summary.toJson());
     }
 

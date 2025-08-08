@@ -25,8 +25,11 @@ SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
   - [x] Metrics export from multi-chain: per-chain acceptance/divergences/ε; diagnostics gauges (R̂)
   - [x] Analytic gradient for SteinGradLogP (replace finite-diff; reuse dlogPost)
   - [x] Switch Stein to z-space origin (logit/exp) with Jacobian-corrected score; expose `gradLogTargetZ` and use prepared, thresholded parallel gradients
+  - [ ] Warmup hyperparam sweep: γ∈[0.2,0.3], leap∈[8,15], phase split 15%/60%/25% → pick defaults to hit acc∈[0.70,0.80]
+  - [ ] Early-divergence backoff in warmup: reduce ε by 10% on divergence; log per-iteration
   - [ ] CLI flags for HMC params (override env)
   - [x] JSON summary output for HMC runs
+  - [ ] JSONL aggregator: merge multi-run JSONL, compute acceptance/diagnostic summaries for CI
   - [x] Implement proper log-prior calculations for all parameters
   - [x] Add convergence diagnostics and effective sample size calculations (prototype)
   - [x] Add parallel sampling support (independent MH chains)
@@ -55,7 +58,7 @@ SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
   - [ ] Integration tests for audit pipeline
   - [ ] DI factory/service locator unit tests (construction, overrides, error paths)
   - [ ] Gradient check: `gradientLogPosterior` vs. finite-diff (tolerance 1e-5)
-  - [ ] HMC regression: acceptance in target band under default seeds
+  - [ ] HMC regression: acceptance in target band under default seeds (≥3 seeds)
   - [ ] Diagnostics: R̂ close to 1 and ESS reasonable on synthetic data
   - [ ] MC vs Stein c_N sanity check on toy integrands
   - [ ] Performance benchmarks
@@ -69,6 +72,7 @@ SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
   - [ ] Concurrency: single-flight ensures one compute under load (stress with threads)
   - [ ] Integration: read-through/write-back path exercised via `precompute(...)` and stats validated
   - [ ] Multi-chain runner: reproducibility (seed spacing), output format validation (JSONL/meta/summary), R̂/ESS sanity
+  - [ ] JSON/JSONL schema validation: summary/chain fields present and within ranges
   - [x] Remove temporary FAIL prints from `PsiMcdaTest` or keep for triage (set to assertions)
 
 ## 🔧 Medium Priority
@@ -100,6 +104,8 @@ SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
   - [ ] Sanity clamps and defaults for cache settings
 
 - [x] Scripts/automation: add `scripts/test_qualia.sh` and `make test-qualia`
+- [ ] Scripts/automation: add `scripts/sweep_hmc.sh` to scan (γ, leap, target) and write JSONL
+- [ ] CI job: parse JSONL, assert acc∈[0.6,0.85], R̂≈1±0.05, and minimum ESS thresholds
 
 ## 📊 Low Priority
 
@@ -107,6 +113,7 @@ SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
 - [ ] **Add comprehensive logging**
   - [ ] Structured logging with SLF4J
   - [x] Metrics collection (Prometheus) — minimal in-process registry
+- [ ] Dashboards: Grafana panels for HMC metrics (acceptance, divergences, tuned ε, R̂/ESS)
   - [ ] Distributed tracing
   - [ ] Health checks
   - [x] Basic health checks (sinks)
@@ -120,6 +127,8 @@ SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
   - [x] Mathematical model documentation
   - [x] Architecture diagrams
   - [ ] HMC usage notes (env flags, targets, diagnostics)
+  - [ ] Adaptive warmup guide: γ, κ, t0, phase splits; divergence threshold; examples
+  - [ ] Visualization: adaptive HMC pipeline diagram (Mermaid) and example runs
   - [ ] Public Methods API (Ψ + MCDA)
     - [x] computePsi(S,N,α,Ra,Rv,λ1,λ2,β) → {psi,O,pen,post}; contracts and examples
     - [x] computePsiTemporal(w,timeSeries,aggregator) → psiBar; mean/softcap
