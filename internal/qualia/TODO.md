@@ -241,6 +241,31 @@ SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
   - Prefer analytic Jacobians when available; else central differences.
   - For Lyapunov in ODEs, integrate sufficiently long after transient; for maps, discard burn‑in before averaging.
 
+##### Numerical guidance (δ sweep, Jacobian choice, burn‑in/transients)
+- δ sweep
+  - Start with δ = 10^(−3)·scale(μ); test {0.3, 1, 3}× that δ.
+  - Use central comparisons (μ±δ); require sign(Re λ_max) consistent across a factor‑3 range.
+  - If flipping due to noise, shrink δ; if numerically identical, grow δ.
+
+- Jacobian choice
+  - Prefer analytic/AD. If finite‑diff:
+    - Central diff step per state dim: h_i = sqrt(eps_machine)·(1+|x_i|) (double: ≈1e−8·(1+|x_i|)).
+    - Scale inputs; use component‑wise h_i; reuse f(x±h e_i) for efficiency.
+    - Exploit sparsity if known; for maps, 1D logistic: f′(x)=r−2rx.
+
+- Burn‑in/transients
+  - ODE fixed points: ensure Newton/continuation converges; if integrating to steady state, discard T_burn ≈ 10–50/|Re λ_slowest|.
+  - Lyapunov (Benettin/QR): discard first 10–20 reorthonormalizations; re‑orthonormalize every 5–20 steps; report λ_max as slope of running mean once delta<1e−3 over a window.
+  - Maps (logistic): discard ≥10^3 iter; average λ_max over ≥10^5 iter or until CI half‑width < target (e.g., 1e−3).
+
+- Stability checks
+  - Validate onset by both Jacobian eigenvalues at x*(μ±δ) and λ_max(μ±δ); require crossing_zero to hold for both.
+  - If disagreement, reduce dt/step error (RK controls) and repeat.
+
+- Integrator hygiene
+  - Use step‑doubling to keep ε_RK4 within budget; ensure results invariant to halving dt.
+  - Report h_stats and confirm metrics stable under dt→dt/2 within tolerance.
+
 #### Integration and runtime (4–6 weeks)
 - [ ] Unified detector
   - [ ] Runtime selects Taylor within trust region; otherwise RK4; geometric invariants as orthogonal check

@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://internal/status-update.schema.json",
+  "title": "StatusUpdateEntry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "ts",
+    "component",
+    "status",
+    "summary",
+    "changes",
+    "next",
+    "blockers",
+    "classification",
+    "version"
+  ],
+  "properties": {
+    "ts": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 timestamp (UTC recommended)"
+    },
+    "component": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "type": "string",
+      "enum": ["planned", "in_progress", "done", "blocked"]
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 600
+    },
+    "changes": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    },
+    "next": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    },
+    "blockers": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    },
+    "metrics": {
+      "type": "object",
+      "additionalProperties": {
+        "oneOf": [
+          {"type": "number"},
+          {"type": "integer"},
+          {"type": "string"},
+          {"type": "boolean"}
+        ]
+      }
+    },
+    "refs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["type"],
+        "properties": {
+          "type": { "type": "string", "enum": ["file", "url", "commit", "pr", "issue"] },
+          "path": { "type": "string" },
+          "url": { "type": "string", "format": "uri" },
+          "lines": { "type": "string", "description": "e.g., 120-145" },
+          "note": { "type": "string" }
+        }
+      },
+      "default": []
+    },
+    "classification": {
+      "type": "string",
+      "const": "Confidential — Internal Use Only"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    }
+  }
+}
+
+

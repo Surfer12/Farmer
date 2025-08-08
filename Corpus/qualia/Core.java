@@ -44,6 +44,7 @@ public final class Core {
             case "hmc_adapt" -> runHmcAdaptive(args);
             case "hmcmulti" -> runHmcMulti(args);
             case "unified" -> runUnifiedDetector(args);
+            case "bifurc" -> runBifurcation(args);
             default -> printUsageAndExit();
         }
     }
@@ -126,7 +127,7 @@ public final class Core {
     }
 
     private static void printUsageAndExit() {
-        System.err.println("Usage: java -cp <cp> qualia.Core <console|file|jdbc|stein|hmc|hmc_adapt|hmcmulti|unified|mcda|rmala> [key=value ...]");
+        System.err.println("Usage: java -cp <cp> qualia.Core <console|file|jdbc|stein|hmc|hmc_adapt|hmcmulti|unified|bifurc|mcda|rmala> [key=value ...]");
         System.exit(1);
     }
 
@@ -487,6 +488,42 @@ public final class Core {
     private static long parseLong(String s, long def) { try { return s==null?def:Long.parseLong(s); } catch (Exception e) { return def; } }
     private static double parseDouble(String s, double def) { try { return s==null?def:Double.parseDouble(s); } catch (Exception e) { return def; } }
     private static String fmt(double x) { return String.format(java.util.Locale.ROOT, "%.6f", x); }
+
+    private static void runBifurcation(String[] args) {
+        java.util.Map<String,String> kv = parseKvArgs(args, 1);
+        String kind = kv.getOrDefault("kind", "logistic");
+        java.io.File out = new java.io.File(kv.getOrDefault("out", "bifurc.jsonl"));
+        switch (kind) {
+            case "logistic" -> {
+                double rMin = parseDouble(kv.get("rMin"), 2.5);
+                double rMax = parseDouble(kv.get("rMax"), 3.6);
+                double rStep = parseDouble(kv.get("rStep"), 0.01);
+                int horizon = parseInt(kv.get("horizon"), 2000);
+                int burn = parseInt(kv.get("burnin"), 1000);
+                long seed = parseLong(kv.get("seed"), 20240808L);
+                BifurcationSweep.runLogistic(rMin, rMax, rStep, horizon, burn, seed, out);
+            }
+            case "saddle" -> {
+                double muMin = parseDouble(kv.get("muMin"), -0.5);
+                double muMax = parseDouble(kv.get("muMax"), 0.5);
+                double muStep = parseDouble(kv.get("muStep"), 0.01);
+                int steps = parseInt(kv.get("steps"), 500);
+                double h = parseDouble(kv.get("h"), 1e-3);
+                BifurcationSweep.runSaddleNode(muMin, muMax, muStep, steps, h, out);
+            }
+            case "hopf" -> {
+                double muMin = parseDouble(kv.get("muMin"), -0.2);
+                double muMax = parseDouble(kv.get("muMax"), 0.2);
+                double muStep = parseDouble(kv.get("muStep"), 0.01);
+                double omega = parseDouble(kv.get("omega"), 1.0);
+                int steps = parseInt(kv.get("steps"), 500);
+                double h = parseDouble(kv.get("h"), 1e-3);
+                BifurcationSweep.runHopf(muMin, muMax, muStep, omega, steps, h, out);
+            }
+            default -> System.err.println("Unknown bifurcation kind: " + kind);
+        }
+        System.out.println("bifurc: wrote " + out.getAbsolutePath());
+    }
 }
 
 
