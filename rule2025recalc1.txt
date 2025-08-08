@@ -1,0 +1,13 @@
+2025 recalculation (proposed updates)
+Assumptions: α(primitives)=0.10–0.15, N(x)=0.96–0.98, β=1.15, S(x)=0.60, penalty=exp(−[0.85·0.25+0.15·0.10])=0.7965, P(H|E,β)=min(0.90×1.15, 1)=1.00.
+O_hybrid = α·0.60 + (1−α)·N(x).
+Results (Ψ(x) = O_hybrid × penalty × P):
+α=0.10, N=0.98 → O=0.942 → Ψ≈0.750
+α=0.12, N=0.97 → O=0.9256 → Ψ≈0.738
+α=0.15, N=0.96 → O=0.906 → Ψ≈0.722
+Takeaway: With your updates, Ψ(x) ranges ≈ 0.722–0.750. To reliably exceed 0.75, keep α near 0.10 and N at ≥0.98, or slightly relax the penalty once official artifacts are added.
+Actions
+2025: Keep label Interpretive/Contextual until official IMO links are live. On publication, set α≈0.10–0.12 and N≈0.98; Ψ(x) ≥0.75 becomes robust → promote to Primitive.
+2024: No change; remains Primitive/Empirically grounded at Ψ(x)≈0.793 with current citations.
+Monitoring: Will re-check for official 2025 imo-official.org pages (year info/problems/results) and update links and Ψ(x) immediately upon availability.
+Added a search pass for official 2025 pages (none found yet), and recomputed 2025 Ψ(x) under your proposed α, N, β; result is a 0.722–0.750 band with promotion achievable at α≈0.10 and N≈0.98 or with a modest penalty relaxation once official links are included

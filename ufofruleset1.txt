@@ -1,0 +1,165 @@
+% uoif_ruleset.tex
+\documentclass[11pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{booktabs,array}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+\usepackage{microtype}
+
+\hypersetup{
+  pdftitle={UOIF Ruleset: IMO 2024--2025 (with Official 2025 Results)},
+  pdfauthor={UOIF Working Note},
+  pdfsubject={Unified Olympiad Information Framework (UOIF) Ruleset},
+  pdfkeywords={IMO, DeepMind, Evan Chen, AoPS, UOIF, canonical, scoring}
+}
+
+\newcommand{\Sx}{S(x)}
+\newcommand{\Nx}{N(x)}
+\newcommand{\Px}{\Psi(x)}
+
+\title{UOIF Ruleset: IMO 2024--2025 Analysis\\(with Official 2025 Results Links)}
+\author{UOIF Working Note}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This ruleset codifies the UOIF procedure to label primitives and interpretations for IMO 2024--2025. Official 2025 \emph{results} pages on \texttt{imo-official.org} are live and canonical. 2025 problems/shortlist remain pending; they follow interpretive gating until posted. Scoring, allocation, and promotion are specified for auditability.
+\end{abstract}
+
+\section{Source Roles and Hierarchy}
+\begin{itemize}[leftmargin=1.35em]
+  \item \textbf{Canonical} (official IMO; 2025 results live):
+    \begin{itemize}[leftmargin=1.2em]
+      \item 2025 year info (medal thresholds): \url{https://imo-official.org/year_info.aspx?year=2025}
+      \item 2025 country results (team rankings/scores): \url{https://imo-official.org/year_country_r.aspx?year=2025}
+      \item 2025 individual results (participant scores/medals): \url{https://imo-official.org/year_individual_r.aspx?year=2025}
+      \item 2025 statistics: \url{https://imo-official.org/year_statistics.aspx?year=2025}
+    \end{itemize}
+  \item \textbf{Historical mirror} (context; not canonical for 2025): \url{https://olympiads.win.tue.nl/imo}
+  \item \textbf{Expert interpretive}:
+    \begin{itemize}[leftmargin=1.2em]
+      \item 2025: Evan Chen, IMO 2025 notes (PDF): \url{https://web.evanchen.cc/exams/IMO-2025-notes.pdf}
+      \item 2024: Evan Chen site root: \url{https://web.evanchen.cc/}
+      \item Google DeepMind solution sets (2024/2025): independent expert/organization interpretive; apply certified uplift for 2025.
+    \end{itemize}
+  \item \textbf{Community interpretive} (AoPS, 2025):
+    P1 \url{https://aops.com/community/p35332003},
+    P2 \url{https://aops.com/community/p35332018},
+    P3 \url{https://aops.com/community/p35332016},
+    P4 \url{https://aops.com/community/p35347364},
+    P5 \url{https://aops.com/community/p35341177},
+    P6 \url{https://aops.com/community/p35341197}.
+\end{itemize}
+Priority (problems/answers/credits): Canonical > Expert (Evan/DeepMind) > AoPS > Mirror.
+For \emph{results} primitives (scores/medals/rankings): Canonical (live) > others.
+
+\section{Claim Classes and Gating}
+\begin{itemize}[leftmargin=1.35em]
+  \item \textbf{Primitive}: exact statements/answers/credits/results.
+    \begin{itemize}[leftmargin=1.2em]
+      \item 2025 results: cite canonical links; promoted with live artifacts.
+      \item 2025 problems: cite Evan 2025 + AoPS; mark ``pending official.''
+      \item 2024: cite Evan 2024 and official/mirrors where available.
+    \end{itemize}
+  \item \textbf{Interpretation}: proofs, methods, lemmas, comparisons (require $\ge 1$ expert or AoPS link).
+  \item \textbf{Speculative/context}: heuristics/history (label speculative; no promotion).
+\end{itemize}
+
+\section{Scoring $s(c)$ and Allocation $\alpha(t)$}
+\[
+s(c)=w_{\text{auth}}\mathrm{Auth}+w_{\text{ver}}\mathrm{Ver}+w_{\text{depth}}\mathrm{Depth}+w_{\text{align}}\mathrm{Intent}+w_{\text{rec}}\mathrm{Rec}-w_{\text{noise}}\mathrm{Noise}.
+\]
+\begin{center}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+Class & $w_{\text{auth}}$ & $w_{\text{ver}}$ & $w_{\text{depth}}$ & $w_{\text{align}}$ & $w_{\text{rec}}$ & $w_{\text{noise}}$\\
+\midrule
+Primitives & 0.35 & 0.30 & 0.10 & 0.15 & 0.07 & 0.23\\
+Interpretations & 0.20 & 0.20 & 0.25 & 0.25 & 0.05 & 0.15\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Current allocation:
+\begin{itemize}[leftmargin=1.35em]
+  \item 2025 primitives (results): $\alpha=0.12$ (favor canonical).
+  \item 2025 primitives (problems): $\alpha=0.15$--$0.20$ (interpretive pending canonical).
+  \item 2024 primitives: $\alpha=0.10$--$0.15$ if official; else like 2025 problems.
+  \item Interpretations (both years): $\alpha=0.35$--$0.45$ with $\ge 1$ expert/AoPS link.
+\end{itemize}
+External reliability:
+\begin{itemize}[leftmargin=1.35em]
+  \item 2025 results: $\Nx\approx 0.97$ (canonical uplift).
+  \item 2025 problems: $\Nx\approx 0.88$--$0.90$ (not yet official).
+  \item 2024: $\Nx\approx 0.92$--$0.95$ (higher with official links).
+\end{itemize}
+Posterior calibration: $P(H\mid E)=0.85$--$0.90$; $\beta=1.15$ for 2025 results; $\beta\to 1.20$ when full problems post.
+
+\section{Decision Equation and Penalties}
+\[
+\Px = [\alpha\,\Sx + (1-\alpha)\,\Nx] \cdot \exp(-[\lambda_1 R_{\text{authority}}+\lambda_2 R_{\text{verifiability}}]) \cdot P(H\mid E,\beta),
+\]
+with $\lambda_1=0.85$, $\lambda_2=0.15$. Reduce $R_{\text{authority}}$ with canonical live; reduce $R_{\text{verifiability}}$ with direct artifact URLs.
+
+\section{Coherence Checks}
+\begin{itemize}[leftmargin=1.35em]
+  \item String: primitives match canonical results (2025) or Evan/official (2024).
+  \item Asset: include canonical 2025 results links; include AoPS + Evan for problems.
+  \item Timestamp: latest Evan notes; AoPS post IDs; 2025 results as of Aug 08, 2025.
+\end{itemize}
+
+\section{Conflict Resolution}
+\begin{itemize}[leftmargin=1.35em]
+  \item Evan vs AoPS: prefer Evan; cite AoPS for divergent insights.
+  \item DeepMind vs others: present both; defer to canonical when posted.
+  \item Mirror: context only; never overrides canonical.
+\end{itemize}
+
+\section{Non-commutative Order}
+\begin{itemize}[leftmargin=1.35em]
+  \item Primitives: canonical (2025 results) or expert PDF first, then AoPS.
+  \item Interpretations: combine expert + AoPS; prefer vetted arguments.
+\end{itemize}
+
+\section{Promotion Triggers}
+\begin{itemize}[leftmargin=1.35em]
+  \item 2025 results: canonical live $\Rightarrow$ $\Nx\to0.97$, $\alpha\to0.12$, $\beta\to1.15$; promote to \emph{Empirically Grounded}.
+  \item 2025 problems/shortlist: when live $\Rightarrow$ $\Nx\to0.98$, $\alpha\to0.10$, $\beta\to1.20$; expect $\Px\ge 0.75$; promote to \emph{Primitive/Empirically Grounded}.
+  \item 2024: keep DeepMind pages as expert interpretive; include official text; promote on canonical swaps.
+\end{itemize}
+
+\section{Per-year Citation Patterns}
+2025 primitives/results:
+\begin{itemize}[leftmargin=1.35em]
+  \item Year info: \url{https://imo-official.org/year_info.aspx?year=2025}
+  \item Country: \url{https://imo-official.org/year_country_r.aspx?year=2025}
+  \item Individual: \url{https://imo-official.org/year_individual_r.aspx?year=2025}
+  \item Statistics: \url{https://imo-official.org/year_statistics.aspx?year=2025}
+  \item Evan 2025: \url{https://web.evanchen.cc/exams/IMO-2025-notes.pdf}
+  \item AoPS P1--P6: links above.
+\end{itemize}
+2024 primitives:
+\begin{itemize}[leftmargin=1.35em]
+  \item Evan site root: \url{https://web.evanchen.cc/}
+  \item Historical mirror: \url{https://olympiads.win.tue.nl/imo}
+\end{itemize}
+
+\section{Presentation and Logging}
+\begin{itemize}[leftmargin=1.35em]
+  \item Label each claim [Primitive]/[Interpretation]/[Speculative] with links and one-line rationale.
+  \item Maintain changelog of canonical swaps; recompute \(\Px\) and update labels.
+\end{itemize}
+
+\section*{Changelog}
+Added official 2025 results links (year info, country, individual, statistics). Problems/shortlist pending.
+
+\end{document}

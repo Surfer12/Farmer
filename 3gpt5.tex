@@ -1,0 +1,111 @@
+\documentclass[11pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{booktabs,array}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{microtype}
+
+\title{UOIF: Proof-Driven Recompute of $\Psi(x)$ with Confidence and Live-Artifact Verification}
+\author{UOIF Working Note}
+\date{August 08, 2025}
+
+\newcommand{\Sx}{S(x)}
+\newcommand{\Nx}{N(x)}
+\newcommand{\Px}{\Psi(x)}
+\newcommand{\post}{P(H\mid E,\beta)}
+\newcommand{\pen}{\mathrm{Penalty}}
+
+\begin{document}
+\maketitle
+
+\section{Model and Proof Logic}
+We evaluate
+\[
+\Px \;=\; \underbrace{\bigl[\alpha\,\Sx + (1-\alpha)\,\Nx\bigr]}_{\text{hybrid linearity}}
+\cdot
+\underbrace{\exp\!\bigl(-[\lambda_1 R_a + \lambda_2 R_v]\bigr)}_{\text{exponential penalty}}
+\cdot
+\underbrace{\post}_{\text{Bayesian posterior}},
+\quad \lambda_1{=}0.85,\ \lambda_2{=}0.15,\ \Sx{=}0.60.
+\]
+Proof logic:
+\begin{itemize}[leftmargin=1.2em]
+  \item \textbf{Hybrid linearity}: $O(\alpha)=\alpha\Sx+(1-\alpha)\Nx$ is affine in $\alpha$, so $\partial O/\partial \alpha=\Sx-\Nx<0$ when $\Nx>\Sx$. Hence decreasing $\alpha$ (more external) increases $O$, and thus $\Px$ (holding penalty/posterior fixed).
+  \item \textbf{Exponential boundedness}: With $R_a,R_v\ge 0$, $\pen=\exp(-[\lambda_1 R_a+\lambda_2 R_v])\in(0,1]$, preventing overconfidence and giving Lipschitz damping.
+  \item \textbf{Posterior calibration}: We use $\post=\min\{\beta\,P(H\mid E),\,1\}$ to encode expert/canonical uplift while capping at certainty.
+\end{itemize}
+
+\section{Parameters (shared unless noted)}
+\begin{itemize}[leftmargin=1.2em]
+  \item 2025 \textbf{results} (canonical live): $\alpha\in[0.12,0.15]$, $\Nx=0.97$, $\beta=1.15$.
+  \item 2025 \textbf{problems} (pending canonical): $\alpha\in[0.15,0.20]$, $\Nx\in[0.88,0.90]$, $\beta=1.05$.
+  \item 2024 (DeepMind P1/P2/P4 enhanced): $\alpha\in[0.10,0.15]$, $\Nx=0.96$, $\beta=1.05$.
+\end{itemize}
+
+\section{Recompute: IMO 2025 Results (Canonical Live)}
+\subsection*{Stepwise derivation with confidence}
+\begin{itemize}[leftmargin=1.2em]
+  \item \textbf{Sources}: Official results + DeepMind 2025 + Evan + AoPS. Confidence: 0.98.
+  \item \textbf{Hybrid}: $O(\alpha)=0.97-0.37\alpha$ for $\alpha\in[0.12,0.15]$. Confidence: 0.96.
+  \item \textbf{Penalty (conservative mixed state)}: $R_a{=}0.15,R_v{=}0.05\Rightarrow \pen=\exp(-0.135)=0.8737$. Confidence: 0.85.
+  \item \textbf{Posterior (conservative)}: $P(H\mid E)\in[0.85,0.90],\ \beta{=}1.15 \Rightarrow \post\approx 0.913$. Confidence: 0.85.
+  \item \textbf{Value (conservative)}: $\alpha{=}0.12\Rightarrow O{=}0.9256$, $\Px\approx 0.9256\cdot 0.8737\cdot 0.913\approx \mathbf{0.738}$;
+        $\alpha{=}0.15\Rightarrow \Px\approx 0.726$. Label: Empirically Grounded. Confidence: 0.90.
+  \item \textbf{Penalty (canonical-eased)}: $R_a{=}0.12,R_v{=}0.04\Rightarrow \pen=\exp(-0.108)=0.8977$. Confidence: 0.85.
+  \item \textbf{Posterior (capped)}: $\post=1.0$. Confidence: 0.88.
+  \item \textbf{Value (eased)}: $\alpha{=}0.12\Rightarrow \Px\approx 0.9256\cdot 0.8977\cdot 1.0\approx \mathbf{0.831}$;
+        $\alpha{=}0.15\Rightarrow \Px\approx \mathbf{0.821}$. Label: Primitive/Empirically Grounded (results primitives). Confidence: 0.90.
+  \item \textbf{Sensitivity}: $\partial \Px/\partial \alpha<0$ (proof above). Confidence: 0.92.
+\end{itemize}
+
+\section{Recompute: IMO 2025 Problems (Pending Canonical)}
+\begin{itemize}[leftmargin=1.2em]
+  \item \textbf{Hybrid (midpoint)}: $\alpha{=}0.17,\ \Nx{=}0.89\Rightarrow O=0.17\cdot 0.60+0.83\cdot 0.89=0.8417$.
+  \item \textbf{Penalty}: $R_a{=}0.25,R_v{=}0.10\Rightarrow \pen=\exp(-0.235)\approx 0.7965$.
+  \item \textbf{Posterior}: $\post=0.90\cdot 1.05=0.945$.
+  \item \textbf{Value}: $\Px\approx 0.8417\cdot 0.7965\cdot 0.945\approx \mathbf{0.633}$;
+        range over $\alpha\in[0.15,0.20], \Nx\in[0.88,0.90]$: $\mathbf{0.60}$--$\mathbf{0.65}$.
+        Label: Interpretive/Contextual (pending canonical). Confidence: 0.85.
+\end{itemize}
+
+\section{Recompute: IMO 2024 (DeepMind P1/P2/P4)}
+\begin{itemize}[leftmargin=1.2em]
+  \item \textbf{Hybrid}: $O(\alpha)=0.96-0.36\alpha$, $\alpha\in[0.10,0.15]$.
+  \item \textbf{Penalty}: $R_a{=}0.10,R_v{=}0.05\Rightarrow \pen=\exp(-0.0925)\approx 0.9117$.
+  \item \textbf{Posterior}: $\post=0.90\cdot 1.05=0.945$.
+  \item \textbf{Value}: $\alpha{=}0.10\Rightarrow \Px\approx 0.9240\cdot 0.9117\cdot 0.945\approx \mathbf{0.796}$;
+        $\alpha{=}0.15\Rightarrow \Px\approx \mathbf{0.781}$.
+        Label: Primitive/Empirically Grounded. Confidence: 0.88.
+\end{itemize}
+
+\section{Keystone Reflections}
+\begin{itemize}[leftmargin=1.2em]
+  \item $\Px$ \textbf{as evidential synthesizer}: aligns source authority (canonical vs.\ expert vs.\ community) with verifiability and Bayesian calibration, producing robust, monotone responses to allocation $\alpha$.
+  \item \textbf{AI-driven mathematics}: the framework cleanly upgrades claims when official artifacts arrive (results), while maintaining caution for pending primitives (problems), supporting transparent promotion in AI-assisted solution corpora.
+\end{itemize}
+
+\section{Verification (Real-Time, Aug 08, 2025)}
+\begin{itemize}[leftmargin=1.2em]
+  \item Official 2025 \textbf{results} pages are live (year info, country/individual, statistics):
+  \href{https://imo-official.org/year_info.aspx?year=2025}{year info},
+  \href{https://imo-official.org/year_country_r.aspx?year=2025}{country},
+  \href{https://imo-official.org/year_individual_r.aspx?year=2025}{individual},
+  \href{https://imo-official.org/year_statistics.aspx?year=2025}{statistics}.
+  \item \textbf{Problems page pending}: no 2025 content found yet on the official problems/shortlist pages.
+\end{itemize}
+
+\section*{Condensed Citations}
+\begin{itemize}[leftmargin=1.2em]
+  \item Official IMO 2025 (results): year info, country, individual, statistics (links above).
+  \item DeepMind 2025 (gold; solutions PDF): \url{https://deepmind.google/discover/blog/advanced-version-of-gemini-with-deep-think-officially-achieves-gold-medal-standard-at-the-international-mathematical-olympiad/}, \url{https://storage.googleapis.com/deepmind-media/gemini/IMO_2025.pdf}
+  \item DeepMind 2024 (silver; P1/P2/P4 pages): \url{https://deepmind.google/discover/blog/ai-solves-imo-problems-at-silver-medal-level/}, \url{https://storage.googleapis.com/deepmind-media/DeepMind.com/Blog/imo-2024-solutions/index.html}
+  \item Evan Chen: \url{https://web.evanchen.cc/}, 2025 PDF \url{https://web.evanchen.cc/exams/IMO-2025-notes.pdf}
+  \item AoPS 2025: P1–P6 threads (IDs as in prior exchanges).
+\end{itemize}
+
+\end{document}

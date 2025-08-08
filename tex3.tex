@@ -1,0 +1,178 @@
+\documentclass[11pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{booktabs,array}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+\usepackage{microtype}
+
+\hypersetup{
+  pdftitle={UOIF Reflection: IMO 2024--2025 with Official 2025 Results (Stepwise, Confidence)},
+  pdfauthor={UOIF Working Note},
+  pdfsubject={Unified Olympiad Information Framework (UOIF) Reflection},
+  pdfkeywords={IMO, DeepMind, Evan Chen, AoPS, UOIF, reliability, canonical, scoring}
+}
+
+\newcommand{\Sx}{S(x)}
+\newcommand{\Nx}{N(x)}
+\newcommand{\Px}{\Psi(x)}
+\newcommand{\post}{P(H\mid E,\beta)}
+\newcommand{\pen}{\mathrm{Penalty}}
+\newcommand{\conf}[2]{\textbf{Confidence:} #1\ (#2)}
+
+\title{UOIF Reflection: IMO 2024--2025 with Official 2025 Results\\
+Stepwise Recomputations and Confidence Accounting}
+\author{UOIF Working Note}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Confirmed official IMO 2025 \emph{results} pages are live on \texttt{imo-official.org} (year info, country/individual results, statistics). We added canonical links for results primitives. Problems page remains pending. We recompute $\Px$ with updated parameters for 2025 results ($\alpha=0.12$, $\Nx=0.97$, $\beta=1.15$) yielding $\Px\approx 0.738$ (conservative), sufficient for promotion to \emph{Empirically Grounded} for results claims, while keeping problems \emph{Interpretive/Contextual} pending official problems/shortlist. 2024 remains \emph{Primitive/Empirically Grounded}.
+\end{abstract}
+
+\section{Canonical Links (2025 Results)}
+\begin{itemize}[leftmargin=1.35em]
+  \item Year info (medal thresholds): \url{https://imo-official.org/year_info.aspx?year=2025}
+  \item Country results (team rankings/scores): \url{https://imo-official.org/year_country_r.aspx?year=2025}
+  \item Individual results (participant scores/medals): \url{https://imo-official.org/year_individual_r.aspx?year=2025}
+  \item Statistics: \url{https://imo-official.org/year_statistics.aspx?year=2025}
+  \item Problems page: pending (no 2025 content found at time of writing).
+\end{itemize}
+Additional sources: DeepMind 2025 blog (certified gold) and solutions PDF; Evan Chen 2025 notes; AoPS 2025 threads (P1--P6); DeepMind 2024 solutions pages and blog; Evan site; historical mirror (context).
+
+\section{Decision Model}
+\[
+\Px \;=\; \underbrace{\bigl[\alpha\,\Sx + (1-\alpha)\,\Nx\bigr]}_{\text{hybrid evidence}}
+\cdot
+\underbrace{\exp\!\Bigl(-\bigl[\lambda_1 R_{\text{authority}}+\lambda_2 R_{\text{verifiability}}\bigr]\Bigr)}_{\pen}
+\cdot
+\underbrace{\post}_{\text{posterior uplift}},
+\quad \lambda_1=0.85,\ \lambda_2=0.15,\ \Sx=0.60.
+\]
+
+\section{IMO 2025 Results (Canonical live): Stepwise Recalculation}
+\subsection*{Step 1: Sources and roles}
+Canonical results pages (above) + DeepMind 2025 (certified) + Evan 2025 + AoPS (context for problems).\\
+\conf{0.98}{Official results pages live; multi-source triangulation.}
+
+\subsection*{Step 2: External reliability and allocation}
+Set $\Nx=0.97$ (official uplift), $\alpha=0.12$ (favor canonical). Hybrid:
+\[
+O_{\text{hybrid}} = 0.12\cdot 0.60 + 0.88\cdot 0.97 = 0.9256.
+\]
+\conf{0.96}{Authority and verifiability high for results; allocation reflects canonical priority.}
+
+\subsection*{Step 3: Penalty}
+Results canonical live; problems pending. We retain a cautious penalty for mixed state:
+\[
+\pen=\exp\!\bigl(-[0.85\cdot 0.15 + 0.15\cdot 0.05]\bigr)=\exp(-0.135)\approx 0.8737.
+\]
+\conf{0.85}{Conservative carry-over while problems remain non-canonical.}
+
+\subsection*{Step 4: Posterior uplift}
+For results with canonical uplift: $P(H\mid E)=0.85$--$0.90$, $\beta=1.15$. We adopt a conservative calibrated value
+\[
+\post \approx 0.913\quad(\text{within }[0.85,1.0]).
+\]
+\conf{0.85}{Conservative setting to avoid over-promotion prior to full problems/shortlist.}
+
+\subsection*{Step 5: Computation and label}
+Conservative (operational):
+\[
+\Px \approx 0.9256 \times 0.8737 \times 0.913 \approx 0.738.
+\]
+Nominal (for reference; $\post=0.945$):
+\[
+\Px \approx 0.9256 \times 0.8737 \times 0.945 \approx 0.764.
+\]
+\textbf{Label:} \emph{Empirically Grounded} for 2025 results primitives.\\
+\conf{0.90}{Both conservative and nominal exceed 0.70 threshold; we report the conservative value.}
+
+\subsection*{Step 6: Confidence summary}
+\begin{center}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabular}{@{}lcl@{}}
+\toprule
+Step & Value/Decision & Confidence (rationale)\\
+\midrule
+Sources/roles & Canonical results + expert + community & 0.98 (official live)\\
+$N(x)$, $\alpha$ & $N=0.97$, $\alpha=0.12$ & 0.96 (canonical uplift)\\
+Penalty & $0.8737$ & 0.85 (mixed canonical state)\\
+Posterior & $0.913$ (conservative), $0.945$ (nominal) & 0.85 (policy-consistent)\\
+$\Px$ & $0.738$ (conservative), $0.764$ (nominal) & 0.90 (robust above threshold)\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{IMO 2025 Problems (Pending canonical): Stepwise Recalculation}
+\subsection*{Step 1: Sources and roles}
+Evan 2025 PDF + AoPS per-problem; DeepMind 2025 (expert interpretive). Canonical problems/shortlist pending.\\
+\conf{0.88}{Strong expert corroboration; non-canonical primitives.}
+
+\subsection*{Step 2: External reliability and allocation}
+Set $\Nx\in[0.88,0.90]$, $\alpha\in[0.15,0.20]$ (favor interpretive). Example midpoint: $\Nx=0.89$, $\alpha=0.17$ gives
+\[
+O_{\text{hybrid}}=0.17\cdot 0.60 + 0.83\cdot 0.89=0.8417.
+\]
+\conf{0.85}{Pre-canonical envelope for problems.}
+
+\subsection*{Step 3: Penalty and posterior}
+Problems not canonical: $\pen=\exp(-[0.85\cdot 0.25+0.15\cdot 0.10])\approx 0.7965$ (stricter). Posterior uplift modest: $\post=0.90\times 1.05=0.945$.\\
+\conf{0.80}{Higher authority penalty; modest uplift.}
+
+\subsection*{Step 4: Computation and label}
+Illustrative midpoint:
+\[
+\Px \approx 0.8417 \times 0.7965 \times 0.945 \approx 0.633.
+\]
+Range over $\alpha\in[0.15,0.20],\ \Nx\in[0.88,0.90]$: $\Px\approx 0.60$--$0.65$.\\
+\textbf{Label:} \emph{Interpretive/Contextual; strong corroboration; pending official}.\\
+\conf{0.85}{Range stable; promotion expected on canonical posting.}
+
+\section{IMO 2024 (Enhanced; P1/P2/P4): Stepwise Recalculation}
+\subsection*{Step 1: Sources and roles}
+DeepMind 2024 blog + solutions pages (P1/P2/P4), Evan site, established archives/mirrors; canonical availability varies.\\
+\conf{0.90}{Multiple expert artifacts; stable mirrors.}
+
+\subsection*{Step 2: External reliability and allocation}
+$\Nx=0.96$, $\alpha\in[0.10,0.15]$. Hybrid $O_{\text{hybrid}}=0.96-0.36\alpha$.\\
+\conf{0.88}{Established context and coverage.}
+
+\subsection*{Step 3: Penalty and posterior}
+$\pen=\exp(-[0.85\cdot 0.10+0.15\cdot 0.05])\approx 0.9117$, $\post=0.90\times 1.05=0.945$.\\
+\conf{0.85}{Lower authority penalty vs 2025 problems.}
+
+\subsection*{Step 4: Computation and label}
+\[
+\alpha=0.10:\ \Px \approx 0.9240\times 0.9117\times 0.945 \approx 0.796,\quad
+\alpha=0.15:\ \Px \approx 0.9060\times 0.9117\times 0.945 \approx 0.781.
+\]
+\textbf{Label:} \emph{Primitive/Empirically Grounded}.\\
+\conf{0.88}{Range consistent with artifacts in hand.}
+
+\section{Summary Table}
+\begin{center}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+Scope & $\alpha$ & $\Nx$ & \pen & \post & $\Px$ & Label\\
+\midrule
+2025 Results (cons.) & 0.12 & 0.97 & 0.8737 & 0.913 & 0.738 & Empirically Grounded\\
+2025 Results (nom.) & 0.12 & 0.97 & 0.8737 & 0.945 & 0.764 & (ref.)\\
+2025 Problems & 0.15--0.20 & 0.88--0.90 & 0.7965 & 0.945 & 0.60--0.65 & Interpretive/Contextual\\
+2024 P1/P2/P4 & 0.10--0.15 & 0.96 & 0.9117 & 0.945 & 0.781--0.796 & Primitive/Empirically Grounded\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section*{Changelog}
+Added canonical 2025 results links (year info, country, individual, statistics). Recomputed 2025 results with $\alpha=0.12$, $\Nx=0.97$, $\beta=1.15$; reported conservative $\Px\approx 0.738$ (promotion achieved for results). 2025 problems remain pending; 2024 unchanged.
+
+\end{document}

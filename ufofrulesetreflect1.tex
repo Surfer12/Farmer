@@ -1,0 +1,164 @@
+% uoif_reflection.tex
+\documentclass[11pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{booktabs,array}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+\usepackage{microtype}
+
+\hypersetup{
+  pdftitle={UOIF Reflection: IMO 2024--2025 with Official 2025 Results},
+  pdfauthor={UOIF Working Note},
+  pdfsubject={UOIF Reflection: recomputations and confidence},
+  pdfkeywords={IMO, DeepMind, Evan Chen, AoPS, UOIF, canonical, scoring}
+}
+
+\newcommand{\Sx}{S(x)}
+\newcommand{\Nx}{N(x)}
+\newcommand{\Px}{\Psi(x)}
+\newcommand{\post}{P(H\mid E,\beta)}
+\newcommand{\pen}{\mathrm{Penalty}}
+\newcommand{\conf}[2]{\textbf{Confidence:} #1\ (#2)}
+
+\title{UOIF Reflection: IMO 2024--2025 with Official 2025 Results\\
+Stepwise Recomputations and Confidence Accounting}
+\author{UOIF Working Note}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Official IMO 2025 \emph{results} pages (year info, country/individual results, statistics) are live on \texttt{imo-official.org}; we integrated these canonical links and recomputed $\Px$ for 2025 results using $\alpha=0.12$, $\Nx=0.97$, $\beta=1.15$. Conservative $\Px\approx 0.738$ (nominal $\approx 0.764$) clears the threshold for \emph{Empirically Grounded} results claims. 2025 problems remain \emph{Interpretive/Contextual} pending official problems/shortlist. 2024 stays \emph{Primitive/Empirically Grounded}.
+\end{abstract}
+
+\section{Decision Model}
+\[
+\Px = \underbrace{[\alpha\,\Sx + (1-\alpha)\,\Nx]}_{\text{hybrid}}
+\cdot
+\underbrace{\exp(-[\lambda_1 R_{\text{authority}}+\lambda_2 R_{\text{verifiability}}])}_{\pen}
+\cdot
+\underbrace{\post}_{\text{posterior}},
+\quad \lambda_1=0.85,\ \lambda_2=0.15,\ \Sx=0.60.
+\]
+
+\section{IMO 2025 Results (Canonical live): Stepwise}
+\subsection*{Step 1: Sources/roles}
+Canonical results:
+\begin{itemize}[leftmargin=1.35em]
+  \item Year info: \url{https://imo-official.org/year_info.aspx?year=2025}
+  \item Country results: \url{https://imo-official.org/year_country_r.aspx?year=2025}
+  \item Individual results: \url{https://imo-official.org/year_individual_r.aspx?year=2025}
+  \item Statistics: \url{https://imo-official.org/year_statistics.aspx?year=2025}
+\end{itemize}
+Expert interpretive: DeepMind 2025 blog \& solutions PDF; Evan 2025; AoPS (problems).\\
+\conf{0.98}{Official results live; triangulated with expert/community.}
+
+\subsection*{Step 2: Reliability/Allocation}
+Set $\Nx=0.97$ (canonical uplift), $\alpha=0.12$.
+\[
+O_{\text{hybrid}}=0.12\cdot 0.60 + 0.88\cdot 0.97 = 0.9256.
+\]
+\conf{0.96}{High authority/verifiability for results; canonical prioritized.}
+
+\subsection*{Step 3: Penalty}
+Mixed state (results canonical; problems pending): keep conservative
+\[
+\pen=\exp(-[0.85\cdot 0.15 + 0.15\cdot 0.05])=\exp(-0.135)\approx 0.8737.
+\]
+\conf{0.85}{Conservative until problems/shortlist post.}
+
+\subsection*{Step 4: Posterior}
+$P(H\mid E)=0.85$--$0.90$, $\beta=1.15$. Conservative calibration:
+\[
+\post \approx 0.913\quad(\text{nominal }0.945).
+\]
+\conf{0.85}{Avoids over-promotion pre-full-canonical.}
+
+\subsection*{Step 5: Compute \& Label}
+Conservative:
+\[
+\Px \approx 0.9256 \times 0.8737 \times 0.913 \approx 0.738.
+\]
+Nominal:
+\[
+\Px \approx 0.9256 \times 0.8737 \times 0.945 \approx 0.764.
+\]
+\textbf{Label:} \emph{Empirically Grounded} for 2025 results primitives.\\
+\conf{0.90}{Both values exceed 0.70; conservative reported operationally.}
+
+\section{IMO 2025 Problems (Pending canonical): Stepwise}
+\subsection*{Step 1: Sources/roles}
+Evan 2025 PDF + AoPS per-problem; DeepMind 2025 (expert interpretive). Problems/shortlist pending.\\
+\conf{0.88}{Strong expert corroboration; non-canonical primitives.}
+
+\subsection*{Step 2--4: Reliability/Allocation/Penalty/Posterior}
+$\Nx\in[0.88,0.90]$, $\alpha\in[0.15,0.20]$; example midpoint $\Nx=0.89$, $\alpha=0.17$:
+\[
+O_{\text{hybrid}}=0.17\cdot 0.60 + 0.83\cdot 0.89=0.8417.
+\]
+Stricter penalty for non-canonical problems:
+\[
+\pen=\exp(-[0.85\cdot 0.25+0.15\cdot 0.10])\approx 0.7965,\quad \post=0.945.
+\]
+\conf{0.80}{Higher authority penalty; modest uplift.}
+
+\subsection*{Step 5: Compute \& Label}
+Midpoint:
+\[
+\Px \approx 0.8417 \times 0.7965 \times 0.945 \approx 0.633.
+\]
+Range: $\Px\approx 0.60$--$0.65$ over $\alpha\in[0.15,0.20]$, $\Nx\in[0.88,0.90]$.\\
+\textbf{Label:} \emph{Interpretive/Contextual; strong corroboration; pending official}.\\
+\conf{0.85}{Stable range; promotion expected when canonical posts.}
+
+\section{IMO 2024 (Enhanced; P1/P2/P4): Stepwise}
+\subsection*{Step 1: Sources/roles}
+DeepMind 2024 blog + solutions pages (P1/P2/P4), Evan site, established archives/mirrors.\\
+\conf{0.90}{Multiple expert artifacts; stable mirrors.}
+
+\subsection*{Step 2--4: Reliability/Allocation/Penalty/Posterior}
+$\Nx=0.96$, $\alpha\in[0.10,0.15]$, $\pen=\exp(-[0.85\cdot 0.10+0.15\cdot 0.05])\approx 0.9117$, $\post=0.945$.\\
+\conf{0.85}{Lower authority penalty vs 2025 problems.}
+
+\subsection*{Step 5: Compute \& Label}
+\[
+\alpha=0.10:\ \Px \approx 0.9240\times 0.9117\times 0.945 \approx 0.796,\quad
+\alpha=0.15:\ \Px \approx 0.9060\times 0.9117\times 0.945 \approx 0.781.
+\]
+\textbf{Label:} \emph{Primitive/Empirically Grounded}.\\
+\conf{0.88}{Consistent with artifacts in hand.}
+
+\section{Verification Methodology (brief)}
+We treat classical solvers and official artifacts as baselines:
+\begin{enumerate}[leftmargin=1.35em]
+  \item Train/curate interpretive artifacts (expert notes, formal solutions).
+  \item Use canonical pages (official results/problems/shortlist) as ground truth for primitives.
+  \item Compare/align interpretive claims; quantify error/consistency and promotion readiness.
+\end{enumerate}
+
+\section{Summary Table}
+\begin{center}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+Scope & $\alpha$ & $\Nx$ & \pen & \post & $\Px$ & Label\\
+\midrule
+2025 Results (cons.) & 0.12 & 0.97 & 0.8737 & 0.913 & 0.738 & Empirically Grounded\\
+2025 Results (nom.)  & 0.12 & 0.97 & 0.8737 & 0.945 & 0.764 & (reference)\\
+2025 Problems        & 0.15--0.20 & 0.88--0.90 & 0.7965 & 0.945 & 0.60--0.65 & Interpretive/Contextual\\
+2024 P1/P2/P4        & 0.10--0.15 & 0.96 & 0.9117 & 0.945 & 0.781--0.796 & Primitive/Empirically Grounded\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section*{Changelog}
+Added canonical 2025 results links; recomputed 2025 results with $\alpha=0.12$, $\Nx=0.97$, $\beta=1.15$; reported conservative $\Px\approx 0.738$; promoted results to \emph{Empirically Grounded}. 2025 problems pending; 2024 unchanged.
+
+\end{document}

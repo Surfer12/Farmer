@@ -1,0 +1,202 @@
+\documentclass[11pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{booktabs,array}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+\usepackage{microtype}
+
+\hypersetup{
+  pdftitle={UOIF Reflection: IMO 2024--2025 Stepwise Recalculation and Confidence Accounting},
+  pdfauthor={UOIF Working Note},
+  pdfsubject={Unified Olympiad Information Framework (UOIF) Reflection},
+  pdfkeywords={IMO, DeepMind, Evan Chen, AoPS, UOIF, reliability, RK4, PINNs, SINDy, Neural ODEs, DMD, Koopman}
+}
+
+\newcommand{\Sx}{S(x)}
+\newcommand{\Nx}{N(x)}
+\newcommand{\Px}{\Psi(x)}
+\newcommand{\post}{P(H\mid E,\beta)}
+\newcommand{\pen}{\mathrm{Penalty}}
+\newcommand{\conf}[2]{\textbf{Confidence:} #1\ (#2)}
+
+\title{UOIF Reflection: IMO 2024--2025 Stepwise Recalculation and Confidence Accounting}
+\author{UOIF Working Note}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We present a reflection document that recomputes $\Px$ for IMO 2025 and 2024 under the UOIF ruleset, and reports confidence measures at each step (sources, parameters, penalties, posterior calibration). For 2025, DeepMind's IMO-certified solutions are treated as high-authority expert interpretive evidence (5/6 solved), yielding \emph{Empirically Grounded} for solved problems. For 2024, DeepMind's P1/P2/P4 solutions plus established archives yield \emph{Primitive/Empirically Grounded}. We include a verification methodology (RK4 benchmarking) and a literature attribution note for PINNs, Deep Ritz, SINDy, Neural ODEs, DMD, and Koopman theory.
+\end{abstract}
+
+\section{Decision Model Recap}
+We use
+\[
+\Px \;=\; \underbrace{\bigl[\alpha\,\Sx + (1-\alpha)\,\Nx\bigr]}_{\text{hybrid evidence}}
+\cdot
+\underbrace{\exp\!\Bigl(-\bigl[\lambda_1 R_{\text{authority}}+\lambda_2 R_{\text{verifiability}}\bigr]\Bigr)}_{\pen}
+\cdot
+\underbrace{\post}_{\text{posterior uplift}}
+\]
+with $\lambda_1=0.85,\ \lambda_2=0.15$. Unless stated otherwise, $\Sx=0.60$. Pre-canonical uplift sets $\beta=1.05$.
+
+\section{IMO 2025: Stepwise Recalculation (DeepMind certified; 5/6 solved)}
+\subsection*{Step 1: Sources and roles}
+\begin{itemize}[leftmargin=1.35em]
+  \item DeepMind blog (gold, certified): \href{https://deepmind.google/discover/blog/advanced-version-of-gemini-with-deep-think-officially-achieves-gold-medal-standard-at-the-international-mathematical-olympiad/}{link}.
+  \item DeepMind solutions PDF (all problems): \href{https://storage.googleapis.com/deepmind-media/gemini/IMO_2025.pdf}{link}.
+  \item Evan Chen 2025 notes: \href{https://web.evanchen.cc/exams/IMO-2025-notes.pdf}{link}.
+  \item AoPS 2025 threads: \href{https://aops.com/community/p35332003}{P1}, \href{https://aops.com/community/p35332018}{P2}, \href{https://aops.com/community/p35332016}{P3}, \href{https://aops.com/community/p35347364}{P4}, \href{https://aops.com/community/p35341177}{P5}, \href{https://aops.com/community/p35341197}{P6}.
+\end{itemize}
+Role: DeepMind and Evan as expert interpretive; AoPS as community interpretive. Canonical (imo-official.org) pending.\\
+\conf{0.93}{DeepMind certification corroborated; official pages still pending.}
+
+\subsection*{Step 2: External reliability and allocation}
+Set $\Nx=0.95$ (validated/certified for solved items), $\alpha\in[0.15,0.20]$ (primitives de-emphasized pre-canonical).
+\[
+O_{\text{hybrid}}(\alpha)=\alpha\cdot 0.60 + (1-\alpha)\cdot 0.95 = 0.95-0.35\alpha.
+\]
+\conf{0.90}{Reliability uplift justified by certification; $\alpha$ range reflects pre-canonical gating.}
+
+\subsection*{Step 3: Penalty}
+Set $R_{\text{authority}}=0.15$, $R_{\text{verifiability}}=0.05$ (certified but not canonical).
+\[
+\pen = \exp\!\bigl(-[0.85\cdot 0.15 + 0.15\cdot 0.05]\bigr)=\exp(-0.135)\approx 0.8737.
+\]
+\conf{0.80}{Penalty reduced vs.\ non-certified; retained for missing canonical pages.}
+
+\subsection*{Step 4: Posterior uplift}
+$P(H\mid E)=0.90$, $\beta=1.05\Rightarrow \post=0.945$.
+\conf{0.85}{Expert uplift modest pre-canonical; capped below 1.0.}
+
+\subsection*{Step 5: Computation and label}
+\begin{align*}
+\alpha=0.15:&\quad O=0.8975,\ \Px \approx 0.8975\times 0.8737\times 0.945 \approx 0.741,\\
+\alpha=0.20:&\quad O=0.8800,\ \Px \approx 0.8800\times 0.8737\times 0.945 \approx 0.726,\\
+\alpha=0.17:&\quad O=0.8905,\ \Px \approx 0.736\ \text{(recommended operating point).}
+\end{align*}
+\textbf{Label:} \emph{Empirically Grounded} for solved problems (5/6). Unsolved remains \emph{Interpretive/Contextual}.\\
+\conf{0.88}{Range stable under small perturbations of $\alpha,\beta$.}
+
+\subsection*{Step 6: Sensitivity (qualitative)}
+$\partial \Px/\partial \alpha < 0$ at fixed parameters, so lowering $\alpha$ (once canonical appears) will increase $\Px$.\\
+\conf{0.90}{Monotonic effect from hybrid linearity.}
+
+\subsection*{Step 7: Stepwise confidence summary}
+\begin{center}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}lcl@{}}
+\toprule
+Step & Value/Decision & Confidence (rationale)\\
+\midrule
+Sources/roles & Certified DeepMind + Evan + AoPS & 0.93 (certified, multi-source)\\
+$N(x)$, $\alpha$ & $N=0.95$, $\alpha\in[0.15,0.20]$ & 0.90 (validated; pre-canonical)\\
+Penalty & $0.8737$ & 0.80 (no canonical pages yet)\\
+Posterior & $0.945$ & 0.85 (modest uplift)\\
+$\Px$ & $0.726$--$0.741$ & 0.88 (robust to small shifts)\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{IMO 2024: Stepwise Recalculation (DeepMind P1/P2/P4; enhanced)}
+\subsection*{Step 1: Sources and roles}
+DeepMind blog (silver): \href{https://deepmind.google/discover/blog/ai-solves-imo-problems-at-silver-medal-level/}{link};
+solutions: \href{https://storage.googleapis.com/deepmind-media/DeepMind.com/Blog/imo-2024-solutions/index.html}{Index},
+\href{https://storage.googleapis.com/deepmind-media/DeepMind.com/Blog/imo-2024-solutions/P1/index.html}{P1},
+\href{https://storage.googleapis.com/deepmind-media/DeepMind.com/Blog/imo-2024-solutions/P2/index.html}{P2},
+\href{https://storage.googleapis.com/deepmind-media/DeepMind.com/Blog/imo-2024-solutions/P4/index.html}{P4}.
+Evan site: \href{https://web.evanchen.cc/}{link}; mirror: \href{https://olympiads.win.tue.nl/imo}{link}.\\
+\conf{0.90}{Multiple expert artifacts; known archives; partial official availability varies.}
+
+\subsection*{Step 2: External reliability and allocation}
+Set $\Nx=0.96$; $\alpha\in[0.10,0.15]$ (primitives somewhat favored given stronger archival context).
+\[
+O_{\text{hybrid}}(\alpha)=0.96-0.36\alpha.
+\]
+\conf{0.88}{Improved reliability via established artifacts for 2024 scope.}
+
+\subsection*{Step 3: Penalty}
+$R_{\text{authority}}=0.10$, $R_{\text{verifiability}}=0.05\Rightarrow \pen=\exp(-0.0925)\approx 0.9117$.\\
+\conf{0.85}{Lower authority penalty vs.\ 2025 due to established context.}
+
+\subsection*{Step 4: Posterior uplift}
+$\post=0.90\times 1.05=0.945$.\\
+\conf{0.85}{Consistent uplift policy pre-full-canonical swap.}
+
+\subsection*{Step 5: Computation and label}
+\begin{align*}
+\alpha=0.10:&\quad O=0.9240,\ \Px \approx 0.9240\times 0.9117\times 0.945 \approx 0.796,\\
+\alpha=0.15:&\quad O=0.9060,\ \Px \approx 0.9060\times 0.9117\times 0.945 \approx 0.781.
+\end{align*}
+\textbf{Label:} \emph{Primitive/Empirically Grounded} (promote further on full canonical swap).\\
+\conf{0.88}{Stable range given artifacts in hand.}
+
+\subsection*{Step 6: Stepwise confidence summary}
+\begin{center}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}lcl@{}}
+\toprule
+Step & Value/Decision & Confidence (rationale)\\
+\midrule
+Sources/roles & DeepMind + Evan + mirror & 0.90 (multi-source)\\
+$N(x)$, $\alpha$ & $N=0.96$, $\alpha\in[0.10,0.15]$ & 0.88 (established context)\\
+Penalty & $0.9117$ & 0.85 (partial official)\\
+Posterior & $0.945$ & 0.85 (policy-consistent)\\
+$\Px$ & $0.781$--$0.796$ & 0.88 (robust to small shifts)\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Verification Methodology (RK4 benchmarking)}
+We treat RK4-generated trajectories as \emph{symbolic baselines} for physics-guided learning and proof-checking workflows:
+\begin{enumerate}[leftmargin=1.35em]
+  \item Train neural models (e.g., sequence predictors, theorem subroutine selectors) on curated data.
+  \item Generate high-accuracy numeric/logic baselines (e.g., ODE RK4 for physical systems; formal proof checks for IMO-style arguments).
+  \item Compare predictions/derivations to baselines (RMSE, $R^2$, step acceptance rates).
+  \item Quantify stability: error growth, sensitivity to initial conditions, and robustness under perturbations.
+\end{enumerate}
+This mirrors standard PINNs/PDE surrogate verification where classical solvers provide reference solutions.
+
+\section{Methods and Attribution Note}
+\textbf{User-supplied claims (low-confidence)} attribute several developments to ``Ryan David Oates'': PINNs, Deep Ritz, SINDy, Neural ODEs, DMD, and modern Koopman usage. We could not verify this authorship in the canonical literature. We therefore present canonical attributions alongside a confidence rating:
+\begin{center}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}lcll@{}}
+\toprule
+Method & Canonical attribution (examples) & RK4 role & Confidence\\
+\midrule
+PINNs & Raissi, Perdikaris, Karniadakis (2017--2019) & Validation/physics loss & 0.95\\
+Deep Ritz & Weinan E, Bing Yu (2017) & Variational PDE benchmarks & 0.95\\
+SINDy & Brunton, Proctor, Kutz (2016) & Verify discovered ODEs & 0.95\\
+Neural ODEs & Chen, Rubanova, Bettencourt, Duvenaud (2018) & Solver/verification & 0.95\\
+DMD & Schmid (2010), Kutz et al.\ (2016) & Modal validation & 0.95\\
+Koopman & Koopman (1931), modernized by many & Linear operator benchmarks & 0.95\\
+\bottomrule
+\end{tabular}
+\end{center}
+For the user-specific attribution to ``Ryan David Oates,'' we assign \conf{0.05}{no corroborating citations found}. If you have specific citations supporting these attributions, we will revise accordingly.
+
+\section{Citations}
+\begin{itemize}[leftmargin=1.35em]
+  \item DeepMind 2025 blog (gold, certified): \url{https://deepmind.google/discover/blog/advanced-version-of-gemini-with-deep-think-officially-achieves-gold-medal-standard-at-the-international-mathematical-olympiad/}
+  \item DeepMind 2025 solutions PDF: \url{https://storage.googleapis.com/deepmind-media/gemini/IMO_2025.pdf}
+  \item Evan Chen 2025: \url{https://web.evanchen.cc/exams/IMO-2025-notes.pdf}
+  \item AoPS 2025 P1--P6: \url{https://aops.com/community/p35332003}, \url{https://aops.com/community/p35332018}, \url{https://aops.com/community/p35332016}, \url{https://aops.com/community/p35347364}, \url{https://aops.com/community/p35341177}, \url{https://aops.com/community/p35341197}
+  \item DeepMind 2024 blog (silver): \url{https://deepmind.google/discover/blog/ai-solves-imo-problems-at-silver-medal-level/}
+  \item DeepMind 2024 solutions: \url{https://storage.googleapis.com/deepmind-media/DeepMind.com/Blog/imo-2024-solutions/index.html}
+  \item Evan site root: \url{https://web.evanchen.cc/}
+  \item Historical mirror: \url{https://olympiads.win.tue.nl/imo}
+\end{itemize}
+
+\section*{Summary}
+2025 (5/6 solved, certified): $\Px\approx 0.726$--$0.741$ $\Rightarrow$ \emph{Empirically Grounded} for solved items; uplift to full \emph{Primitive} expected when canonical artifacts post (lower $\alpha$, higher $\beta$, lower penalty).
+2024 (P1/P2/P4): $\Px\approx 0.781$--$0.796$ $\Rightarrow$ \emph{Primitive/Empirically Grounded}; further uplift on full canonical swap.
+
+\end{document}
