@@ -45,6 +45,13 @@ JSON
 Validation
 - Validate locally using any JSON Schema validator against `status.schema.json`.
 
+CI wiring (concept)
+- In your CI, publish `internal/StatusUpdate/status.jsonl` as an artifact.
+- Optionally parse and render a brief summary in the job output, e.g., with `jq`:
+```sh
+echo "Recent status entries:" && tail -n 5 internal/StatusUpdate/status.jsonl | jq -rc '.ts+" | "+.component+" | "+.status+" | "+.summary'
+```
+
 Notes
 - `REUSE.toml` marks `internal/**` as `LicenseRef-Internal-Use-Only`; no SPDX line inside JSONL needed.
 - Keep entries terse; the goal is coherence and quick situational awareness.

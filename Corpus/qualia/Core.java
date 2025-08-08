@@ -306,8 +306,8 @@ public final class Core {
                     UnifiedDetector.Triad tr = ud.triadStep(dyn, t, y, h, eps, epsRk4, epsTaylor, epsGeom, budgetNs, new UnifiedDetector.Invariant[]{ energy });
                     t = tr.tNext; y = tr.yNext; h = tr.hUsed;
                     String line = String.format(java.util.Locale.ROOT,
-                            "{\"t\":%.6f,\"x\":%.8f,\"v\":%.8f,\"psi\":%.6f,\"h\":%.6e,\"eps_rk4\":%.6e,\"eps_taylor\":%.6e,\"eps_geom\":%.6e,\"accepted\":%s}",
-                            t, y[0], y[1], tr.psi, tr.hUsed, tr.epsRk4, tr.epsTaylor, tr.epsGeom, String.valueOf(tr.accepted));
+                            "{\"t\":%.6f,\"x\":%.8f,\"v\":%.8f,\"psi\":%.6f,\"h\":%.6e,\"eps_rk4\":%.6e,\"eps_taylor\":%.6e,\"eps_geom\":%.6e,\"geom_drift\":%.6e,\"accepted\":%s}",
+                            t, y[0], y[1], tr.psi, tr.hUsed, tr.epsRk4, tr.epsTaylor, tr.epsGeom, tr.geomDrift, String.valueOf(tr.accepted));
                     out.println(line);
                 } else {
                     UnifiedDetector.Result r = ud.step(dyn, t, y, h, eps, budgetNs, new UnifiedDetector.Invariant[]{ energy });

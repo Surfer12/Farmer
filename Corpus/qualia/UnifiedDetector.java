@@ -125,11 +125,13 @@ final class UnifiedDetector {
 
         // 3) Geometry surrogate: invariant drift beyond tolerance
         double epsGeom = 0.0;
+        double geomDrift = 0.0;
         if (invariants != null) {
             for (Invariant inv : invariants) {
                 double v = inv.value(sc.tNext, sc.yNext);
                 double drift = Math.abs(v - inv.reference());
                 double tol = Math.max(1e-12, inv.tolerance());
+                geomDrift += drift;
                 epsGeom += Math.max(0.0, drift - tol);
             }
         }
@@ -145,7 +147,7 @@ final class UnifiedDetector {
         double margin = Math.max(0.0, 1.0 - ((sc.errEst + epsTaylor + epsGeom) / Math.max(epsTotal, 1e-12)));
         double psi = clamp01(margin) * clamp01(agree);
 
-        return new Triad(sc.tNext, sc.yNext, psi, sc.hUsed, sc.errEst, epsTaylor, epsGeom, accepted);
+        return new Triad(sc.tNext, sc.yNext, psi, sc.hUsed, sc.errEst, epsTaylor, epsGeom, geomDrift, accepted);
     }
 
     static final class Triad {
@@ -156,9 +158,10 @@ final class UnifiedDetector {
         final double epsRk4;
         final double epsTaylor;
         final double epsGeom;
+        final double geomDrift; // raw invariant drift (pre-tolerance)
         final boolean accepted;
-        Triad(double tNext, double[] yNext, double psi, double hUsed, double epsRk4, double epsTaylor, double epsGeom, boolean accepted) {
-            this.tNext=tNext; this.yNext=yNext; this.psi=psi; this.hUsed=hUsed; this.epsRk4=epsRk4; this.epsTaylor=epsTaylor; this.epsGeom=epsGeom; this.accepted=accepted;
+        Triad(double tNext, double[] yNext, double psi, double hUsed, double epsRk4, double epsTaylor, double epsGeom, double geomDrift, boolean accepted) {
+            this.tNext=tNext; this.yNext=yNext; this.psi=psi; this.hUsed=hUsed; this.epsRk4=epsRk4; this.epsTaylor=epsTaylor; this.epsGeom=epsGeom; this.geomDrift=geomDrift; this.accepted=accepted;
         }
     }
 
