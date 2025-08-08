@@ -265,6 +265,44 @@ public final class HierarchicalBayesianModel {
         return Diagnostics.fromChains(chains);
     }
 
+    /**
+     * HMC-based posterior inference. Returns a single-chain list of samples.
+     *
+     * @param dataset observations (non-null)
+     * @param totalIters total HMC iterations
+     * @param burnIn number of warmup iterations to discard
+     * @param thin keep 1 of every {@code thin} samples after burn-in
+     * @param seed RNG seed
+     * @param initial starting point for parameters
+     * @param stepSize leapfrog step size
+     * @param leapfrogSteps number of leapfrog steps per iteration
+     * @return posterior samples as {@link ModelParameters}
+     */
+    public List<ModelParameters> performInferenceHmc(List<ClaimData> dataset,
+                                                     int totalIters,
+                                                     int burnIn,
+                                                     int thin,
+                                                     long seed,
+                                                     ModelParameters initial,
+                                                     double stepSize,
+                                                     int leapfrogSteps) {
+        HmcSampler hmc = new HmcSampler(this, dataset);
+        double[] z0 = new double[] {
+                logit(initial.S()),
+                logit(initial.N()),
+                logit(initial.alpha()),
+                Math.log(Math.max(initial.beta(), 1e-12))
+        };
+        HmcSampler.Result res = hmc.sample(totalIters, burnIn, thin, seed, z0, stepSize, leapfrogSteps);
+        return res.samples;
+    }
+
+    private static double logit(double x) {
+        double eps = 1e-12;
+        double c = Math.max(eps, Math.min(1.0 - eps, x));
+        return Math.log(c / (1.0 - c));
+    }
+
     private List<ModelParameters> runMhChain(List<ClaimData> dataset, int sampleCount, long seed) {
         Prepared prep = precompute(dataset);
         boolean par = dataset.size() >= parallelThreshold;
