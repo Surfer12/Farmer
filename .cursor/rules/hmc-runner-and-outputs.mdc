@@ -1,0 +1,19 @@
+---
+description: HMC/NUTS runners, multi-chain outputs, and tests
+globs: Corpus/qualia/*.java
+---
+# HMC Multi-Chain Runner
+
+- Runner: [HmcMultiChainRunner.java](mdc:Corpus/qualia/HmcMultiChainRunner.java)
+- CLI: [Core.java](mdc:Corpus/qualia/Core.java) (`hmc_adapt`, `hmcmulti`)
+- Metrics: [MetricsRegistry.java](mdc:Corpus/qualia/MetricsRegistry.java)
+- Tests: [HmcSmokeTest.java](mdc:Corpus/qualia/HmcSmokeTest.java), [HmcPersistenceTest.java](mdc:Corpus/qualia/HmcPersistenceTest.java)
+
+Artifacts
+- Per-chain JSONL: `chain-XX.jsonl`
+- Per-chain metadata: `chain-XX.meta.json`
+- Summary: `summary.json`
+
+Determinism
+- Fix seeds and verify acceptance/divergences/R̂/ESS consistency across runs.
+

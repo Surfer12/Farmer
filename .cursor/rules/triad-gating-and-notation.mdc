@@ -1,0 +1,21 @@
+---
+description: Triad gating (RK4/Taylor/Geometry) entry points and notation rules
+globs: Corpus/qualia/*.java,internal/*.md
+---
+# Triad Gating and Notation
+
+Entry points
+- Gate runtime: [TriadGate.java](mdc:Corpus/qualia/TriadGate.java)
+- RK4 controller: [RK4Controller.java](mdc:Corpus/qualia/RK4Controller.java)
+- Taylor estimator: [TaylorR4Estimator.java](mdc:Corpus/qualia/TaylorR4Estimator.java)
+- Geometry invariants: [GeometryInvariants.java](mdc:Corpus/qualia/GeometryInvariants.java)
+- Unified runtime: [UnifiedPsiRuntime.java](mdc:Corpus/qualia/UnifiedPsiRuntime.java)
+
+Notation and keys
+- Canonical keys and semantics: [internal/NOTATION.md](mdc:internal/NOTATION.md)
+- Ensure `eps_geom` is violation (post-tolerance) and `geom_drift` is raw drift.
+- Keep `psi` in [0,1]; log `h`, `eps_rk4`, `eps_taylor`, `eps_geom`, `accepted`.
+
+TODO tracking
+- Detailed tasks: [internal/qualia/TODO.md](mdc:internal/qualia/TODO.md) (Triad Gating Scheme section)
+

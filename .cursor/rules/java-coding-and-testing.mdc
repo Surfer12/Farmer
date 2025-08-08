@@ -1,0 +1,15 @@
+---
+globs: *.java
+---
+# Java Coding & Testing Conventions
+
+- Favor deterministic, side-effect-free methods in `qualia` APIs.
+- Validate inputs and clamp ranges as done in `PsiMcda`.
+- Use meaningful names and explicit types; keep methods small and readable.
+- For sinks and services, implement `AutoCloseable` and support graceful shutdown.
+- Emit metrics via `MetricsRegistry` for key events; expose `/metrics` via `MetricsServer`.
+
+Testing
+- Lightweight test mains are acceptable; keep them fast and deterministic.
+- Reuse `out-qualia` and incremental `javac` to compile only required files.
+- Prefer `scripts/test_qualia.sh` or `make test-qualia` for quick runs.

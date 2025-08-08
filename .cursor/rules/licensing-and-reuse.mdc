@@ -1,6 +1,21 @@
 ---
 alwaysApply: true
 ---
+# Licensing & REUSE
+
+- Default license for code: GPL-3.0-only. SPDX headers must be present on all code files.
+- Internal-use-only texts use `LicenseRef-Internal-Use-Only` SPDX.
+- License files live under [LICENSES/](mdc:LICENSES). REUSE configuration at [REUSE.toml](mdc:REUSE.toml).
+- Notices at [NOTICE](mdc:NOTICE) and [COPYRIGHT](mdc:COPYRIGHT).
+
+Guidelines
+- When adding new files, include appropriate SPDX headers:
+  - Code: `// SPDX-License-Identifier: GPL-3.0-only` (or language comment equivalent)
+  - Internal docs: `SPDX-License-Identifier: LicenseRef-Internal-Use-Only`
+- Keep third-party snippets annotated with their licenses and sources.
+---
+alwaysApply: true
+---
 # Licensing and REUSE Policy
 
 - Public releases: GPL-3.0-only. Use SPDX headers in all code/docs intended for public distribution.

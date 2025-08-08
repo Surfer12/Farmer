@@ -401,6 +401,37 @@ SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
   - [ ] Disk format doc for `DatasetPreparedDiskStore` and compatibility/versioning policy
     - [x] sanity unit tests for PsiMcda methods (determinism, ranges, known cases)
 
+  - [ ] Practical wiring (discrete choices): doc + examples
+    - Verdict: Correct and well‑posed. Treat Ψ as the continuous evidence channel; use rules to prune; use MCDA strictly for preferences; keep the MCDA aggregator monotone in Ψ; apply threshold transfer when β changes (sub‑cap).
+    - Practical wiring
+      - Rules → prune feasible set F.
+      - Compute Ψ(a) with α set by evidence; do not encode stakeholder preference into α.
+      - Build criteria vector c(a) = [Ψ(a), cost(a), value(a), time(a), …]; normalize non‑Ψ criteria.
+      - Choose a monotone MCDA M (e.g., weighted sum/product, TOPSIS with positive weights and monotone normalization).
+      - Select argmax M(c(a), w). Use ties → deterministic tie‑break keys.
+    - Invariance conditions
+      - Gauge freedom: Parameter renames/defaults that leave Ψ unchanged ⇒ rankings unchanged.
+      - Threshold transfer: If β→β′, preserve sub‑cap decisions with τ′ = τ·(β/β′). Leave MCDA weights w unchanged.
+      - Sensitivity invariants: If M is strictly increasing in Ψ holding others fixed, then signs/order from Ψ propagate to the final ranking.
+      - Caveat: Invariance only guaranteed sub‑cap. If Ψ hits the cap, scaling β alters saturation; log and review.
+    - MCDA do’s/don’ts
+      - Do: WSM/WPM, TOPSIS (with monotone transforms, positive weights), AHP‑derived weights.
+      - Don’t: Non‑monotone usage of Ψ (band penalties, inverted U), criteria couplings that make M non‑increasing in Ψ; these can produce rank flips unrelated to Ψ.
+    - Tiny example
+      - If only Ψ scales by k>0 (β change) and M is weighted sum M = wΨ·Ψ + Σ wj·cj, then order on a,b from Ψ is preserved; acceptance set via τ′ maintains prior accept/reject decisions (sub‑cap).
+    - Minimal checks
+      - Monotonicity test: For fixed other criteria, ensure M increases when Ψ increases.
+      - Threshold‑transfer A/B: Apply β→β′ and τ′ = τ·(β/β′); confirm accept set and ranks unchanged for items previously sub‑cap.
+      - Saturation audit: Count items at cap; report any rank changes tied to saturation, not MCDA weights.
+    - Governance
+      - Version and log τ, β, and w separately; never adjust w to compensate for β.
+      - Record rule prunes, Ψ inputs, and final MCDA decision for auditability.
+    - Summary
+      - Use rules→Ψ→MCDA with M monotone in Ψ.
+      - Keep α evidence‑only; keep w preference‑only.
+      - Apply τ′ = τ·(β/β′) on β changes (sub‑cap) and don’t touch w.
+      - Rank stability holds unless Ψ saturates or MCDA is non‑monotone.
+
 ### MCDA Implementation
 - [x] Implement WSM/WPM/TOPSIS ranking with Ψ gating demo
  - [x] Implement AHP pairwise weights and consistency ratio

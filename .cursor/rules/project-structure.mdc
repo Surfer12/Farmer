@@ -1,6 +1,43 @@
 ---
 alwaysApply: true
 ---
+# Project structure guide
+
+Main entrypoints and where things live:
+
+- Demos/CLI: [Corpus/qualia/Core.java](mdc:Corpus/qualia/Core.java)
+  - Subcommands: `hmc`, `hmc_adapt`, `hmcmulti`, `rmala`, `stein`, `mcda`, `unified`, `bifurc`.
+
+- Core Bayesian model: [Corpus/qualia/HierarchicalBayesianModel.java](mdc:Corpus/qualia/HierarchicalBayesianModel.java)
+  - Prepared fast-path: inner `Prepared` dataset; use `precompute(...)` and `logPosteriorPrepared(...)`.
+  - Analytic gradients: `gradientLogPosteriorPrepared(...)`, `gradLogTargetZ(...)`.
+
+- Samplers:
+  - HMC: [Corpus/qualia/HmcSampler.java](mdc:Corpus/qualia/HmcSampler.java)
+  - RMALA: [Corpus/qualia/RmalaSampler.java](mdc:Corpus/qualia/RmalaSampler.java)
+  - Stein gradients: [Corpus/qualia/SteinGradLogP.java](mdc:Corpus/qualia/SteinGradLogP.java)
+  - Multi-chain orchestration: [Corpus/qualia/HmcMultiChainRunner.java](mdc:Corpus/qualia/HmcMultiChainRunner.java)
+
+- Unified detector (triad gating): [Corpus/qualia/UnifiedDetector.java](mdc:Corpus/qualia/UnifiedDetector.java)
+  - JSONL writer in: `unified` mode of [Corpus/qualia/Core.java](mdc:Corpus/qualia/Core.java)
+  - Bifurcation sweeps: [Corpus/qualia/BifurcationSweep.java](mdc:Corpus/qualia/BifurcationSweep.java)
+
+- Notation and key naming: [internal/NOTATION.md](mdc:internal/NOTATION.md)
+
+- Status updates: directory [internal/StatusUpdate/](mdc:internal/StatusUpdate/)
+  - Canonical log: [internal/StatusUpdate/status.jsonl](mdc:internal/StatusUpdate/status.jsonl)
+  - Schema: [internal/StatusUpdate/status.schema.json](mdc:internal/StatusUpdate/status.schema.json)
+  - Template: [internal/StatusUpdate/STATUS_UPDATE_TEMPLATE.md](mdc:internal/StatusUpdate/STATUS_UPDATE_TEMPLATE.md)
+
+- Licensing/REUSE:
+  - Public license text: [LICENSES/GPL-3.0-only.txt](mdc:LICENSES/GPL-3.0-only.txt)
+  - Internal-use license: [LICENSES/LicenseRef-Internal-Use-Only.txt](mdc:LICENSES/LicenseRef-Internal-Use-Only.txt)
+  - Policy explainer: [internal/psi-licensing.tex](mdc:internal/psi-licensing.tex)
+  - REUSE config: [REUSE.toml](mdc:REUSE.toml)
+
+---
+alwaysApply: true
+---
 # Project Structure Guide
 
 Core areas and entry points:

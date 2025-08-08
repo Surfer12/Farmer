@@ -1,0 +1,28 @@
+---
+description: Ψ model invariants and MCDA integration when editing decision code
+globs: Corpus/qualia/*.java,Corpus/qualia/**.java
+---
+
+# Ψ Model & MCDA Invariants
+
+- Core structure
+  - Evidence blend: O(α) = α·S + (1−α)·N (transparent, monotone).
+  - Penalty: pen = exp(−[λ1·R_a + λ2·R_v]) (bounded in (0,1]).
+  - Uplift β and policy: prefer dual-channel — raw belief R = β·O·pen (uncapped), gate decisions on bounded Ψ (hard cap or soft-cap).
+
+- Invariants
+  - Gauge freedom: parameter renames or trivial reparameterizations must not change behavior.
+  - Threshold transfer: if β → β′, rescale thresholds to preserve accept/reject decisions in sub-cap regions.
+  - Sensitivity: ∂Ψ/∂α has the sign of (S−N); risks always decrease Ψ; β scales sensitivities without flipping signs.
+
+- MCDA composition
+  - If MCDA aggregator is monotone in Ψ, rankings inherit Ψ’s ordering; avoid non-monotone couplings.
+  - Keep Ψ continuous; discreteness comes from the action set, not Ψ.
+
+- Where to apply
+  - Scoring and gradients: [PsiMcda.java](mdc:Corpus/qualia/PsiMcda.java), [PsiModel.java](mdc:Corpus/qualia/PsiModel.java)
+  - MCDA ops: [Mcda.java](mdc:Corpus/qualia/Mcda.java)
+
+- Tests
+  - Maintain invariance tests and threshold-transfer examples alongside changes.
+
