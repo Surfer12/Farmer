@@ -1,16 +1,14 @@
 ---
-globs: *.java
-description: Java style, naming, and safety rules for Qualia
+alwaysApply: true
 ---
-# Java Style Rules (Qualia)
+SPDX-License-Identifier: LicenseRef-Internal-Use-Only
 
-- Prefer explicit, descriptive names; avoid 1–2 character identifiers.
-- Keep `psi` bounded in [0,1]; use `belief_raw` when emitting uncapped beliefs.
-- Use records for immutable value types (e.g., `ModelParameters`).
-- Always log and bound seeds; for multi-chain, derive per-chain seeds via `baseSeed + c*PHI64`.
-- Add JSON fields using snake_case (e.g., `eps_rk4`, `eps_taylor`, `eps_geom`).
-- Export metrics via `MetricsRegistry` with subsystem prefixes (e.g., `hmc_chain_XX_*`).
-- Ensure deterministic tests with fixed seeds and assert tight tolerances.
-- For CLI parsing, support `key=value` overrides and document defaults.
-- When adding detectors/samplers, expose env/CLI knobs and structured outputs (JSON/JSONL).
+## Java style & safety
+
+- Naming & clarity: descriptive, full words; functions are verbs, variables are nouns.
+- Immutability: prefer records/unmodifiable collections; avoid shared mutable state.
+- Concurrency: guard clauses, early returns, simple synchronization; keep cyclomatic complexity low.
+- Comments: explain "why"; avoid obvious how-comments; keep concise.
+- Testing/CI: run Java build and demos after edits; keep CI green; add unit tests for new public APIs.
+- Licensing headers: include SPDX on all files; code GPL-3.0-only; internal docs LicenseRef-Internal-Use-Only.
 

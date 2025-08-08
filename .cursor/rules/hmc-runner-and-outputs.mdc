@@ -1,19 +1,26 @@
 ---
-description: HMC/NUTS runners, multi-chain outputs, and tests
-globs: Corpus/qualia/*.java
+description: HMC/NUTS runners, warmup/adaptation, outputs, and metrics
 ---
-# HMC Multi-Chain Runner
+SPDX-License-Identifier: LicenseRef-Internal-Use-Only
 
-- Runner: [HmcMultiChainRunner.java](mdc:Corpus/qualia/HmcMultiChainRunner.java)
-- CLI: [Core.java](mdc:Corpus/qualia/Core.java) (`hmc_adapt`, `hmcmulti`)
-- Metrics: [MetricsRegistry.java](mdc:Corpus/qualia/MetricsRegistry.java)
-- Tests: [HmcSmokeTest.java](mdc:Corpus/qualia/HmcSmokeTest.java), [HmcPersistenceTest.java](mdc:Corpus/qualia/HmcPersistenceTest.java)
+## HMC runner and outputs
 
-Artifacts
-- Per-chain JSONL: `chain-XX.jsonl`
-- Per-chain metadata: `chain-XX.meta.json`
-- Summary: `summary.json`
+- Entry points
+  - CLI: [Corpus/qualia/Core.java](mdc:Corpus/qualia/Core.java) (`hmc`, `hmc_adapt`)
+  - Sampler: [Corpus/qualia/HmcSampler.java](mdc:Corpus/qualia/HmcSampler.java)
+  - Multi-chain: [Corpus/qualia/HmcMultiChainRunner.java](mdc:Corpus/qualia/HmcMultiChainRunner.java)
 
-Determinism
-- Fix seeds and verify acceptance/divergences/R̂/ESS consistency across runs.
+- Adaptation
+  - Dual-averaging step size to target acceptance (~0.65–0.80).
+  - Diagonal mass matrix from z-space sample variance.
+  - Divergence checks via energy error / non-finite H.
+
+- Outputs & metrics
+  - JSON/JSONL: per-chain draws with acceptance, divergences, tuned ε and mass diag.
+  - Metrics server (optional): set `METRICS_ENABLE=1`.
+
+- Recommended run
+  ```bash
+  java -cp out-qualia qualia.Core hmc_adapt chains=2 warmup=500 iters=1000 thin=2 seed=42 out=hmc.jsonl | cat
+  ```
 
