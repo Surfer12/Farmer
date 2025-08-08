@@ -1,0 +1,22 @@
+---
+alwaysApply: false
+description: Guidance for composing Ψ with rules and MCDA; invariance and threshold transfer
+---
+# Ψ + MCDA Composition Guidance
+
+- Treat Ψ as the continuous evidence channel. Use rules to prune first, then MCDA strictly for preferences.
+- Keep `α` (allocation) evidence-only; keep MCDA weights `w` preference-only.
+- Use a monotone MCDA aggregator in Ψ (e.g., WSM/WPM/TOPSIS with positive weights and monotone normalization).
+- Threshold transfer: when uplift β changes, in sub-cap region use `τ' = τ·(β/β')` to preserve accept/reject; do not change `w`.
+
+Do’s / Don’ts:
+- Do: weighted sum/product, TOPSIS, AHP-derived weights.
+- Don’t: non-monotone use of Ψ (band penalties, inverted-U), or couplings that make M non-increasing in Ψ.
+
+Minimal checks:
+- Verify M increases when Ψ increases with other criteria fixed.
+- A/B threshold-transfer test preserves accept set and ranks for previously sub-cap items.
+
+Reference files:
+- MCDA core: [Corpus/qualia/Mcda.java](mdc:Corpus/qualia/Mcda.java)
+- Policy doc tasks: [internal/qualia/TODO.md](mdc:internal/qualia/TODO.md)

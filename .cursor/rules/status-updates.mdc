@@ -1,0 +1,15 @@
+---
+alwaysApply: true
+---
+# Status Updates Convention
+
+- Append concise one-line JSON objects to [internal/StatusUpdate/status.jsonl](mdc:internal/StatusUpdate/status.jsonl) matching [status.schema.json](mdc:internal/StatusUpdate/status.schema.json).
+- Place long-form session blocks in [internal/StatusUpdate/Status_Extended.md](mdc:internal/StatusUpdate/Status_Extended.md).
+- Paste template from [STATUS_UPDATE_TEMPLATE.md](mdc:internal/StatusUpdate/STATUS_UPDATE_TEMPLATE.md) when adding new entries.
+
+Quick view of recent entries:
+
+```sh
+echo "Recent status entries:" && tail -n 5 internal/StatusUpdate/status.jsonl | jq -rc '.ts+" | "+.component+" | "+.status+" | "+.summary'
+```
+

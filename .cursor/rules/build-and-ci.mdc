@@ -1,0 +1,22 @@
+---
+alwaysApply: true
+---
+# Build and CI
+
+- Java 21 build:
+
+```sh
+javac --release 21 -d out-qualia $(find Corpus/qualia -name '*.java')
+```
+
+- Run demos/tests:
+
+```sh
+java -cp out-qualia qualia.Core help | cat
+java -cp out-qualia qualia.HmcSmokeTest | cat
+java -cp out-qualia qualia.HmcPersistenceTest | cat
+```
+
+- CI workflow: [.github/workflows/ci.yml](mdc:.github/workflows/ci.yml)
+- CI script: [scripts/ci.sh](mdc:scripts/ci.sh)
+

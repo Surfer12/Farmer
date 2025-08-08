@@ -1,0 +1,20 @@
+---
+alwaysApply: true
+---
+# Licensing and SPDX (Internal/Public)
+
+- Internal-only materials use `LicenseRef-Internal-Use-Only` and must include SPDX headers.
+  - See [internal/psi-licensing.tex](mdc:internal/psi-licensing.tex), [REUSE.toml](mdc:REUSE.toml)
+  - License texts: [LICENSES/GPL-3.0-only.txt](mdc:LICENSES/GPL-3.0-only.txt), [LICENSES/LicenseRef-Internal-Use-Only.txt](mdc:LICENSES/LicenseRef-Internal-Use-Only.txt)
+- Public code is GPL-3.0-only by default. Avoid CC0 for code and most docs per policy.
+- Notices: [COPYRIGHT](mdc:COPYRIGHT), [NOTICE](mdc:NOTICE)
+
+SPDX header examples (from policy):
+
+```text
+// SPDX-License-Identifier: GPL-3.0-only
+// SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
+
+% SPDX-License-Identifier: LicenseRef-Internal-Use-Only
+```
+

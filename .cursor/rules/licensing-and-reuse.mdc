@@ -1,0 +1,16 @@
+---
+alwaysApply: true
+---
+# Licensing and REUSE Policy
+
+- Public releases: GPL-3.0-only. Use SPDX headers in all code/docs intended for public distribution.
+- Internal artifacts: LicenseRef-Internal-Use-Only; store under `internal/` and mark with SPDX.
+- REUSE:
+  - License texts under [LICENSES/](mdc:LICENSES)
+  - Default/license overrides in [REUSE.toml](mdc:REUSE.toml)
+- Top-level [LICENSE](mdc:LICENSE) mirrors GPLv3; [NOTICE](mdc:NOTICE) and [COPYRIGHT](mdc:COPYRIGHT) present.
+
+Key files:
+- Internal licensing explainer: [internal/psi-licensing.tex](mdc:internal/psi-licensing.tex)
+- GPLv3 text: [LICENSES/GPL-3.0-only.txt](mdc:LICENSES/GPL-3.0-only.txt)
+- Internal-use text: [LICENSES/LicenseRef-Internal-Use-Only.txt](mdc:LICENSES/LicenseRef-Internal-Use-Only.txt)

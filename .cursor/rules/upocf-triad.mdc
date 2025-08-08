@@ -1,0 +1,21 @@
+---
+alwaysApply: false
+description: UPOCF triangulation harness (RK4 control, Taylor remainder, geometry invariants) and logging
+---
+# UPOCF Triangulation Harness
+
+Components:
+- RK4 control with PI controller and step-doubling; log `eps_rk4_max`, `h_stats`, `L_hat`.
+- Taylor 4th-order with 5th derivative for remainder `R4`; trust-region switch; log `taylor_r4`.
+- Geometry invariants (Ricci/Ollivier proxies or manifold PCA); log `curvature_stats` and `eps_geom`.
+
+Gating:
+- Accept iff `eps_rk4 + eps_taylor + eps_geom ≤ eps_total`. Preserve sub-cap threshold transfer for Ψ.
+
+Logging & schema:
+- Triad JSONL via Core unified; include fields `eps_rk4`, `taylor_r4`, `curvature_stats/ci`, `geom_drift`, `eps_geom`, `latency_ms`.
+
+Reference files:
+- Unified detector: [Corpus/qualia/UnifiedDetector.java](mdc:Corpus/qualia/UnifiedDetector.java)
+- Bifurcation sweeps: [Corpus/qualia/BifurcationSweep.java](mdc:Corpus/qualia/BifurcationSweep.java)
+- TODO (specs): [internal/qualia/TODO.md](mdc:internal/qualia/TODO.md)
