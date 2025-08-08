@@ -8,18 +8,18 @@ public final class PsiMcdaTest {
     public static void main(String[] args) {
         int passed = 0, total = 0;
 
-        total++; if (testComputePsiDeterminismAndRanges()) passed++;
-        total++; if (testComputePsiTemporalMean()) passed++;
-        total++; if (testThresholdTransfer()) passed++;
-        total++; if (testNormalizeCriterion()) passed++;
-        total++; if (testMapGovernanceWeights()) passed++;
-        total++; if (testGateByPsi()) passed++;
-        total++; if (testWSM_WPM()) passed++;
-        total++; if (testTopsisTrivial()) passed++;
-        total++; if (testAHPIdentity()) passed++;
-        total++; if (testBounds()) passed++;
-        total++; if (testGradPsiSigns()) passed++;
-        total++; if (testTieBreak()) passed++;
+        total++; if (testComputePsiDeterminismAndRanges()) passed++; else System.out.println("FAIL: testComputePsiDeterminismAndRanges");
+        total++; if (testComputePsiTemporalMean()) passed++; else System.out.println("FAIL: testComputePsiTemporalMean");
+        total++; if (testThresholdTransfer()) passed++; else System.out.println("FAIL: testThresholdTransfer");
+        total++; if (testNormalizeCriterion()) passed++; else System.out.println("FAIL: testNormalizeCriterion");
+        total++; if (testMapGovernanceWeights()) passed++; else System.out.println("FAIL: testMapGovernanceWeights");
+        total++; if (testGateByPsi()) passed++; else System.out.println("FAIL: testGateByPsi");
+        total++; if (testWSM_WPM()) passed++; else System.out.println("FAIL: testWSM_WPM");
+        total++; if (testTopsisTrivial()) passed++; else System.out.println("FAIL: testTopsisTrivial");
+        total++; if (testAHPIdentity()) passed++; else System.out.println("FAIL: testAHPIdentity");
+        total++; if (testBounds()) passed++; else System.out.println("FAIL: testBounds");
+        total++; if (testGradPsiSigns()) passed++; else System.out.println("FAIL: testGradPsiSigns");
+        total++; if (testTieBreak()) passed++; else System.out.println("FAIL: testTieBreak");
 
         System.out.println("PsiMcdaTest: passed " + passed + "/" + total + " tests");
         if (passed != total) System.exit(1);

@@ -14,6 +14,21 @@ public interface PsiModel {
     double logPriors(ModelParameters params);
     double logPosterior(List<ClaimData> dataset, ModelParameters params);
     boolean shouldParallelize(int datasetSize);
+
+    // Optional advanced API (default no-op) to allow samplers to use adaptive/z-space paths
+    default List<ModelParameters> performInference(List<ClaimData> dataset, int sampleCount) { return List.of(); }
+    default HmcSampler.AdaptiveResult hmcAdaptive(List<ClaimData> dataset,
+                                                  int warmupIters,
+                                                  int samplingIters,
+                                                  int thin,
+                                                  long seed,
+                                                  double[] z0,
+                                                  double initStepSize,
+                                                  int leapfrogSteps,
+                                                  double targetAccept) {
+        HmcSampler h = new HmcSampler((HierarchicalBayesianModel) this, dataset);
+        return h.sampleAdaptive(warmupIters, samplingIters, thin, seed, z0, initStepSize, leapfrogSteps, targetAccept);
+    }
 }
 
 

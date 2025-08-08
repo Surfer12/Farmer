@@ -32,6 +32,7 @@ public final class Core {
             case "hmc" -> runHmc();
             case "mcda" -> runMcda();
             case "rmala" -> runRmala();
+            case "hmc_adapt" -> runHmcAdaptive(args);
             default -> printUsageAndExit();
         }
     }
@@ -87,22 +88,23 @@ public final class Core {
 
         // 2) Model and MCMC samples (via DI)
         ServiceLocator sl = ServiceLocator.builder().build();
-        PsiModel model = sl.psiModel(ModelPriors.defaults(), 2048);
+        HierarchicalBayesianModel model = (HierarchicalBayesianModel) sl.psiModel(ModelPriors.defaults(), 2048);
+        HierarchicalBayesianModel hb = (HierarchicalBayesianModel) model;
         int sampleCount = 60; // keep small for demo speed
-        List<ModelParameters> samples = model.performInference(dataset, sampleCount);
+        List<ModelParameters> samples = hb.performInference(dataset, sampleCount);
 
         // 3) Define integrand f(params): average Psi over dataset
         double[] fvals = new double[samples.size()];
         for (int i = 0; i < samples.size(); i++) {
             ModelParameters p = samples.get(i);
             double sumPsi = 0.0;
-            for (ClaimData c : dataset) sumPsi += model.calculatePsi(c, p);
+            for (ClaimData c : dataset) sumPsi += hb.calculatePsi(c, p);
             fvals[i] = sumPsi / dataset.size();
         }
 
         // 4) Build Stein estimator and compute c_N
         double lengthScale = 0.5; // demo value
-        SteinEstimator est = new SteinEstimator(lengthScale, model, dataset, samples);
+        SteinEstimator est = new SteinEstimator(lengthScale, hb, dataset, samples);
         double cN = est.estimate(fvals, 50, 1e-3);
 
         // 5) Compare to plain MC average
@@ -113,7 +115,7 @@ public final class Core {
     }
 
     private static void printUsageAndExit() {
-        System.err.println("Usage: java -cp <cp> qualia.Core <console|file|jdbc|stein|hmc|mcda|rmala>");
+        System.err.println("Usage: java -cp <cp> qualia.Core <console|file|jdbc|stein|hmc|hmc_adapt|mcda|rmala> [key=value ...]");
         System.exit(1);
     }
 
@@ -127,7 +129,7 @@ public final class Core {
         }
 
         ServiceLocator sl = ServiceLocator.builder().build();
-        PsiModel model = sl.psiModel(ModelPriors.defaults(), 2048);
+        HierarchicalBayesianModel model = (HierarchicalBayesianModel) sl.psiModel(ModelPriors.defaults(), 2048);
         RmalaSampler sampler = new RmalaSampler(model, dataset);
 
         // constant step size baseline policy
@@ -284,6 +286,94 @@ public final class Core {
             return fallback;
         }
     }
+
+    private static void runHmcAdaptive(String[] args) {
+        java.util.Map<String, String> kv = parseKvArgs(args, 1);
+        int warm = parseInt(kv.get("warmup"), 1000);
+        int iters = parseInt(kv.get("iters"), 2000);
+        int thin = parseInt(kv.get("thin"), 3);
+        long seed1 = parseLong(kv.get("seed1"), 20240808L);
+        long seed2 = parseLong(kv.get("seed2"), 20240809L);
+        double eps0 = parseDouble(kv.get("eps"), 0.05);
+        int leap = parseInt(kv.get("leap"), 20);
+        double target = parseDouble(kv.get("target"), 0.75);
+        String jsonOut = kv.getOrDefault("json", "stdout");
+
+        java.util.List<ClaimData> dataset = new java.util.ArrayList<>();
+        java.util.Random rng = new java.util.Random(11);
+        for (int i = 0; i < 60; i++) {
+            dataset.add(new ClaimData("h-" + i, rng.nextBoolean(),
+                    Math.abs(rng.nextGaussian()) * 0.3,
+                    Math.abs(rng.nextGaussian()) * 0.3,
+                    Math.min(1.0, Math.max(0.0, 0.5 + 0.2 * rng.nextGaussian()))));
+        }
+
+        HierarchicalBayesianModel model = new HierarchicalBayesianModel();
+        HmcSampler hmc = new HmcSampler(model, dataset);
+
+        double[] z0 = new double[] { logit(0.7), logit(0.6), logit(0.5), Math.log(1.0) };
+        HmcSampler.AdaptiveResult ch1 = hmc.sampleAdaptive(warm, iters, thin, seed1, z0, eps0, leap, target);
+        HmcSampler.AdaptiveResult ch2 = hmc.sampleAdaptive(warm, iters, thin, seed2, z0, eps0, leap, target);
+
+        java.util.List<java.util.List<ModelParameters>> chains = java.util.List.of(ch1.samples, ch2.samples);
+        Diagnostics diag = model.diagnose(chains);
+
+        double meanPsi1 = meanPsi(model, dataset, ch1.samples);
+        double meanPsi2 = meanPsi(model, dataset, ch2.samples);
+
+        String json = "{" +
+                "\"config\":{" +
+                "\"warmup\":" + warm + ",\"iters\":" + iters + ",\"thin\":" + thin + "," +
+                "\"leap\":" + leap + ",\"target\":" + target + ",\"eps0\":" + eps0 + "}," +
+                "\"chains\":[{" +
+                "\"kept\":" + ch1.samples.size() + ",\"acc\":" + fmt(ch1.acceptanceRate) + "," +
+                "\"tunedStep\":" + fmt(ch1.tunedStepSize) + ",\"divergences\":" + ch1.divergenceCount + "},{" +
+                "\"kept\":" + ch2.samples.size() + ",\"acc\":" + fmt(ch2.acceptanceRate) + "," +
+                "\"tunedStep\":" + fmt(ch2.tunedStepSize) + ",\"divergences\":" + ch2.divergenceCount + "}]," +
+                "\"summary\":{" +
+                "\"meanPsi1\":" + fmt(meanPsi1) + ",\"meanPsi2\":" + fmt(meanPsi2) + "}," +
+                "\"diagnostics\":{" +
+                "\"rhat\":{\"S\":" + fmt(diag.rHatS) + ",\"N\":" + fmt(diag.rHatN) + ",\"alpha\":" + fmt(diag.rHatAlpha) + ",\"beta\":" + fmt(diag.rHatBeta) + "}," +
+                "\"ess\":{\"S\":" + fmt(diag.essS) + ",\"N\":" + fmt(diag.essN) + ",\"alpha\":" + fmt(diag.essAlpha) + ",\"beta\":" + fmt(diag.essBeta) + "}}}";
+
+        if ("stdout".equalsIgnoreCase(jsonOut)) {
+            System.out.println(json);
+        } else {
+            try (java.io.PrintWriter pw = new java.io.PrintWriter(jsonOut)) {
+                pw.println(json);
+            } catch (Exception e) {
+                System.err.println("Failed to write JSON: " + e.getMessage());
+                System.out.println(json);
+            }
+        }
+    }
+
+    private static double meanPsi(HierarchicalBayesianModel model, java.util.List<ClaimData> dataset, java.util.List<ModelParameters> samples) {
+        double sum = 0.0; int n = 0;
+        for (ModelParameters p : samples) {
+            double s = 0.0;
+            for (ClaimData c : dataset) s += model.calculatePsi(c, p);
+            sum += s / dataset.size();
+            n++;
+        }
+        return n == 0 ? Double.NaN : sum / n;
+    }
+
+    private static java.util.Map<String, String> parseKvArgs(String[] args, int startIdx) {
+        java.util.Map<String, String> m = new java.util.HashMap<>();
+        for (int i = startIdx; i < args.length; i++) {
+            String s = args[i];
+            int eq = s.indexOf('=');
+            if (eq <= 0) continue;
+            m.put(s.substring(0, eq), s.substring(eq + 1));
+        }
+        return m;
+    }
+
+    private static int parseInt(String s, int def) { try { return s==null?def:Integer.parseInt(s); } catch (Exception e) { return def; } }
+    private static long parseLong(String s, long def) { try { return s==null?def:Long.parseLong(s); } catch (Exception e) { return def; } }
+    private static double parseDouble(String s, double def) { try { return s==null?def:Double.parseDouble(s); } catch (Exception e) { return def; } }
+    private static String fmt(double x) { return String.format(java.util.Locale.ROOT, "%.6f", x); }
 }
 
 

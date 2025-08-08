@@ -249,10 +249,14 @@ public final class PsiMcda {
                                            ToDoubleFunction<T> secondaryDesc, // e.g., psiLower desc
                                            ToDoubleFunction<T> costAsc) {
         Objects.requireNonNull(alternatives);
+        // Build a comparator that makes the desired option the maximum:
+        // - Higher primary is better (ascending comparator + max)
+        // - Higher secondary is better (ascending comparator + max)
+        // - Lower cost is better (compare negative cost so higher -cost wins)
         Comparator<T> cmp = Comparator
-                .comparingDouble(primaryDesc).reversed()
-                .thenComparing(Comparator.comparingDouble(secondaryDesc).reversed())
-                .thenComparing(Comparator.comparingDouble(costAsc));
+                .comparingDouble(primaryDesc)
+                .thenComparingDouble(secondaryDesc)
+                .thenComparingDouble(a -> -costAsc.applyAsDouble(a));
         return alternatives.stream().max(cmp);
     }
 
