@@ -27,7 +27,6 @@ SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
   - [x] Switch Stein to z-space origin (logit/exp) with Jacobian-corrected score; expose `gradLogTargetZ` and use prepared, thresholded parallel gradients
   - [ ] Warmup hyperparam sweep: γ∈[0.2,0.3], leap∈[8,15], phase split 15%/60%/25% → pick defaults to hit acc∈[0.70,0.80]
   - [ ] Early-divergence backoff in warmup: reduce ε by 10% on divergence; log per-iteration
-  - [ ] RK4 smoothness guard: empirical Lipschitz estimate L̂ for f(Ψ,t); adapt h to ensure global O(h^4) ≤ ε_RK4
   - [ ] Taylor divergence guard: remainder/ratio tests on |R4|; auto-switch to RK4 when out-of-trust-region
   - [ ] Geometry robustness: k-NN smoothing for curvature estimates; bootstrap/Jackknife CI for curvature bands
   - [ ] CLI flags for HMC params (override env)

@@ -9,6 +9,12 @@ import java.util.Date;
  */
 final class Main {
     public static void main(String[] args) {
+        // Start services from environment and enable metrics if requested
+        ServiceLocator sl = ServiceLocator.builder()
+                .fromEnvironment()
+                .withMetricsServer(true)
+                .build();
+
         String dbUrl = System.getenv("QUALIA_DB_URL");
         JdbcAuditSink jdbcSink = null;
         if (dbUrl != null && !dbUrl.isEmpty()) {
