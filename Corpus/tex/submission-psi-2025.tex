@@ -1,0 +1,217 @@
+% SPDX-License-Identifier: LicenseRef-Internal-Use-Only
+% Copyright (c) 2025 Jumping Quail Solutions
+% Classification: Confidential — Internal Use Only
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{csquotes}
+
+\geometry{margin=1in}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Epistemic Confidence Model (Ψ)}
+\rhead{Submission Draft}
+\lfoot{Confidential — Internal Use Only}
+\rfoot{\thepage}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue,
+  urlcolor=blue,
+  citecolor=blue
+}
+
+\title{Ψ: A Monotone, Auditable Epistemic Confidence Model with Safe Uplift and Governance\vspace{4pt}\\\large 2025 Computational Analysis, Operational Properties, and Licensing Guidance}
+\author{Jumping Quail Solutions\\\small \textcopyright{} 2025 Jumping Quail Solutions. All rights reserved.}
+\date{\today}
+
+\lstdefinestyle{code}{
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  frame=single,
+  backgroundcolor=\color{gray!5},
+  rulecolor=\color{gray!50},
+  showstringspaces=false
+}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+We present Ψ, a single, bounded decision score that blends symbolic evidence with canonical sources, discounts authority and verifiability risks via an exponential penalty, and applies a calibrated posterior uplift. Ψ is designed for fast, auditable operations with predictable sensitivity. We formalize the core model, report computational behavior on representative scenarios, and state three operational invariants: gauge freedom, threshold transfer, and sensitivity invariants. We also show how Ψ composes with rules and MCDA for discrete choices. An appendix provides internal vs. public licensing guidance, a paste-ready internal-use license, notices, and SPDX headers.
+\end{abstract}
+
+\section{Mathematical Framework}
+Let $S$ denote symbolic reasoning strength and $N$ denote canonical (external) evidence. The hybrid evidence score is
+\begin{equation}
+O(\alpha) = \alpha S + (1-\alpha) N, \quad \alpha\in[0,1].
+\end{equation}
+Risk factors enter multiplicatively through an exponential penalty
+\begin{equation}
+\mathrm{pen} = \exp\big(-[\lambda_1 R_a + \lambda_2 R_v]\big), \quad \lambda_1,\lambda_2\ge 0,
+\end{equation}
+where $R_a$ is authority risk and $R_v$ is verifiability risk. Expert/canonical uplift is captured with a capped posterior scaling
+\begin{equation}
+\mathrm{post}(\beta) = \min\{\beta \cdot P(H\mid E), 1\}, \quad \beta>0.
+\end{equation}
+The final decision score is
+\begin{equation}
+\boxed{\Psi = O(\alpha)\, \mathrm{pen}\, \mathrm{post}(\beta)}\ \in (0,1].
+\end{equation}
+Sensitivity to allocation is bounded and predictable:
+\begin{equation}
+\frac{\partial \Psi}{\partial \alpha} = (S-N)\, \mathrm{pen}\, \mathrm{post}(\beta).
+\end{equation}
+
+\section{Computational Behavior}
+The model exhibits consistent, auditable responses across common regimes. Illustrative rows show the monotone effect of canonical dominance ($N>S$) and bounded uplift.
+\begin{center}
+\begin{tabular}{@{}cccccccc@{}}
+\toprule
+$\alpha$ & Hybrid & Penalty & Posterior & $\Psi$ & $\partial\Psi/\partial\alpha$ & Confidence & Label \\
+\midrule
+0.120 & 0.9256 & 0.8976 & 1.0000 & 0.831 & $-0.3321$ & 0.93 & Primitive/Evidence-Grounded \\
+0.150 & 0.9145 & 0.8976 & 1.0000 & 0.821 & $-0.3321$ & 0.93 & Primitive/Evidence-Grounded \\
+\midrule
+0.170 & 0.8407 & 0.7965 & 0.9450 & 0.633 & $-0.2183$ & 0.85 & Interpretive/Contextual \\
+0.150 & 0.8550 & 0.7965 & 0.9450 & 0.644 & $-0.2258$ & 0.85 & Interpretive/Contextual \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Operational Properties}
+\subsection{Gauge Freedom}
+Renaming or trivially reparameterizing knobs does not change behavior. If two parameterizations compute the same $O(\alpha)$, penalty, and uplift, then they induce the same $\Psi$. Intuition: swap labels $\alpha\leftrightarrow \alpha_g$, $\lambda_i\leftrightarrow \lambda_{ig}$, $\beta\leftrightarrow\beta_g$; outputs and rankings are identical.
+
+\subsection{Threshold Transfer}
+When uplift changes from $\beta$ to $\beta'$, you can rescale the decision threshold to preserve accept/reject decisions (away from the hard cap):
+\begin{equation}
+\tau' = \tau\cdot (\beta/\beta').
+\end{equation}
+Example: if $\beta:1.2\to 1.5$ and $\tau=0.80$, then $\tau'=0.80\cdot(1.2/1.5)=0.64$, keeping decisions unchanged in the sub-cap region.
+
+\subsection{Sensitivity Invariants}
+Directions of change do not flip under trivial reparameterizations or threshold transfers. If $N>S$, decreasing $\alpha$ increases $\Psi$; increasing any risk reduces $\Psi$; changing $\beta$ scales sensitivities without changing signs or zero sets.
+
+\section{Policy Without a Hard Cap}
+You can remove the hard cap on \emph{belief} while keeping \emph{policy} bounded and auditable.
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Dual-channel (recommended):} Raw belief $R = \beta\,O\,\mathrm{pen}$. Policy score $\Psi = \min\{R,1\}$ or $\Psi = 1-\exp(-R)$. Gate actions on $\Psi$; use $R$ for strength.
+  \item \textbf{Uncapped with raw thresholds:} Act iff $R\ge \tau_{\text{raw}}$. Threshold transfer: if $\beta\to\beta'$, set $\tau' = \tau_{\text{raw}}\cdot(\beta'/\beta)$ to preserve decisions (previously sub-cap).
+  \item \textbf{Soft cap:} $\Psi = 1-\exp(-\gamma R)$ for $\gamma>0$; strictly increasing with diminishing returns.
+\end{itemize}
+Monotonicity is preserved. Sensitivity to $\beta$ grows linearly in $R$; mitigate via change caps on $\beta$ and versioned thresholds.
+
+\section{Composition with Rules and MCDA}
+For discrete choices, filter by rules first, score options with $\Psi(a)$, then apply a monotone MCDA aggregator $M$ over a criteria vector $c(a)=[\Psi(a),\ \text{cost}(a),\ \text{value}(a),\ldots]$. If $M$ is strictly increasing in the $\Psi$ coordinate, then gauge freedom and sub-cap threshold transfer preserve rankings induced by $M$ when other criteria are fixed.
+
+\section{Governance}
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Observable triggers:} $\alpha$ drops with canonical artifacts; $R_a,R_v$ fall with official URLs; $\beta$ rises with certification.
+  \item \textbf{Audit trail:} Sources \textrightarrow{} Hybrid \textrightarrow{} Penalty \textrightarrow{} Posterior stages report confidence components.
+  \item \textbf{Guardrails:} Nonnegative penalties and bounded policy prevent runaway uplift; version thresholds and parameter changes.
+\end{itemize}
+
+\section{Conclusions}
+Ψ provides a single, monotone, bounded decision score with transparent levers, stable sensitivities, and safe uplift. It composes cleanly with rules and MCDA and supports repeatable operations with clear governance.
+
+\section*{Acknowledgments and Notes}
+This document is provided for operational clarity and auditability. It is not legal advice.
+
+\appendix
+\section{Licensing and Distribution Guidance}\label{app:licensing}
+\subsection*{Internal vs. Public Licensing (Ψ Work)}
+\textbf{Internal (default)}: Use the Internal-Use-Only license below for private collaboration, evaluation, and development.\newline
+\textbf{Public (open) options}: For public release of selected artifacts, choose either CC0 (dedication to the public domain) for documents/datasets or GPL-3.0-only for source code derivatives, per project policy and NDA constraints.
+
+\subsection*{Paste-Ready Internal-Use License}
+\noindent\textbf{LicenseRef-Internal-Use-Only v1.0}
+\begin{lstlisting}[style=code]
+Grant: The Owner grants Collaborators a non-exclusive, non-transferable, revocable, royalty-free license to use, reproduce, and modify this work solely for internal evaluation and collaboration on this project.
+
+Restrictions: No distribution outside the collaboration; no sublicensing; retain copyright and license notices; treat non-public materials as confidential.
+
+Contributions: Each Contributor grants the Owner a non-exclusive, perpetual, irrevocable license to use and relicense their contributions for the project. Contributors represent they have the right to contribute.
+
+IP/Patents: No patent license is granted beyond what is necessary to use the contribution internally. No trademark rights.
+
+Termination: This license terminates automatically upon breach or upon written notice. On termination, stop all use except archival records.
+
+No Warranty / No Liability: The work is provided “AS IS” without warranties. To the extent permitted by law, the Owner disclaims liability.
+
+Governing Law: [Your jurisdiction].
+\end{lstlisting}
+
+\subsection*{Public Licensing Options}
+\begin{itemize}[leftmargin=*]
+  \item \textbf{CC0 1.0 (recommended for text/figures/datasets):} Dedicates content to the public domain. Add a clear notice in the README and file headers.
+  \item \textbf{GPL-3.0-only (recommended for code):} Ensures derivatives remain open under copyleft. Provide a top-level LICENSE file and SPDX headers in every source file.
+\end{itemize}
+
+\subsection*{Notices}
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Copyright:} \textcopyright{} 2025 Jumping Quail Solutions. All rights reserved.
+  \item \textbf{Classification:} Confidential — Internal Use Only.
+  \item \textbf{Policy:} GPLv3 for public code releases where approved; otherwise internal-use only per above and applicable NDAs.
+\end{itemize}
+
+\subsection*{SPDX File Headers (Examples)}
+Include one header at the top of each file using the appropriate comment syntax.
+
+\noindent\textbf{Java}
+\begin{lstlisting}[style=code]
+/*
+ * SPDX-License-Identifier: LicenseRef-Internal-Use-Only
+ * Copyright (c) 2025 Jumping Quail Solutions
+ */
+\end{lstlisting}
+
+\noindent\textbf{Swift}
+\begin{lstlisting}[style=code]
+// SPDX-License-Identifier: LicenseRef-Internal-Use-Only
+// Copyright (c) 2025 Jumping Quail Solutions
+\end{lstlisting}
+
+\noindent\textbf{LaTeX}
+\begin{lstlisting}[style=code]
+% SPDX-License-Identifier: LicenseRef-Internal-Use-Only
+% Copyright (c) 2025 Jumping Quail Solutions
+\end{lstlisting}
+
+\noindent\textbf{Markdown}
+\begin{lstlisting}[style=code]
+<!-- SPDX-License-Identifier: LicenseRef-Internal-Use-Only -->
+<!-- Copyright (c) 2025 Jumping Quail Solutions -->
+\end{lstlisting}
+
+\noindent\textbf{Python}
+\begin{lstlisting}[style=code]
+# SPDX-License-Identifier: LicenseRef-Internal-Use-Only
+# Copyright (c) 2025 Jumping Quail Solutions
+\end{lstlisting}
+
+\subsection*{Switching to Public Releases}
+For selected files slated for public release:
+\begin{itemize}[leftmargin=*]
+  \item Replace the SPDX tag with \texttt{SPDX-License-Identifier: CC0-1.0} (text/data) or \texttt{SPDX-License-Identifier: GPL-3.0-only} (code).
+  \item Add or update top-level LICENSE and a \texttt{NOTICE} file listing third-party attributions.
+  \item Version and record the threshold transfer (if any) and parameter changes tied to the release.
+\end{itemize}
+
+\section*{References}
+% If a bibliography is desired, enable the following two lines and run BibTeX.
+% \bibliographystyle{abbrv}
+% \bibliography{references,citations}
+
+\end{document}
