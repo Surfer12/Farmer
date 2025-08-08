@@ -373,6 +373,30 @@ SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
     - [ ] invariants/contracts (ranges, determinism) and complexity notes
     - [ ] error handling semantics (degenerate normalization, floors)
     - [ ] unit tests for all public methods
+  - [ ] Policy & Governance: Uncapped belief and gating (R vs Ψ)
+    - [ ] Document three safe patterns without a hard cap: dual-channel (recommended), raw-threshold, smooth soft-cap; include formulas and tiny examples
+    - [ ] Ranking invariance: proof sketch and checks under monotone MCDA when swapping Ψ variants (gauge/threshold invariance)
+    - [ ] Threshold transfer guidance: β→β′ implies τ′ = τ·(β/β′) in sub-cap; include raw-threshold governance for τ_raw
+    - [ ] Operational guidance: per-step Δβ caps; versioned thresholds; keep dashboards bounded via Ψ mapping
+    - [ ] Tests: MCDA ranking invariance across patterns; threshold-transfer equivalence in sub-cap; monotonicity preserved
+
+  - [ ] MCDA Ψ‑monotonicity with scale coherence (doc + examples)
+    - Assumptions to surface (make explicit)
+      - Fixed weights w and fixed normalization scheme that is monotone and scale‑coherent in Ψ (e.g., min–max or vector normalization applied uniformly).
+      - No data‑dependent reweighting tied to Ψ’s variance/scale across options after scaling (else invariance may break).
+      - All compared Ψ values remain sub‑cap when applying threshold transfer; saturation can break pure scaling.
+    - Edge cases to flag
+      - Outranking methods (ELECTRE/PROMETHEE): absolute preference/indifference thresholds depend on scale. If Ψ is scaled (β changes), co‑scale those thresholds or invariance fails.
+      - Mixed caps: if some Ψ hit the cap and others don’t, scaling equivalence does not hold; state this as an exclusion.
+      - Per‑run re‑normalization that is non‑monotone (e.g., z‑scores) breaks the “strictly increasing in Ψ” premise.
+    - Suggested wording tweaks (minimal)
+      - After “strictly increasing in Ψ,” add: “with weights and any normalization fixed and monotone in Ψ, and independent of Ψ’s absolute scale.”
+      - After threshold‑transfer bullet, add: “provided no option crosses the cap in either parameterization.”
+      - Add one sentence: “For outranking methods with absolute q/p thresholds, scale q/p with β to preserve decisions.”
+    - Optional tiny example
+      - Note: “If Ψ′ = k·Ψ on the sub‑cap region with k>0, WSM and TOPSIS rankings are invariant holding other criteria fixed (given standard normalizations), satisfying the theorem’s premise.”
+    - Formal statement
+      - Good as written. Consider naming the condition “MCDA Ψ‑monotonicity with scale coherence” to bundle the practical assumptions above.
   - [ ] Caching guide: in-memory LRU + TTL + max-weight + disk layer, configuration, and ops
   - [ ] Disk format doc for `DatasetPreparedDiskStore` and compatibility/versioning policy
     - [x] sanity unit tests for PsiMcda methods (determinism, ranges, known cases)
