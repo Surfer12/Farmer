@@ -7,13 +7,17 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 /**
- * JSON Lines file sink with size/time-based rotation. Non-blocking via bounded executor.
+ * JSON Lines file sink with size/time-based rotation.
+ *
+ * <p>Thread-safe and non-blocking: writes are dispatched to a bounded executor.
+ * Rotation occurs when either file size exceeds {@code maxBytes} or file age
+ * exceeds {@code maxMillis}. Each line is a single JSON object describing an
+ * {@link AuditRecord}. No external JSON library is required.
  */
 public final class FileAuditSink implements AuditSink {
     private final File directory;
@@ -26,6 +30,14 @@ public final class FileAuditSink implements AuditSink {
     private volatile File currentFile;
     private volatile long createdAtMs;
 
+    /**
+     * Creates a file sink.
+     * @param directory output directory (created if missing)
+     * @param filePrefix prefix for rotated files
+     * @param maxBytes maximum file size before rotation; defaults to 10MB if <=0
+     * @param maxMillis maximum file age before rotation; defaults to 1h if <=0
+     * @param maxQueue maximum queued writes before back-pressure via executor rejection
+     */
     public FileAuditSink(File directory, String filePrefix, long maxBytes, long maxMillis, int maxQueue) {
         this.directory = Objects.requireNonNull(directory, "directory");
         this.filePrefix = Objects.requireNonNullElse(filePrefix, "audit");
@@ -48,6 +60,9 @@ public final class FileAuditSink implements AuditSink {
         return new ThreadPoolExecutorCompat(1, 2, 60, TimeUnit.SECONDS, queue, tf);
     }
 
+    /**
+     * Rotates the output file, closing the previous writer if open.
+     */
     private synchronized void rotate() {
         closeQuietly();
         createdAtMs = System.currentTimeMillis();
@@ -60,6 +75,9 @@ public final class FileAuditSink implements AuditSink {
         }
     }
 
+    /**
+     * Flushes and closes the current writer, ignoring secondary IO errors.
+     */
     private synchronized void closeQuietly() {
         if (writer != null) {
             try { writer.flush(); writer.close(); } catch (IOException ignored) {}
@@ -67,6 +85,9 @@ public final class FileAuditSink implements AuditSink {
         }
     }
 
+    /**
+     * Writes a single line and triggers rotation if thresholds are exceeded.
+     */
     private synchronized void writeLine(String line) throws IOException {
         if (writer == null) rotate();
         writer.write(line);
@@ -89,6 +110,9 @@ public final class FileAuditSink implements AuditSink {
         }, executor);
     }
 
+    /**
+     * Serializes a record to a compact JSON object.
+     */
     private static String toJson(AuditRecord rec) {
         String id = JsonUtil.escape(rec.id());
         String ts = JsonUtil.toIso8601(rec.timestamp());
@@ -97,7 +121,7 @@ public final class FileAuditSink implements AuditSink {
 }
 
 /**
- * Minimal compatibility class to avoid depending on java.util.concurrent.ThreadPoolExecutor directly in this snippet.
+ * Minimal compatibility class to avoid a hard dependency surface in this module.
  */
 final class ThreadPoolExecutorCompat extends java.util.concurrent.ThreadPoolExecutor {
     ThreadPoolExecutorCompat(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit,

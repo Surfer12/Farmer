@@ -57,7 +57,7 @@
 
 ### Documentation
 - [ ] **API documentation**
-  - [ ] JavaDoc for all public APIs
+  - [x] JavaDoc for all public APIs
   - [ ] User guide with examples
   - [ ] Mathematical model documentation
   - [ ] Architecture diagrams
@@ -109,6 +109,8 @@
 - [x] Core `HierarchicalBayesianModel` structure
 - [x] Audit system interfaces and basic implementation
 - [x] Console audit sink implementation
+- [x] Package consolidation to `qualia` and removal of legacy `core.java`
+- [x] Detailed JavaDoc across public APIs
 
 ---
 

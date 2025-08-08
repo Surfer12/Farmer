@@ -3,7 +3,14 @@ package qualia;
 import java.util.Objects;
 
 /**
- * Represents a single claim with its features and verification outcome.
+ * Immutable data record representing a single claim with its features and
+ * verification outcome.
+ *
+ * <p>Field semantics:
+ * - {@code id}: application-unique identifier
+ * - {@code isVerifiedTrue}: observed label for supervision/evaluation
+ * - {@code riskAuthenticity}, {@code riskVirality}: non-negative risk indicators
+ * - {@code probabilityHgivenE}: P(H|E) in [0,1]
  */
 public record ClaimData(
         String id,

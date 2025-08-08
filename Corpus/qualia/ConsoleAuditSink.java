@@ -3,11 +3,17 @@ package qualia; // TODO: move to UOIFCore
 import java.util.concurrent.CompletableFuture;
 
 /**
- * Console implementation of AuditSink.
+ * Development {@link AuditSink} that logs records to standard output.
+ *
+ * <p>Non-blocking: uses a default async execution for printing.
  */
 public final class ConsoleAuditSink implements AuditSink {
     private final AuditOptions options;
 
+    /**
+     * Creates a console sink with default behavior controlled by {@code options}.
+     * @param options default options applied when per-call opts are null
+     */
     public ConsoleAuditSink(AuditOptions options) {
         this.options = options;
     }

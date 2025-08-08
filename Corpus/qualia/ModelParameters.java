@@ -1,7 +1,11 @@
-package jumping.qualia;
+package qualia;
 
 /**
- * Represents a single sample of model parameters from the posterior.
+ * Immutable sample of model parameters.
+ *
+ * <p>Invariants:
+ * - S, N, α ∈ [0,1]
+ * - β > 0
  */
 public record ModelParameters(
         double S,

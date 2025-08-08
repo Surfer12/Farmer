@@ -8,15 +8,11 @@ package qualia;
  */
 
 /**
- * Hierarchical Bayesian model (Java port of HB.swift).
+ * Historical Java shim mirroring the Swift HB module.
  *
- * <p>Implements the same data model and core equations:
- * O(α) = α·S + (1−α)·N,
- * pen = exp(−[λ1·R_a + λ2·R_v]),
- * P(H|E, β) = min{β·P(H|E), 1},
- * Ψ(x) = O · pen · P(H|E, β).
- *
- * <p>Records are used for immutability. The inference method is a placeholder.
+ * <p>Left as a placeholder to preserve source compatibility. All model logic
+ * lives in {@link HierarchicalBayesianModel}, {@link ModelParameters},
+ * {@link ModelPriors}, and {@link ClaimData}.
  */
 public final class HB {
     // This class is now a placeholder. All model logic has been refactored into separate files.

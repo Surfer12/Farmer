@@ -1,7 +1,10 @@
-package jumping.qualia;
+package qualia;
 
 /**
- * Holds the hyperparameters for the prior distributions.
+ * Hyperparameters for prior distributions.
+ *
+ * <p>Intended as an immutable container for Beta, LogNormal, and Gamma shapes
+ * and scales used by the hierarchical model.
  */
 public record ModelPriors(
         double s_alpha,
@@ -19,6 +22,9 @@ public record ModelPriors(
         double lambda1,
         double lambda2
 ) {
+    /**
+     * Returns a reasonable set of weakly-informative defaults.
+     */
     public static ModelPriors defaults() {
         return new ModelPriors(
                 1.0, 1.0, // S ~ Beta(1,1)

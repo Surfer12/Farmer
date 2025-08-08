@@ -8,12 +8,14 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
- * HTTP sink that POSTs JSON with retry/backoff. Non-blocking using async HttpClient.
+ * HTTP {@link AuditSink} that POSTs JSON with retry and exponential backoff.
+ *
+ * <p>Non-blocking using Java's async {@link HttpClient}. The sink retries
+ * transient failures up to {@code maxRetries}, doubling backoff each attempt
+ * up to a small cap.
  */
 public final class HttpAuditSink implements AuditSink {
     private final HttpClient client;
@@ -21,6 +23,12 @@ public final class HttpAuditSink implements AuditSink {
     private final int maxRetries;
     private final Duration initialBackoff;
 
+    /**
+     * Creates an HTTP sink.
+     * @param endpoint target URI for POST requests
+     * @param maxRetries maximum number of retries on failure
+     * @param initialBackoff initial backoff duration; defaults to 200ms if null
+     */
     public HttpAuditSink(URI endpoint, int maxRetries, Duration initialBackoff) {
         this.endpoint = Objects.requireNonNull(endpoint, "endpoint");
         this.maxRetries = Math.max(0, maxRetries);
@@ -40,6 +48,9 @@ public final class HttpAuditSink implements AuditSink {
         return sendWithRetry(json, 0, initialBackoff);
     }
 
+    /**
+     * Sends a JSON payload with retry and backoff.
+     */
     private CompletableFuture<Void> sendWithRetry(String json, int attempt, Duration backoff) {
         HttpRequest req = HttpRequest.newBuilder(endpoint)
                 .timeout(Duration.ofSeconds(5))
@@ -66,16 +77,25 @@ public final class HttpAuditSink implements AuditSink {
                 });
     }
 
+    /**
+     * Exponential backoff with a bounded upper limit.
+     */
     private static Duration nextBackoff(Duration current) {
         long next = Math.min(current.toMillis() * 2, TimeUnit.SECONDS.toMillis(5));
         return Duration.ofMillis(next);
     }
 
+    /**
+     * Creates a future that completes after the given delay.
+     */
     private static CompletableFuture<Void> delayed(Duration d) {
         return CompletableFuture.runAsync(() -> {}, CompletableFuture.delayedExecutor(d.toMillis(), TimeUnit.MILLISECONDS))
                 .thenApply(v -> null);
     }
 
+    /**
+     * Serializes a record to JSON.
+     */
     private static String toJson(AuditRecord rec) {
         String id = JsonUtil.escape(rec.id());
         String ts = JsonUtil.toIso8601(rec.timestamp());
