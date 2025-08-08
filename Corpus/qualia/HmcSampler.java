@@ -141,8 +141,8 @@ final class HmcSampler {
         // Mass diag initialised to ones
         double[] massDiag = new double[] {1.0, 1.0, 1.0, 1.0};
 
-        int findWindow = Math.max(10, warmupIters / 10);
-        int adaptWindow = Math.max(10, warmupIters / 2);
+        int findWindow = Math.max(10, (int) Math.round(warmupIters * 0.15));
+        int adaptWindow = Math.max(10, (int) Math.round(warmupIters * 0.60));
         int massWindow = Math.max(10, warmupIters - findWindow - adaptWindow);
         int phase1End = findWindow;
         int phase2End = findWindow + adaptWindow;
@@ -152,7 +152,7 @@ final class HmcSampler {
         double h = 0.0;
         double t0 = 10.0;
         double kappa = 0.75;        // weights decay
-        double gamma = 0.5;          // shrink factor (higher -> smaller updates)
+        double gamma = 0.25;         // shrink factor (higher -> smaller updates)
         double logEpsBar = 0.0;
         int tCount = 0;
 

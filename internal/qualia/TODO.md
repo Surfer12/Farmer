@@ -5,6 +5,13 @@ SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
 
 ## 🚀 High Priority
 
+### Architecture & DI
+- [x] Introduce `PsiModel` interface and make `HierarchicalBayesianModel` implement it
+- [x] Add simple DI: `ModelFactory` and `ServiceLocator` for wiring
+- [ ] Introduce abstract base classes where useful (e.g., `AbstractAuditSink`, `AbstractModel`)
+- [ ] DI configuration via environment: select `AuditSink` (console/file/http/jdbc) and params
+- [ ] Unit tests: factory creation paths and service locator bindings
+
 ### Core Model Implementation
 - [ ] **Complete MCMC inference in `HierarchicalBayesianModel`**
   - [ ] Integrate HMC/NUTS sampler library (e.g., Stan4j, JAGS Java bindings)
@@ -34,6 +41,7 @@ SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
 - [ ] **Comprehensive test suite**
   - [ ] Unit tests for all model components
   - [ ] Integration tests for audit pipeline
+  - [ ] DI factory/service locator unit tests (construction, overrides, error paths)
   - [ ] Gradient check: `gradientLogPosterior` vs. finite-diff (tolerance 1e-5)
   - [ ] HMC regression: acceptance in target band under default seeds
   - [ ] Diagnostics: R̂ close to 1 and ESS reasonable on synthetic data
@@ -71,6 +79,8 @@ SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
   - [ ] Environment variable support
   - [ ] Runtime parameter tuning
   - [ ] Model versioning
+  - [ ] DI from env: `AUDIT_SINK={console|file|http|jdbc}`, `AUDIT_DIR`, `AUDIT_HTTP_URL`, `JDBC_URL`, etc.
+  - [ ] Provide sane defaults and validation for DI env settings
   - [ ] Cache knobs: PREP cache `maxEntries`, `ttl`, `maxWeightBytes`, disk directory
   - [ ] Feature flags: enable/disable disk layer; enable/disable in-memory layer
   - [ ] Sanity clamps and defaults for cache settings
