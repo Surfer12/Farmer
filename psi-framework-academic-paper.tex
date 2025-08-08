@@ -145,6 +145,99 @@ Two confidence frameworks $\score$ and $\Phi$ differ beyond trivial reparameteri
 
 These theorems establish that the Ψ framework's core structure (linear blending + exponential penalties + capped uplift) is uniquely determined by natural axioms, while deviations from this structure produce genuinely different—and potentially less desirable—behavior.
 
+\section{Why the Trivial Bijection Matters: Gauge Freedom, Threshold Transfer, and Sensitivity Invariants}
+
+\subsection{Notation and Guardrailed Score}
+Let $S,N\in[0,1]$ be internal and canonical signal strengths; $\alpha\in[0,1]$ the allocation lever; $r=(R_a,R_v)\in[0,1]^2$ risks with positive weights $(\lambda_1,\lambda_2)$; and $\beta\ge 1$ an uplift factor with a hard cap at $1$. Define
+\begin{align*}
+O(\alpha) &= \alpha S + (1-\alpha)N, \\
+\operatorname{pen}(r) &= \exp\!\big(-[\lambda_1 R_a + \lambda_2 R_v]\big).
+\end{align*}
+The guardrailed score is
+\[
+\Psi(S,N,\alpha,r,\lambda_1,\lambda_2,\beta) = \min\{\beta\,O(\alpha)\,\operatorname{pen}(r),\,1\}.
+\]
+A second system uses parameters $(\alpha_g,\lambda_{1g},\lambda_{2g},\beta_g)$:
+\[
+\Phi = \min\Big\{\beta_g\,[\alpha_g S + (1-\alpha_g)N] \, \exp\!\big(-[\lambda_{1g}R_a + \lambda_{2g}R_v]\big),\, 1\Big\}.
+\]
+We write the sub-cap region for a parameterization $p$ as
+\[
+\mathcal{U}(p) := \{(S,N,\alpha,r) : \beta_p\,O(\alpha)\,\operatorname{pen}(r) < 1\},
+\]
+i.e., where the cap is inactive.
+
+\subsection{Concepts of Interest}
+\begin{definition}[Gauge freedom]
+Two parameterizations are gauge equivalent (trivially bijective) if there is a one-to-one renaming of levers $(\alpha,\lambda_1,\lambda_2,\beta) \leftrightarrow (\alpha_g,\lambda_{1g},\lambda_{2g},\beta_g)$ such that $\Psi \equiv \Phi$ pointwise.
+\end{definition}
+
+\begin{definition}[Threshold transfer]
+Given thresholds $\tau,\tau'\in(0,1]$ for two parameterizations, a threshold transfer is a mapping $\tau\mapsto\tau'$ such that the induced decision sets coincide on the sub-cap region:
+\[
+\{\Psi \ge \tau\}\cap \mathcal{U}(\beta) = \{\Phi \ge \tau'\}\cap \mathcal{U}(\beta_g).
+\]
+\end{definition}
+
+\begin{definition}[Sensitivity invariants]
+Directional derivatives of $\Psi$ with respect to levers $(\alpha,R_a,R_v)$ and signals $(S,N)$ that preserve sign and zero-sets under gauge equivalence and under threshold transfer on the sub-cap region.
+\end{definition}
+
+\subsection{Main Results}
+\begin{theorem}[Gauge freedom / observational equivalence]\label{thm:gauge-observational}
+If $\alpha := \alpha_g$, $\lambda_1 := \lambda_{1g}$, $\lambda_2 := \lambda_{2g}$, and $\beta := \beta_g$, then $\Psi \equiv \Phi$ for all inputs. Consequently, any two systems that differ only by such a bijection are observationally indistinguishable: they induce the same rankings and the same thresholded decisions for any common $\tau$.
+\end{theorem}
+\begin{proof}
+Under the stated identification, the affine blends, exponential penalties, and capped uplifts coincide term-by-term. Equality of the compositions is pointwise, hence identical outputs and orderings. Thresholded decisions also coincide for any $\tau$ since the functions are equal.
+\end{proof}
+
+\begin{theorem}[Threshold transfer]\label{thm:tt-expanded}
+Fix $\tau\in(0,1]$ for $\Psi$ with uplift $\beta$ and $\tau'\in(0,1]$ for $\Phi$ with uplift $\beta_g$. On the common sub-cap region $\mathcal{U}(\beta)\cap\mathcal{U}(\beta_g)$, setting $\tau' = \tau\cdot (\beta/\beta_g)$ yields decision equivalence:
+\[
+\{\Psi \ge \tau\}\cap\mathcal{U}(\beta)\cap\mathcal{U}(\beta_g) = \{\Phi \ge \tau'\}\cap\mathcal{U}(\beta)\cap\mathcal{U}(\beta_g).
+\]
+Moreover, if one side saturates at the cap while the other remains sub-cap, the accepting set of the saturated side weakly contains that of the sub-cap side.
+\end{theorem}
+\begin{proof}
+On $\mathcal{U}(\beta)\cap\mathcal{U}(\beta_g)$ the caps are inactive, so $\Psi = \beta\,O\,\operatorname{pen}$ and $\Phi = \beta_g\,O\,\operatorname{pen}$. Then
+\[
+\Psi \ge \tau \iff \beta\,O\,\operatorname{pen} \ge \tau \iff O\,\operatorname{pen} \ge \tau/\beta \iff \beta_g\,O\,\operatorname{pen} \ge \tau\,\tfrac{\beta_g}{\beta} \iff \Phi \ge \tau'\,.
+\]
+If saturation occurs on one side, replacing its value by $1$ only enlarges its acceptance set, giving weak containment.
+\end{proof}
+
+\begin{theorem}[Sensitivity invariants]\label{thm:sensitivity-invariants}
+On the sub-cap region for a given parameterization,
+\[
+\frac{\partial \Psi}{\partial \alpha} = (S-N)\,\beta\,\operatorname{pen},\quad
+\frac{\partial \Psi}{\partial R_a} = -\beta\,O\,\lambda_1\,\operatorname{pen},\quad
+\frac{\partial \Psi}{\partial R_v} = -\beta\,O\,\lambda_2\,\operatorname{pen}.
+\]
+Under gauge freedom (Theorem~\ref{thm:gauge-observational}), these derivatives coincide pointwise. If only the uplift differs ($\beta\to\beta_g$), derivatives scale by the constant factor $\beta_g/\beta>0$, preserving (i) sign, (ii) zero-sets, and (iii) relative magnitudes across inputs. Therefore, monotonicity directions and stability properties are invariant under bijection, and preserved under threshold transfer.
+\end{theorem}
+\begin{proof}
+Differentiate $\Psi = \beta\,O(\alpha)\,\operatorname{pen}(r)$ in the sub-cap region. The expressions follow by product and chain rules. Under bijection, $\beta,O,\operatorname{pen}$ are identical functions, hence derivatives match. If only $\beta$ changes to $\beta_g$, each derivative is multiplied by $\beta_g/\beta>0$, preserving sign and zeros; relative ratios across inputs are also preserved. Threshold transfer does not alter derivatives; it only rescales the decision boundary, leaving sensitivity structure intact on the sub-cap region.
+\end{proof}
+
+\subsection{Saturation Boundary and Safe Containment}
+\begin{lemma}[Saturation boundary]\label{lem:saturation}
+The cap activates exactly on the set $\partial\mathcal{U}(\beta) = \{(S,N,\alpha,r) : \beta\,O\,\operatorname{pen} = 1\}$. Crossing into saturation renders $\Psi\equiv 1$ locally, so directional derivatives vanish in the saturated region.
+\end{lemma}
+\begin{proof}
+By definition of $\min\{\cdot,1\}$: equality at $1$ triggers the cap. Beyond the boundary, $\Psi=1$ in a neighborhood, hence derivatives are $0$ where defined.
+\end{proof}
+
+\begin{corollary}[Safe containment at the cap]\label{cor:safe-containment}
+If $\beta\,O\,\operatorname{pen} \ge 1$ and $\beta_g\,O\,\operatorname{pen} < 1$, then $\{\Psi \ge \tau\}$ weakly contains $\{\Phi \ge \tau'\}$ for any $\tau\le 1$, since $\Psi=1$ accepts all points while $\Phi<1$ filters by $\tau'$.
+\end{corollary}
+
+\subsection{What This Means in Practice}
+\begin{itemize}[leftmargin=2em]
+  \item \textbf{Gauge freedom}: Parameter renames (and equivalent defaults) do not change outcomes; focus on structure (affine + exponential + cap).
+  \item \textbf{Threshold transfer}: Adjust thresholds when $\beta$ changes to preserve decisions in sub-cap regimes; prevents churn from re-calibration.
+  \item \textbf{Sensitivity invariants}: Signs/zeros of derivatives are stable; tuning is predictable; monotonicity with canonical evidence is retained.
+\end{itemize}
+
 \section{Computational Validation}
 
 \subsection{Experimental Design}
