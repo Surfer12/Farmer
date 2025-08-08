@@ -42,6 +42,14 @@ JSON keys: `t`, `x`, `v` (or state components), `psi`, `h`, `eps_rk4`, `eps_tayl
 - **trust_region_radius** (`h_trust`): cubic root bound h_trust = cbrt(ε_total / (2·max(κ,ε))): Taylor path only if h ≤ h_trust.
 - **fast path**: Euler fallback when time budget exceeded; metrics: `unified_fastpath_total`, `unified_fastpath_extra_err_ppm`.
 
+#### Curvature estimation method (NEW)
+- **curvature_kappa_estimator**: estimator for Ollivier–Ricci curvature’s W1 distance.
+  - Allowed: `sinkhorn` (entropic-regularized OT; fast, approximate), `network_simplex` (exact W1 via min-cost flow; slower).
+  - Default: `sinkhorn`.
+  - Replaces: prior implicit/unspecified estimator for `curvature_kappa`; emit this key when logging κ to document the method used.
+
+JSON keys (optional): `curvature_kappa_estimator` with values `sinkhorn` or `network_simplex`.
+
 ### HMC/NUTS-related
 - **ε (epsilon)** (`step_size`): leapfrog integrator step size.
 - **mass_diag**: diagonal elements of the mass matrix (preconditioning) used for momenta.
