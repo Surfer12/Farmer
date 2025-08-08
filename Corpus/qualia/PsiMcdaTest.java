@@ -114,7 +114,7 @@ public final class PsiMcdaTest {
     }
 
     static boolean testTieBreak() {
-        class A { final double u, psi, cost; A(double u,double p,double c){u=u; this.psi=p; this.cost=c;} }
+        class A { final double u, psi, cost; A(double u,double p,double c){ this.u=u; this.psi=p; this.cost=c; } }
         List<A> xs = Arrays.asList(new A(1.0, 0.7, 5.0), new A(0.9, 0.9, 1.0));
         Optional<A> best = PsiMcda.tieBreak(xs, a -> a.u, a -> a.psi, a -> a.cost);
         return best.isPresent() && close(best.get().u, 1.0);
