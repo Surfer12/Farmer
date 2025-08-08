@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.DoubleAdder;
  * <p>Thread-safety: stateless aside from immutable {@link ModelPriors}; safe for
  * concurrent use.
  */
-public final class HierarchicalBayesianModel {
+public final class HierarchicalBayesianModel implements PsiModel {
     private final ModelPriors priors;
     private final int parallelThreshold;
 
@@ -123,19 +123,39 @@ public final class HierarchicalBayesianModel {
         int size() { return pen.length; }
     }
 
-    // In-memory LRU cache for prepared datasets with TTL and stats.
-    // Keyed by dataset identity+content hash+params+algoVersion fingerprint.
+    // Cache configuration and layers
+    private static final CacheConfig CACHE_CFG = CacheConfig.fromEnv();
     private static final SimpleCaffeineLikeCache<DatasetCacheKey, Prepared> PREP_CACHE =
-            new SimpleCaffeineLikeCache<>(256, java.time.Duration.ofHours(6), true, 128L * 1024L * 1024L,
-                    prep -> prep == null ? 0L : estimatePreparedWeight(prep));
-    // Optional disk layer below the in-memory cache (configure directory as needed)
-    private static final DatasetPreparedDiskStore DISK_STORE = new DatasetPreparedDiskStore(new java.io.File("prep-cache"));
+            CACHE_CFG.memoryEnabled ?
+                    new SimpleCaffeineLikeCache<>(
+                            CACHE_CFG.maxEntries,
+                            CACHE_CFG.ttlDuration(),
+                            true,
+                            CACHE_CFG.maxWeightBytes,
+                            prep -> prep == null ? 0L : estimatePreparedWeight(prep)
+                    ) : null;
+    private static final DatasetPreparedDiskStore DISK_STORE =
+            CACHE_CFG.diskEnabled ? new DatasetPreparedDiskStore(new java.io.File(CACHE_CFG.diskDir)) : null;
 
     private static long estimatePreparedWeight(Prepared p) {
         if (p == null) return 0L;
         // Approximate: 3 arrays of length n: double(8B), double(8B), boolean(1B ~ padded but approx)
         long n = p.size();
         return n * (8L + 8L + 1L);
+    }
+
+    /** Export a snapshot of cache stats to MetricsRegistry gauges. No-op if disabled. */
+    public static void exportCacheStats() {
+        MetricsRegistry mr = MetricsRegistry.get();
+        if (PREP_CACHE != null) {
+            var s = PREP_CACHE.stats();
+            mr.setGauge("prep_cache_hits", s.hitCount);
+            mr.setGauge("prep_cache_misses", s.missCount);
+            mr.setGauge("prep_cache_load_success", s.loadSuccessCount);
+            mr.setGauge("prep_cache_load_failure", s.loadFailureCount);
+            mr.setGauge("prep_cache_evictions", s.evictionCount);
+            mr.setGauge("prep_cache_total_load_time_ns", s.totalLoadTimeNanos);
+        }
     }
 
     Prepared precompute(List<ClaimData> dataset) {
@@ -146,18 +166,31 @@ public final class HierarchicalBayesianModel {
                 Long.toHexString(Double.doubleToLongBits(priors.lambda2()));
         DatasetCacheKey key = new DatasetCacheKey(datasetId, datasetHash, paramsHash, "precompute-v1");
 
+        // Decide flow based on enabled layers
+        final boolean mem = PREP_CACHE != null;
+        final boolean disk = DISK_STORE != null;
+
         try {
-            return PREP_CACHE.get(key, k -> {
-                // First try disk layer
-                Prepared fromDisk = DISK_STORE.readIfPresent(k);
-                if (fromDisk != null) return fromDisk;
-                // Compute, then write-through to disk
+            if (mem) {
+                return PREP_CACHE.get(key, k -> {
+                    if (disk) {
+                        Prepared fromDisk = DISK_STORE.readIfPresent(k);
+                        if (fromDisk != null) return fromDisk;
+                    }
+                    Prepared fresh = computePrepared(dataset);
+                    if (disk) { try { DISK_STORE.write(k, fresh); } catch (Exception ignored) {} }
+                    return fresh;
+                });
+            } else {
+                if (disk) {
+                    Prepared fromDisk = DISK_STORE.readIfPresent(key);
+                    if (fromDisk != null) return fromDisk;
+                }
                 Prepared fresh = computePrepared(dataset);
-                try { DISK_STORE.write(k, fresh); } catch (Exception ignored) {}
+                if (disk) { try { DISK_STORE.write(key, fresh); } catch (Exception ignored) {} }
                 return fresh;
-            });
+            }
         } catch (Exception e) {
-            // Fallback to direct compute on cache failure
             return computePrepared(dataset);
         }
     }

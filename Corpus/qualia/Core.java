@@ -85,8 +85,9 @@ public final class Core {
             dataset.add(new ClaimData(id, y, ra, rv, pHe));
         }
 
-        // 2) Model and MCMC samples
-        HierarchicalBayesianModel model = new HierarchicalBayesianModel();
+        // 2) Model and MCMC samples (via DI)
+        ServiceLocator sl = ServiceLocator.builder().build();
+        PsiModel model = sl.psiModel(ModelPriors.defaults(), 2048);
         int sampleCount = 60; // keep small for demo speed
         List<ModelParameters> samples = model.performInference(dataset, sampleCount);
 
@@ -125,7 +126,8 @@ public final class Core {
                     Math.abs(rng.nextGaussian()) * 0.3, Math.min(1.0, Math.max(0.0, 0.5 + 0.2 * rng.nextGaussian()))));
         }
 
-        HierarchicalBayesianModel model = new HierarchicalBayesianModel();
+        ServiceLocator sl = ServiceLocator.builder().build();
+        PsiModel model = sl.psiModel(ModelPriors.defaults(), 2048);
         RmalaSampler sampler = new RmalaSampler(model, dataset);
 
         // constant step size baseline policy
@@ -159,7 +161,8 @@ public final class Core {
                     Math.min(1.0, Math.max(0.0, 0.5 + 0.2 * rng.nextGaussian()))));
         }
 
-        HierarchicalBayesianModel model = new HierarchicalBayesianModel();
+        ServiceLocator sl = ServiceLocator.builder().build();
+        HierarchicalBayesianModel model = (HierarchicalBayesianModel) sl.psiModel(ModelPriors.defaults(), 2048);
         HmcSampler hmc = new HmcSampler(model, dataset);
 
         // Unconstrained z0 corresponding to params ~ [0.7, 0.6, 0.5, 1.0]

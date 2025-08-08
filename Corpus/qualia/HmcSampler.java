@@ -44,6 +44,25 @@ final class HmcSampler {
         }
     }
 
+    public static final class AdaptiveResult {
+        public final List<ModelParameters> samples;
+        public final double acceptanceRate;
+        public final double tunedStepSize;
+        public final double[] massDiag;
+        public final int divergenceCount;
+        public AdaptiveResult(List<ModelParameters> samples,
+                              double acceptanceRate,
+                              double tunedStepSize,
+                              double[] massDiag,
+                              int divergenceCount) {
+            this.samples = samples;
+            this.acceptanceRate = acceptanceRate;
+            this.tunedStepSize = tunedStepSize;
+            this.massDiag = massDiag;
+            this.divergenceCount = divergenceCount;
+        }
+    }
+
     /** Samples using HMC with identity mass matrix. */
     public Result sample(int totalIters,
                          int burnIn,
@@ -58,10 +77,11 @@ final class HmcSampler {
         List<ModelParameters> kept = new ArrayList<>();
         int accepted = 0;
 
+        double[] massDiag = new double[] {1.0, 1.0, 1.0, 1.0};
         for (int iter = 0; iter < totalIters; iter++) {
             // Momentum p ~ N(0, I)
             double[] p = new double[4];
-            for (int i = 0; i < 4; i++) p[i] = rng.nextGaussian();
+            for (int i = 0; i < 4; i++) p[i] = rng.nextGaussian() * Math.sqrt(massDiag[i]);
 
             // Cache current state
             double[] zCur = z.clone();
@@ -69,7 +89,7 @@ final class HmcSampler {
 
             // Compute initial grad and Hamiltonian
             double logT0 = logTarget(z);
-            double H0 = -logT0 + 0.5 * dot(p, p);
+            double H0 = -logT0 + 0.5 * dotInvMass(p, massDiag);
 
             // Leapfrog
             double[] grad = gradLogTarget(z);
@@ -77,7 +97,7 @@ final class HmcSampler {
                 // p_{t+1/2} = p_t + (ε/2) * ∇ logTarget(z_t)
                 axpy(stepSize * 0.5, grad, p);
                 // z_{t+1} = z_t + ε * p_{t+1/2}
-                axpy(stepSize, p, z);
+                axpyWithInvMass(stepSize, p, massDiag, z);
                 // p_{t+1} = p_{t+1/2} + (ε/2) * ∇ logTarget(z_{t+1})
                 grad = gradLogTarget(z);
                 axpy(stepSize * 0.5, grad, p);
@@ -85,7 +105,7 @@ final class HmcSampler {
 
             // Metropolis accept
             double logT1 = logTarget(z);
-            double H1 = -logT1 + 0.5 * dot(p, p);
+            double H1 = -logT1 + 0.5 * dotInvMass(p, massDiag);
             double acceptProb = Math.min(1.0, Math.exp(H0 - H1));
             if (rng.nextDouble() < acceptProb) {
                 accepted++;
@@ -167,8 +187,14 @@ final class HmcSampler {
     private static void axpy(double a, double[] x, double[] y) {
         for (int i = 0; i < x.length; i++) y[i] += a * x[i];
     }
+    private static void axpyWithInvMass(double eps, double[] p, double[] massDiag, double[] z) {
+        for (int i = 0; i < p.length; i++) z[i] += eps * (p[i] / Math.max(1e-12, massDiag[i]));
+    }
     private static double dot(double[] a, double[] b) {
         double s = 0.0; for (int i = 0; i < a.length; i++) s += a[i] * b[i]; return s;
+    }
+    private static double dotInvMass(double[] p, double[] massDiag) {
+        double s = 0.0; for (int i = 0; i < p.length; i++) s += (p[i] * p[i]) / Math.max(1e-12, massDiag[i]); return s;
     }
 }
 

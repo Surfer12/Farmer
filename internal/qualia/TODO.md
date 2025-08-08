@@ -42,6 +42,12 @@ SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
   - [ ] Property-based testing with QuickCheck-style library
   - [ ] Tests for VotingPolicy (override precedence, weighted majorities, ties)
   - [ ] Unit tests for AgentPresets rule stacks
+  - [ ] Prepared-cache unit tests: LRU eviction order, TTL expiry, maxEntries enforcement
+  - [ ] Weight-based eviction tests with custom weigher
+  - [ ] Disk store round-trip: write/read of `Prepared` and header/version checks
+  - [ ] Disk corruption/partial-file handling: fallback to compute and re-write
+  - [ ] Concurrency: single-flight ensures one compute under load (stress with threads)
+  - [ ] Integration: read-through/write-back path exercised via `precompute(...)` and stats validated
 
 ## 🔧 Medium Priority
 
@@ -65,6 +71,9 @@ SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
   - [ ] Environment variable support
   - [ ] Runtime parameter tuning
   - [ ] Model versioning
+  - [ ] Cache knobs: PREP cache `maxEntries`, `ttl`, `maxWeightBytes`, disk directory
+  - [ ] Feature flags: enable/disable disk layer; enable/disable in-memory layer
+  - [ ] Sanity clamps and defaults for cache settings
 
 ## 📊 Low Priority
 
@@ -75,6 +84,8 @@ SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
   - [ ] Distributed tracing
   - [ ] Health checks
   - [x] Basic health checks (sinks)
+  - [ ] Export cache stats (hits, misses, loads, load failures, evictions, load time) to metrics registry
+  - [ ] Periodic operational log of cache stats and disk store size
 
 ### Documentation
 - [ ] **API documentation**
@@ -84,28 +95,31 @@ SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
   - [x] Architecture diagrams
   - [ ] HMC usage notes (env flags, targets, diagnostics)
   - [ ] Public Methods API (Ψ + MCDA)
-    - [ ] computePsi(S,N,α,Ra,Rv,λ1,λ2,β) → {psi,O,pen,post}; contracts and examples
-    - [ ] computePsiTemporal(w,timeSeries,aggregator) → psiBar; mean/softcap
-    - [ ] thresholdTransfer(κ,τ,mode) → τ′; subcap/softcap mapping
+    - [x] computePsi(S,N,α,Ra,Rv,λ1,λ2,β) → {psi,O,pen,post}; contracts and examples
+    - [x] computePsiTemporal(w,timeSeries,aggregator) → psiBar; mean/softcap
+    - [x] thresholdTransfer(κ,τ,mode) → τ′; subcap/softcap mapping
     - [x] normalizeCriterion(values,direction) → z∈[0,1]
-    - [ ] mapGovernanceWeights(baseWeights,gΨ,η) → w (Δ^m)
+    - [x] mapGovernanceWeights(baseWeights,gΨ,η) → w (Δ^m)
     - [x] gateByPsi(alternatives,ψLower,τ) → feasible set
-    - [ ] wsmScore(w,z) / wsmScoreRobust(w,zLower) (wrap `rankByWSM`)
-    - [ ] wpmScore(w,z) / wpmScoreRobust(w,zLower) (wrap `rankByWPM`)
-    - [ ] topsisScore(w,z,dir) / topsisScoreRobust(w,zLower,zUpper,dir) (wrap `rankByTOPSIS`)
-    - [ ] ahpWeights(pairwise) → {w,CR}
+    - [x] wsmScore(w,z) / wsmScoreRobust(w,zLower)
+    - [x] wpmScore(w,z) / wpmScoreRobust(w,zLower)
+    - [x] topsisScore(w,z,dir)
+    - [x] ahpWeights(pairwise) → {w,CR}
     - [ ] outrankingFlows(Pj,w) / outrankingFlowsRobust(...)
-    - [ ] zBoundsFromXBounds(xLower,xUpper,direction)
-    - [ ] sensitivities: gradWSM, gradPsi partials
-    - [ ] tieBreak(alternatives, keys) → winner (lexicographic)
+    - [x] zBoundsFromXBounds(xLower,xUpper,direction)
+    - [x] sensitivities: gradWSM, gradPsi partials
+    - [x] tieBreak(alternatives, keys) → winner (lexicographic)
     - [ ] auditTrail(event,payload) → recordId (usage + guarantees)
     - [ ] invariants/contracts (ranges, determinism) and complexity notes
     - [ ] error handling semantics (degenerate normalization, floors)
     - [ ] unit tests for all public methods
+  - [ ] Caching guide: in-memory LRU + TTL + max-weight + disk layer, configuration, and ops
+  - [ ] Disk format doc for `DatasetPreparedDiskStore` and compatibility/versioning policy
+    - [x] sanity unit tests for PsiMcda methods (determinism, ranges, known cases)
 
 ### MCDA Implementation
 - [x] Implement WSM/WPM/TOPSIS ranking with Ψ gating demo
-- [ ] Implement AHP pairwise weights and consistency ratio
+ - [x] Implement AHP pairwise weights and consistency ratio
 - [ ] Implement outranking flows (PROMETHEE-like) with monotone Ψ channel
 - [ ] Add robust variants (floors/intervals) for WSM/WPM/TOPSIS
 
@@ -121,6 +135,8 @@ SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
   - [x] Caching strategies
   - [x] Prepared dataset cache: in-memory LRU with TTL and weight-based eviction plus disk write-through (`DatasetPreparedDiskStore`)
   - [ ] JVM tuning recommendations
+  - [ ] Benchmarks: compute vs cache-hit latency; throughput under concurrent load
+  - [ ] Evaluate Caffeine integration as a drop-in for advanced eviction policies
 
 ## 🧪 Research & Exploration
 
@@ -146,6 +162,8 @@ SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
   - [ ] Improve error messages
   - [ ] Add input validation
   - [ ] Refactor complex methods
+  - [ ] Verify immutability/defensive copies for cached values; document contracts
+  - [ ] Add `invalidateByDatasetId(id)` convenience and targeted invalidation utilities
 
 ### Dependencies
 - [ ] **Dependency management**

@@ -3,7 +3,6 @@
 package qualia;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.function.ToDoubleFunction;
 
 /**
@@ -110,12 +109,14 @@ public final class PsiMcda {
         requireRange(gPsi, 0.0, 1.0, "gPsi");
         double sum = Arrays.stream(baseWeights).sum();
         if (Math.abs(sum - 1.0) > 1e-9) throw new IllegalArgumentException("baseWeights must sum to 1");
-        double wPsi = eta * gPsi;
-        double scale = (1.0 - eta);
+        // Allocate a dynamic share to Ψ, distribute the remainder across base weights so the total sums to 1
+        double wPsi = eta * gPsi;                 // dynamic governance share for Ψ in [0, eta]
+        double remaining = Math.max(0.0, 1.0 - wPsi);
         double[] w = new double[baseWeights.length + 1];
         w[0] = wPsi;
-        for (int i = 0; i < baseWeights.length; i++) w[i + 1] = scale * baseWeights[i];
-        // sum to one by construction
+        for (int i = 0; i < baseWeights.length; i++) {
+            w[i + 1] = remaining * baseWeights[i];
+        }
         return w;
     }
 
@@ -202,7 +203,7 @@ public final class PsiMcda {
         }
         double ci = (lambda - n) / Math.max(n - 1, 1);
         double ri = randomIndexFor(n);
-        double cr = (ri <= 0) ? 0.0 : ci / ri;
+        double cr = (ri <= 0) ? 0.0 : Math.max(0.0, ci / ri);
         return new AHPResult(w, cr);
     }
 

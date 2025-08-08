@@ -23,8 +23,8 @@ final class SteinGradLogP {
 
     /** Returns ∇ log p(x) where x∈R^4 corresponds to ModelParameters. */
     double[] gradLogPosterior(double[] x) {
-        // Interpret x as z-coordinates: z = [logit(S), logit(N), logit(alpha), log(beta)]
-        return model.gradLogTargetZ(prep, x, parallel);
+        // x is in parameter space θ = [S, N, alpha, beta]
+        return model.gradientLogPosteriorPrepared(prep, toParams(x), parallel);
     }
 }
 
