@@ -1,0 +1,20 @@
+import qualia.*;
+
+import java.util.Date;
+
+AuditSink sink = new JdbcAuditSink(
+    "jdbc:postgresql://localhost:5432/qualia", // or MySQL URL
+    "dbuser",
+    "dbpass"
+);
+
+AuditRecord rec = new AuditRecordImpl("rec-123", new Date());
+AuditOptions opts = AuditOptions.builder()
+    .idempotencyKey("rec-123") // optional
+    .dryRun(false)
+    .build();
+
+sink.write(rec, opts).join(); // wait if you need to ensure durability now
+
+// Optional: when shutting down your app
+if (sink instanceof JdbcAuditSink j) j.close();

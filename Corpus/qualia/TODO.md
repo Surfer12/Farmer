@@ -8,6 +8,7 @@
   - [x] Implement proper log-prior calculations for all parameters
   - [x] Add convergence diagnostics and effective sample size calculations (prototype)
   - [x] Add parallel sampling support (independent MH chains)
+  - [ ] Add decision voting with explicit overrides wired to policy gates
 
 ### Audit System
 - [ ] **Implement persistent audit sinks**
@@ -22,6 +23,7 @@
   - [ ] Integration tests for audit pipeline
   - [ ] Performance benchmarks
   - [ ] Property-based testing with QuickCheck-style library
+  - [ ] Tests for VotingPolicy (override precedence, weighted majorities, ties)
 
 ## 🔧 Medium Priority
 

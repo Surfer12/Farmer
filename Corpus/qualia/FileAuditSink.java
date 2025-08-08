@@ -116,6 +116,22 @@ public final class FileAuditSink implements AuditSink {
     private static String toJson(AuditRecord rec) {
         String id = JsonUtil.escape(rec.id());
         String ts = JsonUtil.toIso8601(rec.timestamp());
+        if (rec instanceof ExtendedAuditRecord e) {
+            String event = JsonUtil.escape(e.event());
+            String schema = JsonUtil.escape(e.schemaVersion());
+            String inputs = e.inputsJson();
+            String outputs = e.outputsJson();
+            String params = e.paramsJson();
+            return "{" +
+                    "\"id\":\"" + id + "\"," +
+                    "\"timestamp\":\"" + ts + "\"," +
+                    "\"event\":\"" + event + "\"," +
+                    "\"schemaVersion\":\"" + schema + "\"," +
+                    "\"inputs\":" + (inputs == null ? "null" : inputs) + "," +
+                    "\"outputs\":" + (outputs == null ? "null" : outputs) + "," +
+                    "\"params\":" + (params == null ? "null" : params) +
+                    "}";
+        }
         return "{\"id\":\"" + id + "\",\"timestamp\":\"" + ts + "\"}";
     }
 }
