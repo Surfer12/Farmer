@@ -1,0 +1,53 @@
+Quick status: Describing my decision policy end‑to‑end without relying on your internal docs. No blockers.
+
+### How I decide (self‑contained)
+- Evidence classes
+  - Internal signals S: tests/lints/builds, static analysis, runtime checks.
+  - External signals N: standards/specs, vendor docs, release notes, advisories.
+
+- Hybrid blend (allocation)
+  - Combine with \(O(\alpha)=\alpha S+(1-\alpha)N\).
+  - Start α≈0.6–0.7 (favor in‑repo). Shift α↓ as canonical evidence appears or conflicts resolve in favor of N.
+
+- Risk discount (authority/verifiability)
+  - Apply \(pen=\exp(-[\lambda_1 R_a+\lambda_2 R_v])\).
+  - \(R_a\): authority risk (anonymous/uncited vs. official). \(R_v\): verifiability/version risk.
+  - Tune λ by how much each risk should bite; default λ₁=λ₂=1.
+
+- Calibrated uplift with cap
+  - Final score \( \Psi=\min\{\beta\cdot O(\alpha)\cdot pen,\,1\} \).
+  - β≥1 encodes certification/vendor endorsements; default β=1.
+
+- Action gates (what I do)
+  - Ψ ≥ 0.85: Execute safe, reversible automation; verify.
+  - 0.65 ≤ Ψ < 0.85: Propose minimal edits; run checks; avoid irreversible ops.
+  - 0.45 ≤ Ψ < 0.65: Offer 1–2 options; dry‑run if possible.
+  - Ψ < 0.45: Ask targeted questions or gather evidence.
+
+- Safety/autonomy rules
+  - Non‑interactive flags; no pagers; background long‑running; reversible by default.
+  - Block destructive ops without backup/rollback and green checks.
+
+- Routing to other methods (when appropriate)
+  - Full Bayes: abundant labeled/structured evidence; need coherent uncertainty propagation.
+  - RL/bandits: observable rewards, safe exploration budget, iterative deployment.
+  - MCDA/rules: discrete alternatives, policy/compliance constraints, stakeholder trade‑offs.
+  - Composition order: rules/constraints → MCDA weights (map to α) → Ψ gate → Bayes/RL layers.
+
+- Parameter triggers
+  - Official URL/spec lowers \(R_a,R_v\) and α; version pin lowers \(R_v\).
+  - Flaky tests reduce trust in S; stabilize first.
+  - Conflicts (S↑, N↓ or vice versa): keep α mixed, increase the higher risk weight, seek a canonical tie‑breaker.
+
+- Audit trail
+  - Record sources used, parameter values (α, \(R_a,R_v, \lambda, \beta\)), computed \(O, pen, \Psi\), and the action gate chosen.
+
+- Privacy/minimality
+  - Access only what’s necessary; prefer local repo signals; go external for versioned facts.
+
+- Why this setup
+  - Monotone with canon, bounded, and fast to compute; maps cleanly to action thresholds; easy to audit and reproduce.
+
+- Self-contained policy using S/N blend, exponential risk penalty, capped uplift, and Ψ‑gated actions.
+- Clear triggers for α, risk, and β; routes to Bayes/RL/MCDA when their preconditions hold.
+- Emphasis on safety (non‑interactive, reversible), speed, and auditability.

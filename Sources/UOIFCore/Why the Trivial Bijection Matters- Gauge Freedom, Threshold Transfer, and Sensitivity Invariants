@@ -1,0 +1,148 @@
+\documentclass[11pt]{article}
+
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{geometry}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\geometry{margin=1in}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+\newtheorem{definition}{Definition}
+\newtheorem{remark}{Remark}
+
+% Notation macros
+\newcommand{\Ssig}{\mathsf{S}}
+\newcommand{\Nsig}{\mathsf{N}}
+\newcommand{\alloc}{\alpha}
+\newcommand{\riskvec}{\mathbf{r}}
+\newcommand{\rA}{R_a}
+\newcommand{\rV}{R_v}
+\newcommand{\lA}{\lambda_1}
+\newcommand{\lV}{\lambda_2}
+\newcommand{\uplift}{\beta}
+\newcommand{\blend}{O}
+\newcommand{\pen}{\mathrm{pen}}
+\newcommand{\score}{\Psi}
+\newcommand{\gscore}{\Phi}
+
+\title{Why the Trivial Bijection Matters: Gauge Freedom, Threshold Transfer, and Sensitivity Invariants}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section*{1.\quad Notation and Guardrailed Score}
+Let $\Ssig,\Nsig\in[0,1]$ be internal and canonical signal strengths; $\alloc\in[0,1]$ the allocation lever; $\riskvec=(\rA,\rV)\in[0,1]^2$ risks with positive weights $(\lA,\lV)$; and $\uplift\ge 1$ an uplift factor with a hard cap at $1$.
+\[
+\blend(\alloc)=\alloc\,\Ssig+(1-\alloc)\,\Nsig,\qquad
+\pen(\riskvec)=\exp\!\big(-[\lA\rA+\lV\rV]\big).
+\]
+The guardrailed score is
+\[
+\score(\Ssig,\Nsig,\alloc,\riskvec,\lA,\lV,\uplift)=\min\Big\{\uplift\cdot \blend(\alloc)\cdot \pen(\riskvec),\,1\Big\}.
+\]
+A second system uses parameters $(\alpha_g,\lambda_{1g},\lambda_{2g},\beta_g)$:
+\[
+\gscore=\min\Big\{\beta_g\,[\alpha_g \Ssig+(1-\alpha_g)\Nsig]\exp(-[\lambda_{1g}\rA+\lambda_{2g}\rV]),\,1\Big\}.
+\]
+
+We write the \emph{sub-cap region} for a parameterization $p$ as
+\[
+\mathcal{U}(p)=\left\{(\Ssig,\Nsig,\alloc,\riskvec): \beta_p\,\blend(\alloc)\,\pen(\riskvec) < 1\right\},
+\]
+i.e., where the cap is inactive.
+
+\section*{2.\quad Concepts of Interest}
+\begin{definition}[Gauge freedom]
+Two parameterizations are \emph{gauge equivalent} (trivially bijective) if there is a one-to-one renaming of levers $(\alloc,\lA,\lV,\uplift)\leftrightarrow(\alpha_g,\lambda_{1g},\lambda_{2g},\beta_g)$ such that $\score\equiv\gscore$ pointwise.
+\end{definition}
+
+\begin{definition}[Threshold transfer]
+Given thresholds $\tau,\tau'\in(0,1]$ for two parameterizations, a \emph{threshold transfer} is a mapping $\tau\mapsto\tau'$ such that the induced decision sets coincide on the sub-cap region:
+\[
+\{\score\ge \tau\}\cap \mathcal{U}(\beta) \;=\; \{\gscore\ge \tau'\}\cap \mathcal{U}(\beta_g).
+\]
+\end{definition}
+
+\begin{definition}[Sensitivity invariants]
+Directional derivatives of $\score$ with respect to levers $(\alloc,\rA,\rV)$ and signals $(\Ssig,\Nsig)$ that preserve sign and zero-sets under gauge equivalence and under threshold transfer on the sub-cap region.
+\end{definition}
+
+\section*{3.\quad Main Results}
+\begin{theorem}[Gauge freedom / observational equivalence]
+\label{thm:gauge}
+If $\alloc:=\alpha_g$, $\lA:=\lambda_{1g}$, $\lV:=\lambda_{2g}$, and $\uplift:=\beta_g$, then $\score\equiv\gscore$ for all inputs. Consequently, any two systems that differ only by such a bijection are observationally indistinguishable: they induce the same rankings and the same thresholded decisions for any common $\tau$.
+\end{theorem}
+
+\begin{proof}
+Under the stated identification, the affine blends, exponential penalties, and capped uplifts coincide term-by-term. Equality of the compositions is pointwise, hence identical outputs and orderings. Thresholded decisions also coincide for any $\tau$ since the functions are equal. 
+\end{proof}
+
+\begin{theorem}[Threshold transfer]
+\label{thm:threshold}
+Fix $\tau\in(0,1]$ for $\score$ with uplift $\beta$ and $\tau'\in(0,1]$ for $\gscore$ with uplift $\beta_g$. On the common sub-cap region $\mathcal{U}(\beta)\cap\mathcal{U}(\beta_g)$, setting
+\[
+\tau' \;=\; \tau\cdot \frac{\beta}{\beta_g}
+\]
+yields decision equivalence:
+\[
+\{\score\ge \tau\}\cap \mathcal{U}(\beta)\cap\mathcal{U}(\beta_g) \;=\; \{\gscore\ge \tau'\}\cap \mathcal{U}(\beta)\cap\mathcal{U}(\beta_g).
+\]
+Moreover, if one side saturates at the cap while the other remains sub-cap, the accepting set of the saturated side weakly contains that of the sub-cap side.
+\end{theorem}
+
+\begin{proof}
+On $\mathcal{U}(\beta)\cap\mathcal{U}(\beta_g)$ the caps are inactive, so
+\[
+\score=\beta\,\blend\,\pen,\qquad \gscore=\beta_g\,\blend\,\pen.
+\]
+Then $\score\ge\tau \iff \beta\,\blend\,\pen\ge \tau \iff \blend\,\pen\ge \tau/\beta \iff \beta_g\,\blend\,\pen \ge \tau\cdot \frac{\beta_g}{\beta} \iff \gscore\ge \tau'$
+with $\tau'=\tau\,\beta/\beta_g$. If saturation occurs on one side, replacing its value by $1$ only enlarges its acceptance set, giving weak containment.
+\end{proof}
+
+\begin{theorem}[Sensitivity invariants]
+\label{thm:sensitivity}
+On the sub-cap region for a given parameterization,
+\[
+\frac{\partial \score}{\partial \alloc} = (\,\Ssig-\Nsig\,)\,\beta\,\pen,\quad
+\frac{\partial \score}{\partial \rA} = -\,\beta\,\blend\,\lA\,\pen,\quad
+\frac{\partial \score}{\partial \rV} = -\,\beta\,\blend\,\lV\,\pen.
+\]
+Under gauge freedom (Theorem \ref{thm:gauge}), these derivatives coincide pointwise. If only the uplift differs ($\beta\mapsto\beta_g$), derivatives scale by the constant factor $\beta_g/\beta$, preserving (i) sign, (ii) zero-sets, and (iii) relative magnitudes across inputs. Therefore, monotonicity directions and stability properties are invariant under bijection, and preserved under threshold transfer.
+\end{theorem}
+
+\begin{proof}
+Differentiate $\score=\beta\,\blend(\alloc)\,\pen(\riskvec)$ in the sub-cap region. The expressions follow by product and chain rules. Under bijection, $\beta,\blend,\pen$ are identical functions, hence derivatives match. If only $\beta$ changes to $\beta_g$, each derivative is multiplied by $\beta_g/\beta>0$, preserving sign and zeros; relative ratios across inputs are also preserved. Threshold transfer does not alter derivatives; it only rescales the decision boundary, leaving sensitivity structure intact on the sub-cap region.
+\end{proof}
+
+\begin{corollary}[Operational significance]
+Gauge freedom implies debates about parameter labels/defaults are non-substantive absent structural changes. Threshold transfer ensures that changing $\beta$ (e.g., new certification strength) can be absorbed by adjusting $\tau$ without altering behavior in sub-cap regimes. Sensitivity invariants guarantee directionally consistent responses to allocation and risk changes, stabilizing reviews and tuning.
+\end{corollary}
+
+\section*{4.\quad Saturation Boundary and Safe Containment}
+\begin{lemma}[Saturation boundary]
+The cap activates exactly on the set $\partial\mathcal{U}(\beta)=\{(\Ssig,\Nsig,\alloc,\riskvec): \beta\,\blend\,\pen=1\}$. Crossing into saturation renders $\partial \score/\partial(\cdot)=0$ in the saturated direction, further stabilizing decisions.
+\end{lemma}
+
+\begin{proof}
+By definition of $\min\{\cdot,1\}$: equality at $1$ triggers the cap. Beyond the boundary, $\score\equiv 1$ locally, so directional derivatives vanish in the saturated region.
+\end{proof}
+
+\begin{corollary}[Safe containment at the cap]
+If $\beta\,\blend\,\pen\ge 1$ and $\beta_g\,\blend\,\pen<1$, then $\{\score\ge\tau\}$ weakly contains $\{\gscore\ge\tau'\}$ for any $\tau\le 1$, since $\score=1$ accepts all points and $\gscore<1$ filters by $\tau'$.
+\end{corollary}
+
+\section*{5.\quad What This Means in Practice}
+\begin{itemize}[leftmargin=1.4em]
+  \item \textbf{Gauge freedom}: Parameter renames (and equivalent defaults) do not change outcomes; focus on structure (affine+exponential+cap).
+  \item \textbf{Threshold transfer}: Adjust thresholds when $\beta$ changes to preserve decisions in sub-cap regimes; prevents churn from re-calibration.
+  \item \textbf{Sensitivity invariants}: Signs/zeros of derivatives are stable; tuning is predictable; monotonicity with canonical evidence is retained.
+\end{itemize}
+
+\section*{References (anchors)}
+[Berger1985], [Savage1954], [GneitingRaftery2007], [Platt1999], [ZadroznyElkan2002], [Guo2017], [Cox1972], [BarlowProschan1981], [SuttonBarto2018], [LattimoreSzepesvari2020], [Auer2002], [Achiam2017], [KeeneyRaiffa1993], [Saaty1980], [HwangYoon1981], [Shafer1976], [Zadeh1965], [Bishop2006], [Goodfellow2016], [SRE2016], [Kleppmann2017], [Nygard2018].
+
+\end{document}

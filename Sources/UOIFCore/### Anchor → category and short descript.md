@@ -1,17 +1,3 @@
-Short in-text anchors (drop into docs)
-[Berger1985], [Savage1954], [GneitingRaftery2007]
-[Cox1972], [BarlowProschan1981]
-[SuttonBarto2018], [LattimoreSzepesvari2020], [Auer2002]
-[KeeneyRaiffa1993], [Saaty1980], [HwangYoon1981]
-[SRE2016], [Kleppmann2017], [Nygard2018]
-Included a compact, paste‑ready references block with links by category and short anchor tags for in‑text use.
-Emphasized your internal governance docs as primary influence; external works justify α‑blend, exponential penalties, calibration, and routing to Bayes/RL/MCDA when warranted.
-
-### In‑text anchors (all‑inclusive)
-[GovDocs], [Berger1985], [Savage1954], [GneitingRaftery2007], [Platt1999], [ZadroznyElkan2002], [Guo2017], [Cox1972], [BarlowProschan1981], [SuttonBarto2018], [LattimoreSzepesvari2020], [Auer2002], [Achiam2017], [KeeneyRaiffa1993], [Saaty1980], [HwangYoon1981], [Shafer1976], [Zadeh1965], [Bishop2006], [Goodfellow2016], [SRE2016], [Kleppmann2017], [Nygard2018]
-
-- Pulled every anchor from `references.bib` and `citations.bib`, deduplicated.
-
 ### Anchor → category and short description
 - **[GovDocs]**: Internal governance — Your internal process/rules artifacts.
 - **[Berger1985]**: Decision theory — Bayesian decision theory and loss‑optimal thresholds.
@@ -37,4 +23,4 @@ Emphasized your internal governance docs as primary influence; external works ju
 - **[Kleppmann2017]**: Systems — Data‑intensive design; correctness/operability.
 - **[Nygard2018]**: Operations — Stability patterns, circuit breakers, bulkheads.
 
-- Delivered a complete anchor→category map with concise descriptions for quick in‑text use.
+- Delivered a complete anchor→category map with concise descriptions for quick in‑text use.Quick status: Sharing a compact LaTeX reflection document on my decision framework and insights about the trivial bijection (equivalence up to parameter renaming). No blockers.
