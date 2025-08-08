@@ -1,11 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-only
+// SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
 package qualia;
-
-/*
- * © 2025 Jumping Quail Solutions. All rights reserved.
- * Classification: Confidential — Internal Use Only
- * SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
- * SPDX-License-Identifier: GPL-3.0-only AND LicenseRef-Internal-Use-Only
- */
 
 /**
  * Historical Java shim mirroring the Swift HB module.
