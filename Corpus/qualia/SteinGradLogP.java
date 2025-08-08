@@ -11,10 +11,14 @@ package qualia;
 final class SteinGradLogP {
     private final HierarchicalBayesianModel model;
     private final java.util.List<ClaimData> dataset;
+    private final HierarchicalBayesianModel.Prepared prep;
+    private final boolean parallel;
 
     SteinGradLogP(HierarchicalBayesianModel model, java.util.List<ClaimData> dataset) {
         this.model = model;
         this.dataset = dataset;
+        this.prep = model.precompute(dataset);
+        this.parallel = model.shouldParallelize(dataset.size());
     }
 
     /** Maps double[4] -> ModelParameters with clamping for domain constraints. */
@@ -37,13 +41,13 @@ final class SteinGradLogP {
         // log p(params|data) ∝ logLik + logPrior
         double[] g = new double[4];
         double eps = 1e-4;
-        double base = model.logPosterior(dataset, toParams(x));
+        double base = model.logPosteriorPrepared(prep, toParams(x), parallel);
         for (int i = 0; i < 4; i++) {
             double old = x[i];
             x[i] = old + eps;
-            double up = model.logPosterior(dataset, toParams(x));
+            double up = model.logPosteriorPrepared(prep, toParams(x), parallel);
             x[i] = old - eps;
-            double dn = model.logPosterior(dataset, toParams(x));
+            double dn = model.logPosteriorPrepared(prep, toParams(x), parallel);
             x[i] = old;
             g[i] = (up - dn) / (2.0 * eps);
         }

@@ -25,10 +25,14 @@ import java.util.Random;
 final class HmcSampler {
     private final HierarchicalBayesianModel model;
     private final List<ClaimData> dataset;
+    private final HierarchicalBayesianModel.Prepared prep;
+    private final boolean parallel;
 
     public HmcSampler(HierarchicalBayesianModel model, List<ClaimData> dataset) {
         this.model = model;
         this.dataset = dataset;
+        this.prep = model.precompute(dataset);
+        this.parallel = model.shouldParallelize(dataset.size());
     }
 
     public static final class Result {
@@ -103,7 +107,7 @@ final class HmcSampler {
     /** logTarget(z) = logPosterior(θ(z)) + log|J(z)| */
     private double logTarget(double[] z) {
         ModelParameters params = zToParams(z);
-        double logPost = model.logPosterior(dataset, params);
+        double logPost = model.logPosteriorPrepared(prep, params, parallel);
         // Jacobian terms
         double s0 = sigmoid(z[0]);
         double s1 = sigmoid(z[1]);

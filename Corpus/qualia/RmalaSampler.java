@@ -33,11 +33,15 @@ public final class RmalaSampler {
     private final HierarchicalBayesianModel model;
     private final List<ClaimData> dataset;
     private final SteinGradLogP gradProvider;
+    private final HierarchicalBayesianModel.Prepared prep;
+    private final boolean parallel;
 
     public RmalaSampler(HierarchicalBayesianModel model, List<ClaimData> dataset) {
         this.model = model;
         this.dataset = dataset;
         this.gradProvider = new SteinGradLogP(model, dataset);
+        this.prep = model.precompute(dataset);
+        this.parallel = model.shouldParallelize(dataset.size());
     }
 
     public Result sample(int totalIters, int burnIn, int thin, long seed, double[] x0, StepSizePolicy policy) {
@@ -102,7 +106,7 @@ public final class RmalaSampler {
     }
 
     private double logPosterior(double[] x) {
-        return model.logPosterior(dataset, toParams(x));
+        return model.logPosteriorPrepared(prep, toParams(x), parallel);
     }
 
     private static double[] add(double[] a, double[] b) {

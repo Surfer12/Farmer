@@ -53,6 +53,11 @@ public final class HierarchicalBayesianModel {
         this.parallelThreshold = Math.max(0, parallelThreshold);
     }
 
+    /** Returns whether likelihood evaluation should use parallel execution for a dataset of given size. */
+    public boolean shouldParallelize(int datasetSize) {
+        return datasetSize >= parallelThreshold;
+    }
+
     /**
      * Calculates Ψ(x) for a given claim and parameter sample.
      * Result is clamped to [0,1] for numerical stability.
@@ -107,7 +112,7 @@ public final class HierarchicalBayesianModel {
     }
 
     // --- Prepared dataset fast-paths ---
-    private static final class Prepared {
+    static final class Prepared {
         final double[] pen;       // exp(-[λ1 Ra + λ2 Rv]) per-claim
         final double[] pHe;       // P(H|E) per-claim
         final boolean[] y;        // labels per-claim
@@ -117,7 +122,7 @@ public final class HierarchicalBayesianModel {
         int size() { return pen.length; }
     }
 
-    private Prepared precompute(List<ClaimData> dataset) {
+    Prepared precompute(List<ClaimData> dataset) {
         int n = dataset.size();
         double[] pen = new double[n];
         double[] pHe = new double[n];
@@ -133,7 +138,7 @@ public final class HierarchicalBayesianModel {
         return new Prepared(pen, pHe, y);
     }
 
-    private double totalLogLikelihoodPrepared(Prepared prep, ModelParameters params, boolean parallel) {
+    double totalLogLikelihoodPrepared(Prepared prep, ModelParameters params, boolean parallel) {
         final double O = params.alpha() * params.S() + (1.0 - params.alpha()) * params.N();
         final double beta = params.beta();
         final double epsilon = 1e-9;
@@ -159,7 +164,7 @@ public final class HierarchicalBayesianModel {
         }).sum();
     }
 
-    private double logPosteriorPrepared(Prepared prep, ModelParameters params, boolean parallel) {
+    double logPosteriorPrepared(Prepared prep, ModelParameters params, boolean parallel) {
         return totalLogLikelihoodPrepared(prep, params, parallel) + logPriors(params);
     }
 
@@ -301,6 +306,80 @@ public final class HierarchicalBayesianModel {
         double eps = 1e-12;
         double c = Math.max(eps, Math.min(1.0 - eps, x));
         return Math.log(c / (1.0 - c));
+    }
+
+    /**
+     * Analytic gradient of log-posterior with respect to (S, N, alpha, beta).
+     * Includes both likelihood and prior terms. Piecewise handles beta cap where
+     * P(H|E, β) = min{β·P(H|E), 1}.
+     */
+    public double[] gradientLogPosterior(List<ClaimData> dataset, ModelParameters params) {
+        double dS = 0.0, dN = 0.0, dA = 0.0, dB = 0.0;
+
+        // Likelihood gradient
+        double S = params.S();
+        double N = params.N();
+        double A = params.alpha();
+        double B = params.beta();
+
+        for (ClaimData c : dataset) {
+            double O = A * S + (1.0 - A) * N;
+            double pen = Math.exp(-(priors.lambda1() * c.riskAuthenticity() + priors.lambda2() * c.riskVirality()));
+            double P = c.probabilityHgivenE();
+            boolean capped = (B * P >= 1.0);
+            double pBeta = capped ? 1.0 : (B * P);
+            double psi = O * pen * pBeta;
+
+            // Clamp to avoid division by zero in log-gradient
+            double eps = 1e-12;
+            double denomPos = Math.max(eps, psi);
+            double denomNeg = Math.max(eps, 1.0 - psi);
+
+            double dpsi_dS = A * pen * pBeta;
+            double dpsi_dN = (1.0 - A) * pen * pBeta;
+            double dpsi_dA = (S - N) * pen * pBeta;
+            double dpsi_dB = capped ? 0.0 : (O * pen * P);
+
+            if (c.isVerifiedTrue()) {
+                dS += dpsi_dS / denomPos;
+                dN += dpsi_dN / denomPos;
+                dA += dpsi_dA / denomPos;
+                dB += dpsi_dB / denomPos;
+            } else {
+                dS += -dpsi_dS / denomNeg;
+                dN += -dpsi_dN / denomNeg;
+                dA += -dpsi_dA / denomNeg;
+                dB += -dpsi_dB / denomNeg;
+            }
+        }
+
+        // Prior gradients
+        double epsUnit = 1e-12;
+        // Beta prior for S
+        double Sa = priors.s_alpha();
+        double Sb = priors.s_beta();
+        double sClamped = Math.max(epsUnit, Math.min(1.0 - epsUnit, S));
+        dS += (Sa - 1.0) / sClamped - (Sb - 1.0) / (1.0 - sClamped);
+
+        // Beta prior for N
+        double Na = priors.n_alpha();
+        double Nb = priors.n_beta();
+        double nClamped = Math.max(epsUnit, Math.min(1.0 - epsUnit, N));
+        dN += (Na - 1.0) / nClamped - (Nb - 1.0) / (1.0 - nClamped);
+
+        // Beta prior for alpha
+        double Aa = priors.alpha_alpha();
+        double Ab = priors.alpha_beta();
+        double aClamped = Math.max(epsUnit, Math.min(1.0 - epsUnit, A));
+        dA += (Aa - 1.0) / aClamped - (Ab - 1.0) / (1.0 - aClamped);
+
+        // LogNormal prior for beta
+        double mu = priors.beta_mu();
+        double sigma = priors.beta_sigma();
+        double t = Math.log(Math.max(B, epsUnit));
+        dB += (-(t - mu) / (sigma * sigma) - 1.0) * (1.0 / Math.max(B, epsUnit));
+
+        return new double[] { dS, dN, dA, dB };
     }
 
     private List<ModelParameters> runMhChain(List<ClaimData> dataset, int sampleCount, long seed) {
