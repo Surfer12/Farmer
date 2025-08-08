@@ -346,6 +346,18 @@ public final class Core {
                 System.out.println(json);
             }
         }
+
+        // Append JSONL line if JSONL file is provided
+        String jsonlPath = kv.get("jsonl");
+        if (jsonlPath != null && !jsonlPath.isEmpty()) {
+            try (java.io.FileWriter fw = new java.io.FileWriter(jsonlPath, true);
+                 java.io.BufferedWriter bw = new java.io.BufferedWriter(fw);
+                 java.io.PrintWriter out = new java.io.PrintWriter(bw)) {
+                out.println(json);
+            } catch (Exception e) {
+                System.err.println("Failed to append JSONL: " + e.getMessage());
+            }
+        }
     }
 
     private static double meanPsi(HierarchicalBayesianModel model, java.util.List<ClaimData> dataset, java.util.List<ModelParameters> samples) {

@@ -33,9 +33,12 @@ public final class AuditTrail {
         Objects.requireNonNull(record, "record");
         AuditOptions opts = options != null ? options : AuditOptions.builder().dryRun(false).build();
         try {
-            return sink.write(record, opts).exceptionally(ex -> null);
+            return sink.write(record, opts).exceptionally(ex -> {
+                ErrorReporter.report("AuditTrail.emit", ex);
+                return null;
+            });
         } catch (RuntimeException ex) {
-            // Fail-open: swallow to preserve decision purity
+            ErrorReporter.report("AuditTrail.emit", ex);
             return CompletableFuture.completedFuture(null);
         }
     }

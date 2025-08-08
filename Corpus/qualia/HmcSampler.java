@@ -151,7 +151,8 @@ final class HmcSampler {
         double logEps = Math.log(Math.max(1e-6, initStepSize));
         double h = 0.0;
         double t0 = 10.0;
-        double kappa = 0.75;
+        double kappa = 0.75;        // weights decay
+        double gamma = 0.5;          // shrink factor (higher -> smaller updates)
         double logEpsBar = 0.0;
         int tCount = 0;
 
@@ -197,14 +198,22 @@ final class HmcSampler {
 
             // Phase-specific adaptation
             if (iter < phase1End) {
-                // Coarse step-size finder
-                if (acceptProb < 0.5) logEps -= 0.1; else if (acceptProb > 0.9) logEps += 0.1;
+                // Coarse step-size finder around target acceptance
+                double low = Math.max(0.10, targetAccept * 0.9);
+                double high = Math.min(0.95, targetAccept * 1.1);
+                if (acceptProb < low) {
+                    // too low acceptance -> decrease step
+                    logEps -= 0.1;
+                } else if (acceptProb > high) {
+                    // too high acceptance -> increase step
+                    logEps += 0.1;
+                }
             } else if (iter < phase2End) {
                 // Dual-averaging towards targetAccept
                 tCount++;
                 double eta = 1.0 / (tCount + t0);
                 h = (1.0 - eta) * h + eta * (targetAccept - acceptProb);
-                double logEpsRaw = mu - Math.sqrt(tCount) / 0.05 * h;
+                double logEpsRaw = mu - (Math.sqrt(tCount) / gamma) * h;
                 double w = Math.pow(tCount, -kappa);
                 logEps = (1.0 - w) * logEps + w * logEpsRaw;
                 logEpsBar = (tCount == 1) ? logEps : ((tCount - 1) / (double) tCount) * logEpsBar + (1.0 / tCount) * logEps;
@@ -222,6 +231,8 @@ final class HmcSampler {
 
         // Final tuned ε and mass diag
         double tunedStep = Math.exp((tCount > 0) ? logEpsBar : logEps);
+        // Clamp tuned step into a reasonable band
+        tunedStep = Math.max(1e-4, Math.min(0.25, tunedStep));
         double[] tunedMass = massDiag;
         if (massN > 10) {
             tunedMass = new double[4];
@@ -268,6 +279,9 @@ final class HmcSampler {
         }
 
         double accRate = accepted / (double) Math.max(1, samplingIters);
+        // Post-adjust tuned step if acceptance far from target
+        if (accRate < 0.60) tunedStep *= 0.8;
+        else if (accRate > 0.90) tunedStep *= 1.2;
         return new AdaptiveResult(kept, accRate, tunedStep, tunedMass, divergenceCount);
     }
 

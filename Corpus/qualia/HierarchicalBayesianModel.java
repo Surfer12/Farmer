@@ -243,16 +243,13 @@ public final class HierarchicalBayesianModel implements PsiModel {
 
     /**
      * Analytic gradient of log-posterior with respect to (S, N, alpha, beta), using a prepared dataset.
-     * Parallelizes across observations when {@code parallel} is true.
+     * Public adapter delegating to the internal implementation.
      */
     public double[] gradientLogPosteriorPrepared(Prepared prep, ModelParameters params, boolean parallel) {
         return gradientLogPosteriorPreparedInternal(prep, params, parallel);
     }
 
-    // Backward-compatible alias retained for internal callers
-    double[] gradientLogPosteriorPrepared(Prepared prep, ModelParameters params, boolean parallel, boolean ignored) {
-        return gradientLogPosteriorPreparedInternal(prep, params, parallel);
-    }
+    // Public prepared-variant removed to avoid duplicate definitions; internal used by samplers
 
     /**
      * Gradient in z-space of logTarget(z) = logPosterior(θ(z)) + log|J(z)| where

@@ -2,7 +2,6 @@
 // SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
 package qualia;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -67,13 +66,13 @@ public final class HttpAuditSink implements AuditSink {
                         return CompletableFuture.completedFuture(null);
                     }
                     if (attempt >= maxRetries) {
-                        return CompletableFuture.failedFuture(new IOException("HTTP " + code));
+                        return CompletableFuture.failedFuture(new NetworkException("HTTP " + code));
                     }
                     return delayed(backoff).thenCompose(v -> sendWithRetry(json, attempt + 1, nextBackoff(backoff)));
                 })
                 .exceptionallyCompose(ex -> {
                     if (attempt >= maxRetries) {
-                        return CompletableFuture.failedFuture(ex);
+                        return CompletableFuture.failedFuture(new NetworkException("HTTP send failed", ex));
                     }
                     return delayed(backoff).thenCompose(v -> sendWithRetry(json, attempt + 1, nextBackoff(backoff)));
                 });

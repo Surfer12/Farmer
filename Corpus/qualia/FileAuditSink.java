@@ -73,7 +73,7 @@ public final class FileAuditSink implements AuditSink {
         try {
             writer = new BufferedWriter(new FileWriter(currentFile, true));
         } catch (IOException e) {
-            throw new RuntimeException("Failed to open audit file", e);
+            throw new PersistenceException("Failed to open audit file", e);
         }
     }
 
@@ -107,7 +107,7 @@ public final class FileAuditSink implements AuditSink {
             try {
                 writeLine(json);
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new AuditWriteException("Failed to write audit record", e);
             }
         }, executor);
     }
