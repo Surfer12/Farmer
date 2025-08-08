@@ -1,5 +1,8 @@
 # Ψ Framework Go To Market Strategy
 
+SPDX-License-Identifier: GPL-3.0-only
+SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
+
 ## 🎯 Executive Summary
 
 The Ψ framework is a novel decision-making system that combines hierarchical Bayesian inference with audit trails for transparent, defensible AI-assisted reasoning. This GTM strategy outlines how to launch and promote the framework to research institutions, AI safety organizations, and decision-making teams.
