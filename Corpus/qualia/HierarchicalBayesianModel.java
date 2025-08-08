@@ -1,4 +1,4 @@
-package jumping.qualia;
+package qualia;
 
 import java.util.List;
 import java.util.Objects;

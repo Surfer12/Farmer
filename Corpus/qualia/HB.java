@@ -1,4 +1,4 @@
-package jumping.qualia;
+package qualia;
 
 /*
  * © 2025 Jumping Quail Solutions. All rights reserved.
