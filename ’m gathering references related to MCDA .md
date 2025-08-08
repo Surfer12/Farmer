@@ -1,0 +1,5 @@
+’m gathering references related to MCDA and rule engines. For MCDA, I’ll include works like Keeney & Raiffa's Decisions with Multiple Objectives and Saaty’s AHP. I’m considering whether to include Drools for rule engines, but I might skip it. 
+For operational safety norms, I'll reference Designing Data-Intensive Applications and Release It! as well. I'll create a markdown snippet for a references section that includes headings, a bullet list with bold titles, compact citations formatted with markdown links, and in-text citation suggestions too.
+Creating concise citatiCreating concise citations
+I’m considering how to integrate citations into existing files, like ### How I decide, step by step.md or Preparing the status update and summary.sty. But the user is asking for citations, not file modifications. So, I’ll focus on providing easy-to-use content instead.
+I'll create a minimal references secti
