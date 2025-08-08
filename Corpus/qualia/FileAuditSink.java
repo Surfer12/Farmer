@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
  * exceeds {@code maxMillis}. Each line is a single JSON object describing an
  * {@link AuditRecord}. No external JSON library is required.
  */
-public final class FileAuditSink implements AuditSink {
+public final class FileAuditSink implements AuditSink, AutoCloseable {
     private final File directory;
     private final String filePrefix;
     private final long maxBytes;
@@ -31,6 +31,7 @@ public final class FileAuditSink implements AuditSink {
     private volatile BufferedWriter writer;
     private volatile File currentFile;
     private volatile long createdAtMs;
+    private volatile boolean closed = false;
 
     /**
      * Creates a file sink.
@@ -66,6 +67,7 @@ public final class FileAuditSink implements AuditSink {
      * Rotates the output file, closing the previous writer if open.
      */
     private synchronized void rotate() {
+        if (closed) throw new PersistenceException("Sink closed");
         closeQuietly();
         createdAtMs = System.currentTimeMillis();
         String name = filePrefix + "-" + createdAtMs + ".jsonl";
@@ -93,6 +95,7 @@ public final class FileAuditSink implements AuditSink {
      * Writes a single line and triggers rotation if thresholds are exceeded.
      */
     private synchronized void writeLine(String line) throws IOException {
+        if (closed) throw new IOException("sink closed");
         if (writer == null) rotate();
         writer.write(line);
         writer.write('\n');
@@ -104,6 +107,9 @@ public final class FileAuditSink implements AuditSink {
 
     @Override
     public CompletableFuture<Void> write(AuditRecord rec, AuditOptions opts) {
+        if (closed) {
+            return CompletableFuture.failedFuture(new AuditWriteException("Sink closed"));
+        }
         return CompletableFuture.runAsync(() -> {
             String json = toJson(rec);
             try {
@@ -114,6 +120,33 @@ public final class FileAuditSink implements AuditSink {
                 throw new AuditWriteException("Failed to write audit record", e);
             }
         }, executor);
+    }
+
+    /**
+     * Closes the sink gracefully with a small default grace period.
+     */
+    @Override
+    public void close() {
+        shutdown(java.time.Duration.ofSeconds(1));
+    }
+
+    /**
+     * Shuts down the executor and closes the writer, waiting up to the grace period.
+     */
+    public void shutdown(java.time.Duration grace) {
+        closed = true;
+        closeQuietly();
+        executor.shutdown();
+        long waitMs = grace == null ? 0 : Math.max(0, grace.toMillis());
+        try {
+            if (!executor.awaitTermination(waitMs, java.util.concurrent.TimeUnit.MILLISECONDS)) {
+                executor.shutdownNow();
+            }
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+            executor.shutdownNow();
+        }
+        MetricsRegistry.get().incCounter("audit_sink_closed_total");
     }
 
     /**

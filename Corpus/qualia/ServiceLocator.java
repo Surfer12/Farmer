@@ -10,6 +10,7 @@ import java.util.Objects;
 public final class ServiceLocator {
     private final ModelFactory modelFactory;
     private final AuditSink auditSink;
+    private MetricsServer metricsServer;
 
     private ServiceLocator(ModelFactory modelFactory, AuditSink auditSink) {
         this.modelFactory = Objects.requireNonNull(modelFactory);
@@ -27,6 +28,7 @@ public final class ServiceLocator {
     public static final class Builder {
         private ModelFactory modelFactory = ModelFactory.defaultFactory();
         private AuditSink auditSink = AuditSink.noop();
+        private boolean startMetrics = false;
 
         public Builder modelFactory(ModelFactory f) { this.modelFactory = Objects.requireNonNull(f); return this; }
         public Builder auditSink(AuditSink s) { this.auditSink = Objects.requireNonNull(s); return this; }
@@ -69,9 +71,30 @@ public final class ServiceLocator {
             return this;
         }
 
+        public Builder withMetricsServer(boolean enable) { this.startMetrics = enable; return this; }
+
         private static long parseLong(String s, long def) { try { return s==null?def:Long.parseLong(s); } catch (Exception e) { return def; } }
 
-        public ServiceLocator build() { return new ServiceLocator(modelFactory, auditSink); }
+        public ServiceLocator build() {
+            ServiceLocator sl = new ServiceLocator(modelFactory, auditSink);
+            if (startMetrics) {
+                try {
+                    sl.metricsServer = MetricsServer.startFromEnv();
+                } catch (RuntimeException ex) {
+                    ErrorReporter.report("ServiceLocator.metricsServer", ex);
+                }
+            }
+            // Shutdown hook for graceful close
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                try {
+                    if (sl.auditSink instanceof AutoCloseable c) c.close();
+                } catch (Exception ignored) {}
+                try {
+                    if (sl.metricsServer != null) sl.metricsServer.close();
+                } catch (Exception ignored) {}
+            }, "qualia-shutdown"));
+            return sl;
+        }
     }
 }
 

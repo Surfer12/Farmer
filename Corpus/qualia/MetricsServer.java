@@ -30,7 +30,7 @@ import java.util.Objects;
  *
  * If TLS env is not provided, falls back to HTTP for local development.
  */
-public final class MetricsServer {
+public final class MetricsServer implements AutoCloseable {
     private final HttpServer server;
     private final int port;
     private final boolean https;
@@ -72,6 +72,7 @@ public final class MetricsServer {
     public void stop(Duration grace) {
         int secs = (int) Math.max(0, grace == null ? 0 : grace.getSeconds());
         server.stop(secs);
+        MetricsRegistry.get().incCounter("metrics_server_stopped_total");
     }
 
     public int port() { return port; }
@@ -111,6 +112,11 @@ public final class MetricsServer {
             ex.sendResponseHeaders(200, bytes.length);
             try (OutputStream os = ex.getResponseBody()) { os.write(bytes); }
         }
+    }
+
+    @Override
+    public void close() {
+        stop(Duration.ofSeconds(1));
     }
 }
 

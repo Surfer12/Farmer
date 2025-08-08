@@ -18,11 +18,12 @@ import java.util.concurrent.TimeUnit;
  * transient failures up to {@code maxRetries}, doubling backoff each attempt
  * up to a small cap.
  */
-public final class HttpAuditSink implements AuditSink {
+public final class HttpAuditSink implements AuditSink, AutoCloseable {
     private final HttpClient client;
     private final URI endpoint;
     private final int maxRetries;
     private final Duration initialBackoff;
+    private volatile boolean closed = false;
 
     /**
      * Creates an HTTP sink.
@@ -42,6 +43,9 @@ public final class HttpAuditSink implements AuditSink {
 
     @Override
     public CompletableFuture<Void> write(AuditRecord rec, AuditOptions opts) {
+        if (closed) {
+            return CompletableFuture.failedFuture(new AuditWriteException("Sink closed"));
+        }
         String json = toJson(rec);
         if (opts != null && opts.dryRun()) {
             return CompletableFuture.completedFuture(null);
@@ -81,6 +85,12 @@ public final class HttpAuditSink implements AuditSink {
                     MetricsRegistry.get().incCounter("http_retry_total");
                     return delayed(backoff).thenCompose(v -> sendWithRetry(json, attempt + 1, nextBackoff(backoff)));
                 });
+    }
+
+    @Override
+    public void close() {
+        closed = true;
+        MetricsRegistry.get().incCounter("http_sink_closed_total");
     }
 
     /**
