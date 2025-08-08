@@ -8,6 +8,12 @@
     "swiftmodule": "/Users/ryan_david_oates/Farmer/.build/arm64-apple-macosx/debug/UOIFCore.build/Confidence~partial.swiftmodule",
     "swift-dependencies": "/Users/ryan_david_oates/Farmer/.build/arm64-apple-macosx/debug/UOIFCore.build/Confidence.swiftdeps"
   },
+  "/Users/ryan_david_oates/Farmer/Sources/UOIFCore/CorpusData.swift": {
+    "dependencies": "/Users/ryan_david_oates/Farmer/.build/arm64-apple-macosx/debug/UOIFCore.build/CorpusData.d",
+    "object": "/Users/ryan_david_oates/Farmer/.build/arm64-apple-macosx/debug/UOIFCore.build/CorpusData.swift.o",
+    "swiftmodule": "/Users/ryan_david_oates/Farmer/.build/arm64-apple-macosx/debug/UOIFCore.build/CorpusData~partial.swiftmodule",
+    "swift-dependencies": "/Users/ryan_david_oates/Farmer/.build/arm64-apple-macosx/debug/UOIFCore.build/CorpusData.swiftdeps"
+  },
   "/Users/ryan_david_oates/Farmer/Sources/UOIFCore/PsiModel.swift": {
     "dependencies": "/Users/ryan_david_oates/Farmer/.build/arm64-apple-macosx/debug/UOIFCore.build/PsiModel.d",
     "object": "/Users/ryan_david_oates/Farmer/.build/arm64-apple-macosx/debug/UOIFCore.build/PsiModel.swift.o",

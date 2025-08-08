@@ -1,0 +1,273 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+
+\geometry{margin=1in}
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{UOIF Analysis 2025}
+\lhead{Epistemic Confidence Model}
+\rfoot{\thepage}
+
+\title{UOIF Epistemic Confidence Model: \\
+2025 Computational Analysis and Reflection}
+
+\author{UOIF CLI Analysis}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This document presents a comprehensive analysis of the Unified Optimization and Inference Framework (UOIF) epistemic confidence model applied to 2025 mathematical contest problems and 2024 reference cases. We examine the behavior of the hybrid evidence blending, exponential penalty system, and Bayesian posterior calibration across different canonical artifact availability scenarios, demonstrating the model's monotonic, auditable response characteristics and bounded confidence measures.
+\end{abstract}
+
+\section{Mathematical Framework}
+
+The UOIF model computes epistemic confidence $\Psi(x)$ through a three-stage transformation:
+
+\subsection{Hybrid Evidence Blending}
+
+The hybrid evidence score combines symbolic reasoning $S$ with external canonical evidence $N$:
+
+\begin{equation}
+O(\alpha) = \alpha S + (1-\alpha) N
+\end{equation}
+
+where $\alpha \in [0,1]$ represents the allocation weight. This formulation ensures:
+\begin{itemize}
+    \item Monotonicity: $\frac{\partial O}{\partial \alpha} = S - N < 0$ when $N > S$ (canonical dominance)
+    \item Transparency: Linear blending with interpretable weights
+    \item Auditability: Clear relationship between inputs and outputs
+\end{itemize}
+
+\subsection{Exponential Penalty System}
+
+Risk factors are incorporated through an exponential penalty:
+
+\begin{equation}
+\text{pen} = \exp(-[\lambda_1 R_a + \lambda_2 R_v])
+\end{equation}
+
+where:
+\begin{itemize}
+    \item $R_a$ = authority risk factor
+    \item $R_v$ = verifiability risk factor  
+    \item $\lambda_1, \lambda_2$ = penalty weighting parameters
+\end{itemize}
+
+This maintains $\text{pen} \in (0,1]$ and provides smooth discounting without abrupt thresholding.
+
+\subsection{Bayesian Posterior Calibration}
+
+Expert/canonical uplift is encoded through capped Bayesian scaling:
+
+\begin{equation}
+P(H|E,\beta) = \min\{\beta \cdot P(H|E), 1\}
+\end{equation}
+
+The final confidence measure combines all components:
+
+\begin{equation}
+\boxed{\Psi(x) = O(\alpha) \cdot \text{pen} \cdot P(H|E,\beta)}
+\end{equation}
+
+\subsection{Sensitivity Analysis}
+
+The model's sensitivity to allocation changes is:
+
+\begin{equation}
+\frac{\partial \Psi}{\partial \alpha} = (S - N) \cdot \text{pen} \cdot P(H|E,\beta)
+\end{equation}
+
+This derivative is bounded and predictable, ensuring stable behavior under parameter variations.
+
+\section{Computational Results}
+
+\subsection{2025 Results (Canonical Eased)}
+
+For problems with established canonical solutions ($N = 0.97$, high external evidence):
+
+\begin{center}
+\begin{tabular}{@{}cccccccc@{}}
+\toprule
+$\alpha$ & Hybrid & Penalty & Posterior & $\Psi$ & $\frac{\partial \Psi}{\partial \alpha}$ & Confidence & Label \\
+\midrule
+0.120 & 0.9256 & 0.8976 & 1.0000 & 0.831 & -0.3321 & 0.93 & Primitive/Empirically Grounded \\
+0.150 & 0.9145 & 0.8976 & 1.0000 & 0.821 & -0.3321 & 0.93 & Primitive/Empirically Grounded \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Key observations:}
+\begin{itemize}
+    \item High confidence ($\Psi > 0.82$) due to strong canonical evidence
+    \item Negative sensitivity indicates proper monotonic response to canonical dominance
+    \item Capped posterior at 1.0 prevents overconfidence
+    \item Consistent classification as "Primitive/Empirically Grounded"
+\end{itemize}
+
+\subsection{2025 Problems (Pending Canonical)}
+
+For problems awaiting canonical verification ($N \in [0.88, 0.90]$, moderate external evidence):
+
+\begin{center}
+\begin{tabular}{@{}ccccccccc@{}}
+\toprule
+$\alpha$ & $N$ & Hybrid & Penalty & Posterior & $\Psi$ & $\frac{\partial \Psi}{\partial \alpha}$ & Confidence & Label \\
+\midrule
+0.170 & 0.89 & 0.8407 & 0.7965 & 0.9450 & 0.633 & -0.2183 & 0.85 & Interpretive/Contextual \\
+0.150 & 0.90 & 0.8550 & 0.7965 & 0.9450 & 0.644 & -0.2258 & 0.85 & Interpretive/Contextual \\
+0.200 & 0.88 & 0.8240 & 0.7965 & 0.9450 & 0.620 & -0.2108 & 0.85 & Interpretive/Contextual \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Key observations:}
+\begin{itemize}
+    \item Moderate confidence ($\Psi \in [0.62, 0.64]$) reflecting pending canonical status
+    \item Lower penalty (0.7965) due to increased authority/verifiability risks
+    \item Consistent "Interpretive/Contextual" classification
+    \item Sensitivity varies with $N$ values, showing proper parameter dependence
+\end{itemize}
+
+\subsection{2024 P1/P2/P4 Reference Cases}
+
+Historical problems with established solutions ($N = 0.96$, strong external evidence):
+
+\begin{center}
+\begin{tabular}{@{}cccccccc@{}}
+\toprule
+$\alpha$ & Hybrid & Penalty & Posterior & $\Psi$ & $\frac{\partial \Psi}{\partial \alpha}$ & Confidence & Label \\
+\midrule
+0.100 & 0.9240 & 0.9116 & 0.9450 & 0.796 & -0.3101 & 0.88 & Primitive/Empirically Grounded \\
+0.150 & 0.9060 & 0.9116 & 0.9450 & 0.781 & -0.3101 & 0.88 & Primitive/Empirically Grounded \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Key observations:}
+\begin{itemize}
+    \item High confidence ($\Psi \approx 0.78-0.80$) with strong canonical backing
+    \item Highest penalty value (0.9116) reflecting lower risk factors
+    \item Moderate posterior uplift (0.9450) prevents overconfidence
+    \item Stable "Primitive/Empirically Grounded" classification
+\end{itemize}
+
+\section{Model Parameter Analysis}
+
+\subsection{Common Parameters}
+\begin{itemize}
+    \item $S = 0.60$ (symbolic reasoning baseline)
+    \item $\lambda_1 = 0.85$, $\lambda_2 = 0.15$ (penalty weights)
+    \item Base posterior = 0.90 (prior confidence)
+\end{itemize}
+
+\subsection{Risk Factor Variations}
+\begin{center}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+Scenario & Authority Risk & Verifiability Risk & Penalty \\
+\midrule
+2025 Results & 0.12 & 0.04 & 0.8976 \\
+2025 Problems & 0.25 & 0.10 & 0.7965 \\
+2024 Reference & 0.10 & 0.05 & 0.9116 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The penalty system appropriately penalizes higher-risk scenarios while maintaining smooth transitions.
+
+\section{Confidence Trail Analysis}
+
+The model provides multi-stage confidence tracking:
+
+\begin{center}
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+Scenario & Sources & Hybrid & Penalty & Posterior & Overall \\
+\midrule
+2025 Results & 0.98 & 0.96 & 0.85 & 0.88 & 0.93 \\
+2025 Problems & 0.88 & 0.85 & 0.80 & 0.85 & 0.85 \\
+2024 Reference & 0.90 & 0.88 & 0.85 & 0.85 & 0.88 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The confidence trail clearly differentiates between:
+\begin{itemize}
+    \item \textbf{High-confidence scenarios}: Strong canonical backing (0.93 overall)
+    \item \textbf{Moderate-confidence scenarios}: Pending verification (0.85 overall)  
+    \item \textbf{Reference scenarios}: Established but historical (0.88 overall)
+\end{itemize}
+
+\section{Reflection and Implications}
+
+\subsection{Hybrid Linearity Properties}
+
+The linear hybrid formulation $O(\alpha) = \alpha S + (1-\alpha) N$ provides several critical advantages:
+
+\begin{enumerate}
+    \item \textbf{Monotonic Response}: As canonical sources arrive and $\alpha$ decreases, $\Psi$ increases monotonically when $N > S$, providing auditable and predictable behavior.
+    
+    \item \textbf{Transparent Blending}: The evidence combination is fully interpretable, with clear attribution to symbolic vs. external sources.
+    
+    \item \textbf{Sensitivity Control}: The bounded derivative $\frac{\partial \Psi}{\partial \alpha} = (S-N) \cdot \text{pen} \cdot \text{post}$ ensures small parameter changes cannot produce outsized confidence shifts.
+\end{enumerate}
+
+\subsection{Exponential Penalty System}
+
+The exponential penalty $\exp(-[\lambda_1 R_a + \lambda_2 R_v])$ maintains $\Psi \in [0,1]$ while providing:
+
+\begin{enumerate}
+    \item \textbf{Smooth Discounting}: No abrupt thresholding effects
+    \item \textbf{Bounded Behavior}: Natural upper bound prevents runaway confidence
+    \item \textbf{Risk Factor Integration}: Linear combination in log-space matches intuitive risk reasoning
+\end{enumerate}
+
+\subsection{Posterior Calibration}
+
+The capped Bayesian uplift $\min\{\beta \cdot P(H|E), 1\}$ provides:
+
+\begin{enumerate}
+    \item \textbf{Expert Integration}: Systematic incorporation of canonical/expert evidence
+    \item \textbf{Overconfidence Prevention}: Hard cap at certainty prevents inflation
+    \item \textbf{Tunable Uplift}: Parameter $\beta$ allows calibration to different evidence types
+\end{enumerate}
+
+\subsection{Governance and Auditability}
+
+The model supports robust governance through:
+
+\begin{itemize}
+    \item \textbf{Observable Triggers}: Each parameter change maps to identifiable real-world events
+    \item \textbf{Stepwise Confidence}: Multi-stage confidence tracking identifies where robustness varies
+    \item \textbf{Promotion Criteria}: Transitions between "Interpretive" and "Primitive" classifications tied to canonical artifacts
+\end{itemize}
+
+\section{Conclusions}
+
+The UOIF epistemic confidence model demonstrates several key strengths:
+
+\begin{enumerate}
+    \item \textbf{Principled Mathematical Foundation}: Hybrid linearity, exponential penalties, and Bayesian calibration provide theoretically sound confidence estimation.
+    
+    \item \textbf{Practical Auditability}: Transparent computations with bounded, predictable responses to parameter changes.
+    
+    \item \textbf{Appropriate Calibration}: Clear differentiation between high-confidence canonical results (0.83), moderate-confidence pending problems (0.63), and reference cases (0.79).
+    
+    \item \textbf{Robust Governance}: Confidence trails and observable triggers enable systematic, defensible updates tied to canonical artifact availability.
+\end{enumerate}
+
+The model successfully operationalizes how AI-generated mathematical proofs and solutions interact with official verification artifacts, providing a path from interpretive analysis to empirically grounded claims while maintaining appropriate epistemic humility.
+
+\end{document}

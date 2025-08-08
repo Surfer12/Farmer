@@ -129,6 +129,10 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ryan_david_oates/Farmer/Sources/UOIFCore/CorpusData.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ryan_david_oates/Farmer/Sources/UOIFCore/PsiModel.swift"
         },
         {
@@ -149,6 +153,7 @@
       "moduleOutputPath" : "/Users/ryan_david_oates/Farmer/.build/arm64-apple-macosx/debug/Modules/UOIFCore.swiftmodule",
       "objects" : [
         "/Users/ryan_david_oates/Farmer/.build/arm64-apple-macosx/debug/UOIFCore.build/Confidence.swift.o",
+        "/Users/ryan_david_oates/Farmer/.build/arm64-apple-macosx/debug/UOIFCore.build/CorpusData.swift.o",
         "/Users/ryan_david_oates/Farmer/.build/arm64-apple-macosx/debug/UOIFCore.build/PsiModel.swift.o",
         "/Users/ryan_david_oates/Farmer/.build/arm64-apple-macosx/debug/UOIFCore.build/Types.swift.o"
       ],
@@ -211,6 +216,10 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ryan_david_oates/Farmer/.build/arm64-apple-macosx/debug/UOIFCore.build/CorpusData.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ryan_david_oates/Farmer/.build/arm64-apple-macosx/debug/UOIFCore.build/PsiModel.swift.o"
         },
         {
@@ -225,6 +234,7 @@
       "prepareForIndexing" : false,
       "sources" : [
         "/Users/ryan_david_oates/Farmer/Sources/UOIFCore/Confidence.swift",
+        "/Users/ryan_david_oates/Farmer/Sources/UOIFCore/CorpusData.swift",
         "/Users/ryan_david_oates/Farmer/Sources/UOIFCore/PsiModel.swift",
         "/Users/ryan_david_oates/Farmer/Sources/UOIFCore/Types.swift"
       ],
@@ -501,6 +511,7 @@
       "-incremental",
       "-c",
       "/Users/ryan_david_oates/Farmer/Sources/UOIFCore/Confidence.swift",
+      "/Users/ryan_david_oates/Farmer/Sources/UOIFCore/CorpusData.swift",
       "/Users/ryan_david_oates/Farmer/Sources/UOIFCore/PsiModel.swift",
       "/Users/ryan_david_oates/Farmer/Sources/UOIFCore/Types.swift",
       "-I",
@@ -745,6 +756,10 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ryan_david_oates/Farmer/Sources/UOIFCore/CorpusData.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ryan_david_oates/Farmer/Sources/UOIFCore/PsiModel.swift"
         },
         {
@@ -792,6 +807,10 @@
         {
           "kind" : "file",
           "name" : "/Users/ryan_david_oates/Farmer/.build/arm64-apple-macosx/debug/UOIFCore.build/Confidence.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ryan_david_oates/Farmer/.build/arm64-apple-macosx/debug/UOIFCore.build/CorpusData.swift.o"
         },
         {
           "kind" : "file",
@@ -854,6 +873,10 @@
         {
           "kind" : "file",
           "name" : "/Users/ryan_david_oates/Farmer/.build/arm64-apple-macosx/debug/UOIFCore.build/Confidence.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ryan_david_oates/Farmer/.build/arm64-apple-macosx/debug/UOIFCore.build/CorpusData.swift.o"
         },
         {
           "kind" : "file",
