@@ -11,6 +11,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ThreadLocalRandom;
 import java.security.SecureRandom;
+import java.util.stream.IntStream;
 
 /**
  * Core model implementation for Hierarchical Bayesian inference.
@@ -26,12 +27,13 @@ import java.security.SecureRandom;
  */
 public final class HierarchicalBayesianModel {
     private final ModelPriors priors;
+    private final int parallelThreshold;
 
     /**
      * Constructs a model with default priors.
      */
     public HierarchicalBayesianModel() {
-        this(ModelPriors.defaults());
+        this(ModelPriors.defaults(), 2048);
     }
 
     /**
@@ -39,7 +41,16 @@ public final class HierarchicalBayesianModel {
      * @param priors hyperparameters (non-null)
      */
     public HierarchicalBayesianModel(ModelPriors priors) {
+        this(priors, 2048);
+    }
+
+    /**
+     * Constructs a model with explicit priors and a parallelization threshold.
+     * If dataset size >= parallelThreshold, likelihood sums use parallel streams.
+     */
+    public HierarchicalBayesianModel(ModelPriors priors, int parallelThreshold) {
         this.priors = Objects.requireNonNull(priors, "priors must not be null");
+        this.parallelThreshold = Math.max(0, parallelThreshold);
     }
 
     /**
@@ -95,6 +106,63 @@ public final class HierarchicalBayesianModel {
                 .sum();
     }
 
+    // --- Prepared dataset fast-paths ---
+    private static final class Prepared {
+        final double[] pen;       // exp(-[λ1 Ra + λ2 Rv]) per-claim
+        final double[] pHe;       // P(H|E) per-claim
+        final boolean[] y;        // labels per-claim
+        Prepared(double[] pen, double[] pHe, boolean[] y) {
+            this.pen = pen; this.pHe = pHe; this.y = y;
+        }
+        int size() { return pen.length; }
+    }
+
+    private Prepared precompute(List<ClaimData> dataset) {
+        int n = dataset.size();
+        double[] pen = new double[n];
+        double[] pHe = new double[n];
+        boolean[] y = new boolean[n];
+        final double l1 = priors.lambda1();
+        final double l2 = priors.lambda2();
+        for (int i = 0; i < n; i++) {
+            ClaimData c = dataset.get(i);
+            pen[i] = Math.exp(-(l1 * c.riskAuthenticity() + l2 * c.riskVirality()));
+            pHe[i] = c.probabilityHgivenE();
+            y[i] = c.isVerifiedTrue();
+        }
+        return new Prepared(pen, pHe, y);
+    }
+
+    private double totalLogLikelihoodPrepared(Prepared prep, ModelParameters params, boolean parallel) {
+        final double O = params.alpha() * params.S() + (1.0 - params.alpha()) * params.N();
+        final double beta = params.beta();
+        final double epsilon = 1e-9;
+        final int n = prep.size();
+
+        if (!parallel) {
+            double sum = 0.0;
+            for (int i = 0; i < n; i++) {
+                double pHb = Math.min(beta * prep.pHe[i], 1.0);
+                double psi = O * prep.pen[i] * pHb;
+                // clamp
+                double clamped = Math.max(epsilon, Math.min(1.0 - epsilon, psi));
+                sum += prep.y[i] ? Math.log(clamped) : Math.log(1.0 - clamped);
+            }
+            return sum;
+        }
+
+        return IntStream.range(0, n).parallel().mapToDouble(i -> {
+            double pHb = Math.min(beta * prep.pHe[i], 1.0);
+            double psi = O * prep.pen[i] * pHb;
+            double clamped = Math.max(epsilon, Math.min(1.0 - epsilon, psi));
+            return prep.y[i] ? Math.log(clamped) : Math.log(1.0 - clamped);
+        }).sum();
+    }
+
+    private double logPosteriorPrepared(Prepared prep, ModelParameters params, boolean parallel) {
+        return totalLogLikelihoodPrepared(prep, params, parallel) + logPriors(params);
+    }
+
     /**
      * Log-priors for a given parameter draw. Placeholder (returns 0.0).
      * In a full implementation, provide log-PDFs for Beta, LogNormal, etc.
@@ -130,7 +198,9 @@ public final class HierarchicalBayesianModel {
     public List<ModelParameters> performInference(List<ClaimData> dataset, int sampleCount) {
         long seed = ThreadLocalRandom.current().nextLong();
         System.out.println("performInference: seed=" + seed + ", samples=" + sampleCount);
-        return runMhChain(dataset, sampleCount, seed);
+        Prepared prep = precompute(dataset);
+        boolean par = dataset.size() >= parallelThreshold;
+        return runMhChain(prep, sampleCount, seed, par);
     }
 
     /**
@@ -138,7 +208,9 @@ public final class HierarchicalBayesianModel {
      */
     public List<ModelParameters> performInference(List<ClaimData> dataset, int sampleCount, long seed) {
         System.out.println("performInference(explicit): seed=" + seed + ", samples=" + sampleCount);
-        return runMhChain(dataset, sampleCount, seed);
+        Prepared prep = precompute(dataset);
+        boolean par = dataset.size() >= parallelThreshold;
+        return runMhChain(prep, sampleCount, seed, par);
     }
 
     /**
@@ -158,6 +230,8 @@ public final class HierarchicalBayesianModel {
      */
     public List<List<ModelParameters>> performInferenceParallel(List<ClaimData> dataset, int chains, int samplesPerChain, long baseSeed) {
         if (chains <= 0 || samplesPerChain <= 0) return List.of();
+        final Prepared prep = precompute(dataset);
+        final boolean par = dataset.size() >= parallelThreshold;
         int poolSize = Math.min(chains, Math.max(1, Runtime.getRuntime().availableProcessors()));
         ExecutorService pool = Executors.newFixedThreadPool(poolSize, r -> {
             Thread t = new Thread(r, "qualia-mh-");
@@ -171,7 +245,7 @@ public final class HierarchicalBayesianModel {
                 // Use the 64-bit golden ratio odd constant for good spacing in Z/2^64Z
                 final long PHI64 = 0x9E3779B97F4A7C15L;
                 final long seed = baseSeed + (PHI64 * (long) c);
-                futures.add(CompletableFuture.supplyAsync(() -> runMhChain(dataset, samplesPerChain, seed), pool));
+                futures.add(CompletableFuture.supplyAsync(() -> runMhChain(prep, samplesPerChain, seed, par), pool));
             }
             List<List<ModelParameters>> results = new ArrayList<>(chains);
             for (CompletableFuture<List<ModelParameters>> f : futures) {
@@ -192,11 +266,17 @@ public final class HierarchicalBayesianModel {
     }
 
     private List<ModelParameters> runMhChain(List<ClaimData> dataset, int sampleCount, long seed) {
+        Prepared prep = precompute(dataset);
+        boolean par = dataset.size() >= parallelThreshold;
+        return runMhChain(prep, sampleCount, seed, par);
+    }
+
+    private List<ModelParameters> runMhChain(Prepared prep, int sampleCount, long seed, boolean parallel) {
         System.out.println("Starting MH chain (seed=" + seed + ")...");
         if (sampleCount <= 0) return List.of();
 
         ModelParameters current = new ModelParameters(0.7, 0.6, 0.5, 1.0);
-        double currentLogPost = logPosterior(dataset, current);
+        double currentLogPost = logPosteriorPrepared(prep, current, parallel);
         ArrayList<ModelParameters> samples = new ArrayList<>(sampleCount);
 
         java.util.Random rng = new java.util.Random(seed);
@@ -212,7 +292,7 @@ public final class HierarchicalBayesianModel {
             double propBeta = Math.max(1e-6, current.beta() * Math.exp(stepBeta * (rng.nextDouble() * 2 - 1)));
 
             ModelParameters proposal = new ModelParameters(propS, propN, propAlpha, propBeta);
-            double propLogPost = logPosterior(dataset, proposal);
+            double propLogPost = logPosteriorPrepared(prep, proposal, parallel);
             double acceptProb = Math.min(1.0, Math.exp(propLogPost - currentLogPost));
             if (rng.nextDouble() < acceptProb) {
                 current = proposal;

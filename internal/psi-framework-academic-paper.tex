@@ -101,6 +101,45 @@ The Ψ score is monotonic in evidence quality and anti-monotonic in risk factors
 \item $\frac{\partial \score}{\partial \Nsig} > 0$ (improving canonical evidence increases confidence)
 \end{enumerate}
 \end{theorem}
+\section{Analogy: Equivalence Patterns in Enumerative Geometry}
+
+A Looijenga pair $(Y,D)$ (log Calabi–Yau surface of maximal boundary) admits multiple enumerative theories that are provably equivalent in large families: log Gromov–Witten (log GW), local Gromov–Witten (local GW) for associated Calabi–Yau total spaces, open Gromov–Witten (open GW) for toric CY$_3$ with Aganagic–Vafa branes (via a framing), refined/knot–quiver invariants (LMOV), and quiver Donaldson–Thomas (DT) invariants. These equivalences are closed-form solvable in canonical examples and are constructed geometrically via log$\to$open mechanisms and (quantized) scattering diagrams.
+
+\subsection{Canonical example: $ \mathbb{P}^2(1,4)$ (line $+$ conic)}
+Let $Y=\mathbb{P}^2$ with $D=D_1+D_2$ where $D_1$ is a line and $D_2$ a conic. The degree-$d$ genus-0 log invariant with maximal tangencies satisfies
+\[
+R_{0,d}\big(\mathbb{P}^2(1,4)\big)\;=\;\binom{2d}{d}.
+\]
+Its all-genus $q$-refinement is the quantized binomial coefficient
+\[
+R_d\big(\mathbb{P}^2(1,4)\big)(q)\;=\;\binom{2d}{d}_q,
+\]
+matching the open invariant $O_d(\mathbb{C}^3,L, f{=}1)$ and (via multiple-cover/Klemm–Pandharipande) the local CY$_4$ genus-0 counts on $\mathrm{Tot}\,\mathcal{O}_{\mathbb{P}^2}(-1)\oplus\mathcal{O}_{\mathbb{P}^2}(-2)$.
+
+\subsection{Geometric mechanism and scattering}
+- \textbf{Log $\to$ open}: Designate one boundary component as “open,” remove its ray, record a framing, and twist by remaining toric rays to obtain a toric CY$_3$ with an Aganagic–Vafa Lagrangian; log tangencies correspond to disk windings.
+- \textbf{Scattering diagrams}: Quantum broken lines and wall-crossing automorphisms produce the coefficients (e.g., $\binom{2d}{d}_q$) by multiplying theta functions associated to boundary directions; summing over broken lines recovers the refined generating functions.
+
+\subsection{Higher-genus structure and integrality}
+Under a positivity assumption (Property O), there is a higher-genus log/open correspondence equating all-genus generating functions. The resulting refined BPS series are Laurent polynomials with integer coefficients, providing a refinement of local (CY$_4$) KP invariants. In many two-boundary cases, the same numbers equal quiver DT invariants (e.g., the $2$-loop quiver).
+
+\subsection{Connection to $\Psi$-framework invariants}
+These equivalences mirror our structural invariance results:
+- \textbf{Gauge freedom}: Different presentations (log/local/open/quiver) preserve the same counting structure, analogous to reparameterization-equivalence of $\Psi$.
+- \textbf{Threshold transfer}: Framing/winding reparametrizations preserve decision sets within the “sub-cap” (unsaturated) regime, paralleling $\tau'=\tau\cdot(\beta/\beta')$.
+- \textbf{Sensitivity invariants}: Order and monotonicity are preserved under structural moves, akin to sign/zero-set preservation of $\partial\Psi$ under trivial reparameterizations.
+
+\section{Why the Trivial Bijection Matters: Gauge Freedom, Threshold Transfer, and Sensitivity Invariants}
+
+\subsection{Notation and Guardrailed Score}
+Let $S,N\in[0,1]$ be internal and canonical signal strengths; $\alpha\in[0,1]$ the allocation lever; $r=(R_a,R_v)\in[0,1]^2$ risks with positive weights $(\lambda_1,\lambda_2)$; and $\beta\ge 1$ an uplift factor with a hard cap at $1$. Define
+\[
+O(\alpha) = \alpha S + (1-\alpha)N, \quad \operatorname{pen}(r) = \exp\!\big(-[\lambda_1 R_a + \lambda_2 R_v]\big).
+\]
+The guardrailed score is
+\[
+\Psi(S,N,\alpha,r,\lambda_1,\lambda_2,\beta) = \min\{\beta\,O(\alpha)\,\operatorname{pen}(r),\,1\}.
+\]
 
 \begin{proof}
 In the sub-cap region where $\uplift \cdot \blend(\alloc) \cdot \pen(\riskvec) < 1$:

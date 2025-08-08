@@ -145,3 +145,5 @@ SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
 # Run with specific configuration
 java -jar qualia.jar --config config.yaml
 ```
+
+
