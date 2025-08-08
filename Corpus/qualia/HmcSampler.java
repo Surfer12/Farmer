@@ -124,6 +124,153 @@ final class HmcSampler {
         return new Result(kept, accRate);
     }
 
+    /**
+     * Adaptive HMC with three warmup phases: step-size find, dual-averaging of ε, and diagonal mass estimation.
+     * After warmup, samples are drawn using tuned ε and massDiag.
+     */
+    public AdaptiveResult sampleAdaptive(int warmupIters,
+                                         int samplingIters,
+                                         int thin,
+                                         long seed,
+                                         double[] z0,
+                                         double initStepSize,
+                                         int leapfrogSteps,
+                                         double targetAccept) {
+        Random rng = new Random(seed);
+        double[] z = z0.clone();
+        // Mass diag initialised to ones
+        double[] massDiag = new double[] {1.0, 1.0, 1.0, 1.0};
+
+        int findWindow = Math.max(10, warmupIters / 10);
+        int adaptWindow = Math.max(10, warmupIters / 2);
+        int massWindow = Math.max(10, warmupIters - findWindow - adaptWindow);
+        int phase1End = findWindow;
+        int phase2End = findWindow + adaptWindow;
+
+        double mu = Math.log(10.0 * Math.max(1e-6, initStepSize));
+        double logEps = Math.log(Math.max(1e-6, initStepSize));
+        double h = 0.0;
+        double t0 = 10.0;
+        double kappa = 0.75;
+        double logEpsBar = 0.0;
+        int tCount = 0;
+
+        double[] meanZ = new double[4];
+        double[] m2Z = new double[4];
+        int massN = 0;
+        int divergenceCount = 0;
+
+        // Warmup loop
+        for (int iter = 0; iter < warmupIters; iter++) {
+            // Sample momentum
+            double[] p = new double[4];
+            for (int i = 0; i < 4; i++) p[i] = rng.nextGaussian() * Math.sqrt(massDiag[i]);
+
+            double[] zCur = z.clone();
+            double[] pCur = p.clone();
+
+            double logT0 = logTarget(z);
+            double H0 = -logT0 + 0.5 * dotInvMass(p, massDiag);
+
+            double[] grad = gradLogTarget(z);
+            double eps = Math.exp(logEps);
+            int L = Math.max(1, leapfrogSteps);
+            for (int l = 0; l < L; l++) {
+                axpy(eps * 0.5, grad, p);
+                axpyWithInvMass(eps, p, massDiag, z);
+                grad = gradLogTarget(z);
+                axpy(eps * 0.5, grad, p);
+            }
+
+            double logT1 = logTarget(z);
+            double H1 = -logT1 + 0.5 * dotInvMass(p, massDiag);
+            double acceptProb = Math.min(1.0, Math.exp(H0 - H1));
+            boolean accept = rng.nextDouble() < acceptProb;
+            if (!accept) {
+                z = zCur;
+            }
+
+            // Divergence check: large energy error or NaN
+            if (!Double.isFinite(H0) || !Double.isFinite(H1) || (H1 - H0) > 50.0) {
+                divergenceCount++;
+            }
+
+            // Phase-specific adaptation
+            if (iter < phase1End) {
+                // Coarse step-size finder
+                if (acceptProb < 0.5) logEps -= 0.1; else if (acceptProb > 0.9) logEps += 0.1;
+            } else if (iter < phase2End) {
+                // Dual-averaging towards targetAccept
+                tCount++;
+                double eta = 1.0 / (tCount + t0);
+                h = (1.0 - eta) * h + eta * (targetAccept - acceptProb);
+                double logEpsRaw = mu - Math.sqrt(tCount) / 0.05 * h;
+                double w = Math.pow(tCount, -kappa);
+                logEps = (1.0 - w) * logEps + w * logEpsRaw;
+                logEpsBar = (tCount == 1) ? logEps : ((tCount - 1) / (double) tCount) * logEpsBar + (1.0 / tCount) * logEps;
+            } else {
+                // Accumulate z variance for diag mass
+                massN++;
+                for (int i = 0; i < 4; i++) {
+                    double delta = z[i] - meanZ[i];
+                    meanZ[i] += delta / massN;
+                    double delta2 = z[i] - meanZ[i];
+                    m2Z[i] += delta * delta2;
+                }
+            }
+        }
+
+        // Final tuned ε and mass diag
+        double tunedStep = Math.exp((tCount > 0) ? logEpsBar : logEps);
+        double[] tunedMass = massDiag;
+        if (massN > 10) {
+            tunedMass = new double[4];
+            for (int i = 0; i < 4; i++) {
+                double var = m2Z[i] / Math.max(1, massN - 1);
+                tunedMass[i] = Math.max(1e-6, var);
+            }
+        }
+
+        // Sampling with tuned parameters
+        List<ModelParameters> kept = new ArrayList<>();
+        int accepted = 0;
+        int keepEvery = Math.max(1, thin);
+        int keptCount = 0;
+        for (int iter = 0; iter < samplingIters; iter++) {
+            double[] p = new double[4];
+            for (int i = 0; i < 4; i++) p[i] = rng.nextGaussian() * Math.sqrt(tunedMass[i]);
+            double[] zCur = z.clone();
+            double logT0 = logTarget(z);
+            double H0 = -logT0 + 0.5 * dotInvMass(p, tunedMass);
+
+            double[] grad = gradLogTarget(z);
+            int L = Math.max(1, leapfrogSteps);
+            for (int l = 0; l < L; l++) {
+                axpy(tunedStep * 0.5, grad, p);
+                axpyWithInvMass(tunedStep, p, tunedMass, z);
+                grad = gradLogTarget(z);
+                axpy(tunedStep * 0.5, grad, p);
+            }
+            double logT1 = logTarget(z);
+            double H1 = -logT1 + 0.5 * dotInvMass(p, tunedMass);
+
+            double acceptProb = Math.min(1.0, Math.exp(H0 - H1));
+            if (rng.nextDouble() < acceptProb) {
+                accepted++;
+            } else {
+                z = zCur;
+            }
+
+            if ((iter % keepEvery) == 0) {
+                kept.add(zToParams(z));
+                keptCount++;
+            }
+        }
+
+        double accRate = accepted / (double) Math.max(1, samplingIters);
+        return new AdaptiveResult(kept, accRate, tunedStep, tunedMass, divergenceCount);
+    }
+
     /** logTarget(z) = logPosterior(θ(z)) + log|J(z)| */
     private double logTarget(double[] z) {
         ModelParameters params = zToParams(z);

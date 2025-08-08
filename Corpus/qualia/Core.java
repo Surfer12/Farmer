@@ -169,24 +169,25 @@ public final class Core {
         double[] z0 = new double[] { logit(0.7), logit(0.6), logit(0.5), Math.log(1.0) };
         double stepSize = getEnvDouble("HMC_STEP_SIZE", 0.01);
         int leap = getEnvInt("HMC_LEAP", 30);
-        HmcSampler.Result res1 = hmc.sample(
-                3000,      // total iterations
-                1000,      // burn-in
-                3,         // thinning
-                20240808L, // seed
-                z0,
-                stepSize,
-                leap
-        );
-        // Second chain (different seed)
-        HmcSampler.Result res2 = hmc.sample(
-                3000, 1000, 3, 20240809L, z0,
-                stepSize, leap
-        );
+        boolean adaptive = Boolean.parseBoolean(System.getenv().getOrDefault("HMC_ADAPT", "true"));
+        HmcSampler.AdaptiveResult a1;
+        HmcSampler.AdaptiveResult a2;
+        if (adaptive) {
+            int warm = getEnvInt("HMC_WARMUP", 1000);
+            int iters = getEnvInt("HMC_ITERS", 3000);
+            double targetAcc = getEnvDouble("HMC_TARGET_ACC", 0.75);
+            a1 = hmc.sampleAdaptive(warm, iters, 3, 20240808L, z0, stepSize, leap, targetAcc);
+            a2 = hmc.sampleAdaptive(warm, iters, 3, 20240809L, z0, stepSize, leap, targetAcc);
+        } else {
+            HmcSampler.Result res1 = hmc.sample(3000, 1000, 3, 20240808L, z0, stepSize, leap);
+            HmcSampler.Result res2 = hmc.sample(3000, 1000, 3, 20240809L, z0, stepSize, leap);
+            a1 = new HmcSampler.AdaptiveResult(res1.samples, res1.acceptanceRate, stepSize, new double[]{1,1,1,1}, 0);
+            a2 = new HmcSampler.AdaptiveResult(res2.samples, res2.acceptanceRate, stepSize, new double[]{1,1,1,1}, 0);
+        }
 
         // Report acceptance and mean Ψ per chain
         double meanPsi1 = 0.0; int m1 = 0;
-        for (ModelParameters p : res1.samples) {
+        for (ModelParameters p : a1.samples) {
             double s = 0.0;
             for (ClaimData c : dataset) s += model.calculatePsi(c, p);
             meanPsi1 += s / dataset.size();
@@ -194,15 +195,16 @@ public final class Core {
         }
         if (m1 > 0) meanPsi1 /= m1;
         double meanPsi2 = 0.0; int m2 = 0;
-        for (ModelParameters p : res2.samples) {
+        for (ModelParameters p : a2.samples) {
             double s = 0.0;
             for (ClaimData c : dataset) s += model.calculatePsi(c, p);
             meanPsi2 += s / dataset.size();
             m2++;
         }
         if (m2 > 0) meanPsi2 /= m2;
-        System.out.println("hmc: chain1 kept=" + res1.samples.size() + ", acc=" + String.format("%.3f", res1.acceptanceRate) + ", meanΨ=" + String.format("%.6f", meanPsi1));
-        System.out.println("hmc: chain2 kept=" + res2.samples.size() + ", acc=" + String.format("%.3f", res2.acceptanceRate) + ", meanΨ=" + String.format("%.6f", meanPsi2));
+        System.out.println("hmc: chain1 kept=" + a1.samples.size() + ", acc=" + String.format("%.3f", a1.acceptanceRate) + ", ε*=" + String.format("%.5f", a1.tunedStepSize));
+        System.out.println("hmc: chain2 kept=" + a2.samples.size() + ", acc=" + String.format("%.3f", a2.acceptanceRate) + ", ε*=" + String.format("%.5f", a2.tunedStepSize));
+        System.out.println("hmc: meanΨ ch1=" + String.format("%.6f", meanPsi1) + ", ch2=" + String.format("%.6f", meanPsi2));
 
         // Diagnostics R̂/ESS on Ψ across chains (quick scalar view)
         java.util.List<java.util.List<ModelParameters>> chains = java.util.List.of(res1.samples, res2.samples);

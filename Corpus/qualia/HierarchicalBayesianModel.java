@@ -612,6 +612,72 @@ public final class HierarchicalBayesianModel implements PsiModel {
         return new double[] { dS, dN, dA, dB };
     }
 
+    /** Prepared fast-path gradient of log-posterior with respect to (S,N,alpha,beta). */
+    double[] gradientLogPosteriorPrepared(Prepared prep, ModelParameters params, boolean parallel) {
+        double dS = 0.0, dN = 0.0, dA = 0.0, dB = 0.0;
+
+        double S = params.S();
+        double N = params.N();
+        double A = params.alpha();
+        double B = params.beta();
+
+        final double O = A * S + (1.0 - A) * N;
+        final int n = prep.size();
+        final double eps = 1e-12;
+
+        for (int i = 0; i < n; i++) {
+            double pen = prep.pen[i];
+            double P = prep.pHe[i];
+            boolean capped = (B * P >= 1.0);
+            double pBeta = capped ? 1.0 : (B * P);
+            double psi = O * pen * pBeta;
+
+            double denomPos = Math.max(eps, psi);
+            double denomNeg = Math.max(eps, 1.0 - psi);
+
+            double dpsi_dS = A * pen * pBeta;
+            double dpsi_dN = (1.0 - A) * pen * pBeta;
+            double dpsi_dA = (S - N) * pen * pBeta;
+            double dpsi_dB = capped ? 0.0 : (O * pen * P);
+
+            if (prep.y[i]) {
+                dS += dpsi_dS / denomPos;
+                dN += dpsi_dN / denomPos;
+                dA += dpsi_dA / denomPos;
+                dB += dpsi_dB / denomPos;
+            } else {
+                dS += -dpsi_dS / denomNeg;
+                dN += -dpsi_dN / denomNeg;
+                dA += -dpsi_dA / denomNeg;
+                dB += -dpsi_dB / denomNeg;
+            }
+        }
+
+        // Priors
+        double epsUnit = 1e-12;
+        double Sa = priors.s_alpha();
+        double Sb = priors.s_beta();
+        double sClamped = Math.max(epsUnit, Math.min(1.0 - epsUnit, S));
+        dS += (Sa - 1.0) / sClamped - (Sb - 1.0) / (1.0 - sClamped);
+
+        double Na = priors.n_alpha();
+        double Nb = priors.n_beta();
+        double nClamped = Math.max(epsUnit, Math.min(1.0 - epsUnit, N));
+        dN += (Na - 1.0) / nClamped - (Nb - 1.0) / (1.0 - nClamped);
+
+        double Aa = priors.alpha_alpha();
+        double Ab = priors.alpha_beta();
+        double aClamped = Math.max(epsUnit, Math.min(1.0 - epsUnit, A));
+        dA += (Aa - 1.0) / aClamped - (Ab - 1.0) / (1.0 - aClamped);
+
+        double mu = priors.beta_mu();
+        double sigma = priors.beta_sigma();
+        double t = Math.log(Math.max(B, epsUnit));
+        dB += (-(t - mu) / (sigma * sigma) - 1.0) * (1.0 / Math.max(B, epsUnit));
+
+        return new double[] { dS, dN, dA, dB };
+    }
+
     private List<ModelParameters> runMhChain(List<ClaimData> dataset, int sampleCount, long seed) {
         Prepared prep = precompute(dataset);
         boolean par = dataset.size() >= parallelThreshold;
