@@ -163,19 +163,21 @@ public final class Core {
 
         // Unconstrained z0 corresponding to params ~ [0.7, 0.6, 0.5, 1.0]
         double[] z0 = new double[] { logit(0.7), logit(0.6), logit(0.5), Math.log(1.0) };
+        double stepSize = getEnvDouble("HMC_STEP_SIZE", 0.01);
+        int leap = getEnvInt("HMC_LEAP", 30);
         HmcSampler.Result res1 = hmc.sample(
                 3000,      // total iterations
                 1000,      // burn-in
                 3,         // thinning
                 20240808L, // seed
                 z0,
-                0.01,      // step size (tuned down)
-                30         // leapfrog steps (tuned up)
+                stepSize,
+                leap
         );
         // Second chain (different seed)
         HmcSampler.Result res2 = hmc.sample(
                 3000, 1000, 3, 20240809L, z0,
-                0.01, 30
+                stepSize, leap
         );
 
         // Report acceptance and mean Ψ per chain
@@ -215,6 +217,26 @@ public final class Core {
         double eps = 1e-12;
         double clamped = Math.max(eps, Math.min(1.0 - eps, x));
         return Math.log(clamped / (1.0 - clamped));
+    }
+
+    private static double getEnvDouble(String key, double fallback) {
+        try {
+            String v = System.getenv(key);
+            if (v == null || v.isEmpty()) return fallback;
+            return Double.parseDouble(v);
+        } catch (Exception e) {
+            return fallback;
+        }
+    }
+
+    private static int getEnvInt(String key, int fallback) {
+        try {
+            String v = System.getenv(key);
+            if (v == null || v.isEmpty()) return fallback;
+            return Integer.parseInt(v);
+        } catch (Exception e) {
+            return fallback;
+        }
     }
 }
 
