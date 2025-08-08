@@ -246,108 +246,12 @@ public final class HierarchicalBayesianModel implements PsiModel {
      * Parallelizes across observations when {@code parallel} is true.
      */
     public double[] gradientLogPosteriorPrepared(Prepared prep, ModelParameters params, boolean parallel) {
-        double dS = 0.0, dN = 0.0, dA = 0.0, dB = 0.0;
+        return gradientLogPosteriorPreparedInternal(prep, params, parallel);
+    }
 
-        // Likelihood gradient contributions
-        final double S = params.S();
-        final double N = params.N();
-        final double A = params.alpha();
-        final double B = params.beta();
-
-        final int n = prep.size();
-        if (!parallel) {
-            for (int i = 0; i < n; i++) {
-                double O = A * S + (1.0 - A) * N;
-                double pen = prep.pen[i];
-                double P = prep.pHe[i];
-                boolean capped = (B * P >= 1.0);
-                double pBeta = capped ? 1.0 : (B * P);
-                double psi = O * pen * pBeta;
-
-                double eps = 1e-12;
-                double denomPos = Math.max(eps, psi);
-                double denomNeg = Math.max(eps, 1.0 - psi);
-
-                double dpsi_dS = A * pen * pBeta;
-                double dpsi_dN = (1.0 - A) * pen * pBeta;
-                double dpsi_dA = (S - N) * pen * pBeta;
-                double dpsi_dB = capped ? 0.0 : (O * pen * P);
-
-                if (prep.y[i]) {
-                    dS += dpsi_dS / denomPos;
-                    dN += dpsi_dN / denomPos;
-                    dA += dpsi_dA / denomPos;
-                    dB += dpsi_dB / denomPos;
-                } else {
-                    dS += -dpsi_dS / denomNeg;
-                    dN += -dpsi_dN / denomNeg;
-                    dA += -dpsi_dA / denomNeg;
-                    dB += -dpsi_dB / denomNeg;
-                }
-            }
-        } else {
-            DoubleAdder aS = new DoubleAdder();
-            DoubleAdder aN = new DoubleAdder();
-            DoubleAdder aA = new DoubleAdder();
-            DoubleAdder aB = new DoubleAdder();
-            IntStream.range(0, n).parallel().forEach(i -> {
-                double O = A * S + (1.0 - A) * N;
-                double pen = prep.pen[i];
-                double P = prep.pHe[i];
-                boolean capped = (B * P >= 1.0);
-                double pBeta = capped ? 1.0 : (B * P);
-                double psi = O * pen * pBeta;
-
-                double eps = 1e-12;
-                double denomPos = Math.max(eps, psi);
-                double denomNeg = Math.max(eps, 1.0 - psi);
-
-                double dpsi_dS = A * pen * pBeta;
-                double dpsi_dN = (1.0 - A) * pen * pBeta;
-                double dpsi_dA = (S - N) * pen * pBeta;
-                double dpsi_dB = capped ? 0.0 : (O * pen * P);
-
-                if (prep.y[i]) {
-                    aS.add(dpsi_dS / denomPos);
-                    aN.add(dpsi_dN / denomPos);
-                    aA.add(dpsi_dA / denomPos);
-                    aB.add(dpsi_dB / denomPos);
-                } else {
-                    aS.add(-dpsi_dS / denomNeg);
-                    aN.add(-dpsi_dN / denomNeg);
-                    aA.add(-dpsi_dA / denomNeg);
-                    aB.add(-dpsi_dB / denomNeg);
-                }
-            });
-            dS = aS.sum();
-            dN = aN.sum();
-            dA = aA.sum();
-            dB = aB.sum();
-        }
-
-        // Prior gradients (same as non-prepared)
-        double epsUnit = 1e-12;
-        double Sa = priors.s_alpha();
-        double Sb = priors.s_beta();
-        double sClamped = Math.max(epsUnit, Math.min(1.0 - epsUnit, S));
-        dS += (Sa - 1.0) / sClamped - (Sb - 1.0) / (1.0 - sClamped);
-
-        double Na = priors.n_alpha();
-        double Nb = priors.n_beta();
-        double nClamped = Math.max(epsUnit, Math.min(1.0 - epsUnit, N));
-        dN += (Na - 1.0) / nClamped - (Nb - 1.0) / (1.0 - nClamped);
-
-        double Aa = priors.alpha_alpha();
-        double Ab = priors.alpha_beta();
-        double aClamped = Math.max(epsUnit, Math.min(1.0 - epsUnit, A));
-        dA += (Aa - 1.0) / aClamped - (Ab - 1.0) / (1.0 - aClamped);
-
-        double mu = priors.beta_mu();
-        double sigma = priors.beta_sigma();
-        double t = Math.log(Math.max(B, epsUnit));
-        dB += (-(t - mu) / (sigma * sigma) - 1.0) * (1.0 / Math.max(B, epsUnit));
-
-        return new double[] { dS, dN, dA, dB };
+    // Backward-compatible alias retained for internal callers
+    double[] gradientLogPosteriorPrepared(Prepared prep, ModelParameters params, boolean parallel, boolean ignored) {
+        return gradientLogPosteriorPreparedInternal(prep, params, parallel);
     }
 
     /**
@@ -613,7 +517,7 @@ public final class HierarchicalBayesianModel implements PsiModel {
     }
 
     /** Prepared fast-path gradient of log-posterior with respect to (S,N,alpha,beta). */
-    double[] gradientLogPosteriorPrepared(Prepared prep, ModelParameters params, boolean parallel) {
+    private double[] gradientLogPosteriorPreparedInternal(Prepared prep, ModelParameters params, boolean parallel) {
         double dS = 0.0, dN = 0.0, dA = 0.0, dB = 0.0;
 
         double S = params.S();

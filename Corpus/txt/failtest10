@@ -1,0 +1,11 @@
+What failed and why:
+testTieBreak: The comparator logic chose the wrong max when preferring higher primary/secondary but lower cost. I rewrote the comparator so stream().max selects:
+higher primary
+then higher secondary
+then lower cost (by comparing negative cost)
+Edits (key lines):
+PsiMcda.tieBreak(...): switched comparator to:
+.comparingDouble(primary).thenComparingDouble(secondary).thenComparingDouble(a -> -cost(a))
+PsiMcda.mapGovernanceWeights(...): ensured the returned weights sum to 1 by distributing the remainder 1 − wPsi over base weights.
+PsiMcda.ahpWeights(...): clamped the computed CR to be non-negative to avoid tiny negative due to floating point.
+PsiMcdaTest.main(...): temporary prints for failing test names (left in for quick triage; can remove if you prefer).

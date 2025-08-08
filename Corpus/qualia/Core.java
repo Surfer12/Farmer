@@ -209,7 +209,7 @@ public final class Core {
         System.out.println("hmc: meanΨ ch1=" + String.format("%.6f", meanPsi1) + ", ch2=" + String.format("%.6f", meanPsi2));
 
         // Diagnostics R̂/ESS on Ψ across chains (quick scalar view)
-        java.util.List<java.util.List<ModelParameters>> chains = java.util.List.of(res1.samples, res2.samples);
+        java.util.List<java.util.List<ModelParameters>> chains = java.util.List.of(a1.samples, a2.samples);
         Diagnostics diag = model.diagnose(chains);
         System.out.println("hmc: R̂ S=" + String.format("%.3f", diag.rHatS)
                 + ", N=" + String.format("%.3f", diag.rHatN)
