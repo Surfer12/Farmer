@@ -276,23 +276,49 @@ public final class Core {
     }
 
     private static void runUnifiedDetector(String[] args) {
+        java.util.Map<String,String> kv = parseKvArgs(args, 1);
         // Simple harmonic oscillator demo: y'' + ω^2 y = 0
-        double omega = 2.0 * Math.PI;
+        double omega = Double.parseDouble(kv.getOrDefault("omega", String.valueOf(2.0 * Math.PI)));
         UnifiedDetector.Dynamics dyn = (t, y, dy) -> { dy[0] = y[1]; dy[1] = -omega * omega * y[0]; };
+        // Initial state and energy-based invariant
+        final double[] y0 = new double[] {1.0, 0.0};
+        final double E0 = 0.5 * (y0[1]*y0[1] + omega*omega*y0[0]*y0[0]);
         UnifiedDetector.Invariant energy = new UnifiedDetector.Invariant() {
             @Override public double value(double t, double[] y) { return 0.5 * (y[1]*y[1] + omega*omega*y[0]*y[0]); }
-            @Override public double reference() { return 0.5; }
-            @Override public double tolerance() { return 1e-3; }
+            @Override public double reference() { return E0; }
+            @Override public double tolerance() { return Math.max(1e-9, E0 * 1e-3); }
         };
         UnifiedDetector ud = new UnifiedDetector();
-        double t = 0.0; double[] y = new double[] {1.0, 0.0};
-        double h = 1e-3; double eps = 1e-4; long budgetNs = 500_000; // 0.5 ms
-        for (int i = 0; i < 1000; i++) {
-            UnifiedDetector.Result r = ud.step(dyn, t, y, h, eps, budgetNs, new UnifiedDetector.Invariant[]{ energy });
-            t = r.tNext; y = r.yNext; h = r.hUsed;
-            if ((i % 100) == 0) {
-                System.out.println(String.format(java.util.Locale.ROOT, "unified: t=%.4f x=%.5f v=%.5f psi=%.3f err=%.2e", t, y[0], y[1], r.psi, r.errLocal));
+        double t = 0.0; double[] y = y0.clone();
+        double h = Double.parseDouble(kv.getOrDefault("h", "1e-3"));
+        double eps = Double.parseDouble(kv.getOrDefault("eps", "1e-4"));
+        long budgetNs = Long.parseLong(kv.getOrDefault("budgetNs", "500000")); // 0.5 ms
+        boolean triad = Boolean.parseBoolean(kv.getOrDefault("triad", "true"));
+        double epsRk4 = Double.parseDouble(kv.getOrDefault("epsRk4", "1e-5"));
+        double epsTaylor = Double.parseDouble(kv.getOrDefault("epsTaylor", "1e-5"));
+        double epsGeom = Double.parseDouble(kv.getOrDefault("epsGeom", "1e-5"));
+        java.io.File jsonl = new java.io.File(kv.getOrDefault("jsonl", "unified.jsonl"));
+
+        try (java.io.PrintWriter out = new java.io.PrintWriter(new java.io.BufferedWriter(new java.io.FileWriter(jsonl, true)))) {
+            for (int i = 0; i < 1000; i++) {
+                if (triad) {
+                    UnifiedDetector.Triad tr = ud.triadStep(dyn, t, y, h, eps, epsRk4, epsTaylor, epsGeom, budgetNs, new UnifiedDetector.Invariant[]{ energy });
+                    t = tr.tNext; y = tr.yNext; h = tr.hUsed;
+                    String line = String.format(java.util.Locale.ROOT,
+                            "{\"t\":%.6f,\"x\":%.8f,\"v\":%.8f,\"psi\":%.6f,\"h\":%.6e,\"eps_rk4\":%.6e,\"eps_taylor\":%.6e,\"eps_geom\":%.6e,\"accepted\":%s}",
+                            t, y[0], y[1], tr.psi, tr.hUsed, tr.epsRk4, tr.epsTaylor, tr.epsGeom, String.valueOf(tr.accepted));
+                    out.println(line);
+                } else {
+                    UnifiedDetector.Result r = ud.step(dyn, t, y, h, eps, budgetNs, new UnifiedDetector.Invariant[]{ energy });
+                    t = r.tNext; y = r.yNext; h = r.hUsed;
+                    String line = String.format(java.util.Locale.ROOT,
+                            "{\"t\":%.6f,\"x\":%.8f,\"v\":%.8f,\"psi\":%.6f,\"h\":%.6e,\"err_local\":%.6e}",
+                            t, y[0], y[1], r.psi, r.hUsed, r.errLocal);
+                    out.println(line);
+                }
             }
+        } catch (Exception e) {
+            System.err.println("unified: failed to write JSONL: " + e.getMessage());
         }
     }
 

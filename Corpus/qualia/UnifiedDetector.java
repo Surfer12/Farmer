@@ -103,8 +103,69 @@ final class UnifiedDetector {
         return new Result(t + h, ySel, clamp01(psi), errLoc, agree, h);
     }
 
+    /** Triad gating step: Adaptive RK4 (PI), Taylor remainder bound, geometric band check. */
+    Triad triadStep(Dynamics f,
+                    double t,
+                    double[] y,
+                    double hInit,
+                    double epsTotal,
+                    double epsRk4Budget,
+                    double epsTaylorBudget,
+                    double epsGeomBudget,
+                    long timeBudgetNanos,
+                    Invariant[] invariants) {
+        // 1) Adaptive RK4 with PI controller to meet epsRk4Budget
+        StepControlled sc = rk4Controlled(f, t, y, hInit, epsRk4Budget);
+
+        // 2) Taylor R4 bound using Lipschitz/curvature estimates
+        double lips = estimateLipschitz(f, t, y);
+        double kap = curvature.estimate(f, t, y, derivative(f, t, y));
+        double L_eff = Math.max(lips, kap);
+        double epsTaylor = (L_eff * Math.pow(sc.hUsed, 5)) / 120.0; // coarse Lagrange remainder proxy
+
+        // 3) Geometry surrogate: invariant drift beyond tolerance
+        double epsGeom = 0.0;
+        if (invariants != null) {
+            for (Invariant inv : invariants) {
+                double v = inv.value(sc.tNext, sc.yNext);
+                double drift = Math.abs(v - inv.reference());
+                double tol = Math.max(1e-12, inv.tolerance());
+                epsGeom += Math.max(0.0, drift - tol);
+            }
+        }
+
+        boolean accepted = (sc.errEst <= epsRk4Budget)
+                && (epsTaylor <= epsTaylorBudget)
+                && (epsGeom <= epsGeomBudget)
+                && (sc.errEst + epsTaylor + epsGeom <= epsTotal);
+
+        // agreement metric via cheap RK4 vs Euler compare
+        StepOut euler = euler(f, t, y, derivative(f, t, y), sc.hUsed);
+        double agree = 1.0 / (1.0 + l2diff(sc.yNext, euler.yNext));
+        double margin = Math.max(0.0, 1.0 - ((sc.errEst + epsTaylor + epsGeom) / Math.max(epsTotal, 1e-12)));
+        double psi = clamp01(margin) * clamp01(agree);
+
+        return new Triad(sc.tNext, sc.yNext, psi, sc.hUsed, sc.errEst, epsTaylor, epsGeom, accepted);
+    }
+
+    static final class Triad {
+        final double tNext;
+        final double[] yNext;
+        final double psi;
+        final double hUsed;
+        final double epsRk4;
+        final double epsTaylor;
+        final double epsGeom;
+        final boolean accepted;
+        Triad(double tNext, double[] yNext, double psi, double hUsed, double epsRk4, double epsTaylor, double epsGeom, boolean accepted) {
+            this.tNext=tNext; this.yNext=yNext; this.psi=psi; this.hUsed=hUsed; this.epsRk4=epsRk4; this.epsTaylor=epsTaylor; this.epsGeom=epsGeom; this.accepted=accepted;
+        }
+    }
+
     // --- Integrators ---
     private static final class StepOut { final double[] yNext; final double errEst; StepOut(double[] yNext, double errEst){ this.yNext=yNext; this.errEst=errEst; } }
+
+    private static final class StepControlled { final double tNext; final double[] yNext; final double hUsed; final double errEst; StepControlled(double tNext, double[] yNext, double hUsed, double errEst){ this.tNext=tNext; this.yNext=yNext; this.hUsed=hUsed; this.errEst=errEst; } }
 
     private static StepOut taylor2(Dynamics f, double t, double[] y, double[] dy, double h, double kappa) {
         // y_{n+1} ≈ y + h f + 0.5 h^2 y'' with ||y''||≈κ as magnitude proxy
@@ -131,10 +192,52 @@ final class UnifiedDetector {
         return new StepOut(yn, err);
     }
 
+    // Controlled RK4 using step doubling and PI controller
+    private static StepControlled rk4Controlled(Dynamics f, double t, double[] y, double hInit, double tol) {
+        double h = Math.max(1e-9, hInit);
+        double prevRatio = 1.0;
+        for (int iter = 0; iter < 10; iter++) {
+            // one step with h
+            StepOut big = rk4(f, t, y, h);
+            // two steps with h/2
+            StepOut half1 = rk4(f, t, y, h * 0.5);
+            StepOut half2 = rk4(f, t + h * 0.5, half1.yNext, h * 0.5);
+            double err = l2diff(half2.yNext, big.yNext);
+            if (err <= tol || h <= 1e-9) {
+                return new StepControlled(t + h, half2.yNext, h, err);
+            }
+            // PI controller (order p=4): exponents kp=0.2, ki=0.0667
+            double ratio = tol / Math.max(err, 1e-18);
+            double s = Math.pow(ratio, 0.2) * Math.pow(prevRatio, 0.0667);
+            s = Math.max(0.2, Math.min(5.0, s));
+            h *= s;
+            prevRatio = ratio;
+        }
+        StepOut last = rk4(f, t, y, h);
+        return new StepControlled(t + h, last.yNext, h, last.errEst);
+    }
+
     private static StepOut euler(Dynamics f, double t, double[] y, double[] dy, double h) {
         double[] yn = add(y, scale(dy, h));
         double err = 0.0; // unknown; caller will compare to RK4
         return new StepOut(yn, err);
+    }
+
+    private static double[] derivative(Dynamics f, double t, double[] y) { double[] dy = new double[y.length]; f.eval(t, y, dy); return dy; }
+
+    private static double estimateLipschitz(Dynamics f, double t, double[] y) {
+        int n = y.length;
+        double delta = 1e-4;
+        double maxColSum = 0.0; // crude matrix norm proxy
+        double[] base = new double[n]; f.eval(t, y, base);
+        for (int j = 0; j < n; j++) {
+            double[] yj = y.clone(); yj[j] += delta;
+            double[] fj = new double[n]; f.eval(t, yj, fj);
+            double colSum = 0.0;
+            for (int i = 0; i < n; i++) colSum += Math.abs((fj[i] - base[i]) / delta);
+            maxColSum = Math.max(maxColSum, colSum);
+        }
+        return maxColSum;
     }
 
     // --- Agreement and invariants ---

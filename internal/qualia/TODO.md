@@ -49,6 +49,72 @@ SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
   - [ ] CLI/env knobs: ε_total, per-component budgets (ε_RK4, ε_Taylor, ε_geom), method toggles, time budget; integrate with `Core unified` demo.
   - [ ] Tests: deterministic seeds; gating correctness on pass/fail cases; CA ground-truth and canonical bifurcation battery; ROC and agreement deltas.
 
+### Quick status: Ground-truthing, triangulation, accept/reject, integration/runtime (4–6 weeks), reporting/reproducibility, risk controls
+
+- **Scope and definitions**
+  - **CA ground‑truth**: canonical artifacts (official text/solutions/shortlist/jury) used as the authoritative label source; “pending” until posted, then promoted.
+  - **Canonical bifurcations**: points where sources disagree or where a promotion path forks (e.g., expert vs. canonical vs. community); tracked as events.
+  - **Triangulation**: agreement across methods (exact Ψ, Taylor within trust region, RK4‑checked geometric invariants) and sources (expert/community/canonical).
+
+- **Ground‑truth and bifurcations**
+  - **Dataset**: per‑item fields (id, text/URL, source class S/E/C, label, timestamps).
+  - **Bifurcations log**: record each fork: trigger, sources, decision rule, ΔΨ before/after, and final status (accept/reject/defer).
+  - **Promotion rules**: when canonical posts, auto‑upgrade ground‑truth and re‑run triad; archive previous decision context.
+
+- **Triangulation metrics**
+  - **Agreement**: 1 − |Ψ_exact − Ψ_Taylor|, 1 − |Ψ_exact − Ψ_RK4‑band|; aggregate via min/mean.
+  - **Stability**: variance of Ψ under small parameter perturbations (sensitivity stencils).
+  - **Margin**: |Ψ − τ| (or vector to multiple thresholds).
+  - **Invariant score**: fraction of sign/band checks passed.
+
+- **Accept/Reject analysis**
+  - **Gate**: ε_RK4 + ε_Taylor + ε_geom ≤ ε_total; accept if Ψ ≥ τ and gate holds; else defer or reject.
+  - **Reject causes**: insufficient margin, large method disagreement, invariant violation, or source conflict at bifurcation.
+  - **Audit**: JSONL row per decision: inputs, Ψs, epsilons, gate result, outcome, rationale, links to artifacts.
+
+- **Integration/runtime (4–6 weeks)**
+  - **Week 1–2**:
+    - Implement RK4 with PI controller (target ε_RK4), Taylor R4 with remainder + trust region, geometry invariant bands; wire JSONL logging and CLI/env knobs.
+    - Microbenchmarks; precompute derivative stencils; curvature caches; adaptive h; budget: sub‑ms p50 per item, ε_total documented.
+  - **Week 3–4**:
+    - Integrate with `UnifiedPsiRuntime` selector; graceful degradation paths; error‑budget accounting and surfaced metrics.
+    - Determinism tests; divergence handling; bifurcation tracker; replay harness.
+  - **Week 5–6**:
+    - Triangulation dashboards (agreement, margins, invariants); notebooks; figure scripts.
+    - Hardening: timeouts, backpressure, memory caps; finalize protocol prereg + release pack.
+
+- **Reporting and reproducibility**
+  - **Protocol pre‑registration (GPL‑3.0‑only)**: goals, datasets/sources, thresholds τ, ε_total, trust‑region radius, seeds, metrics (agreement/margin/invariants), decision rules, analysis plan, exclusion criteria, and stop conditions.
+  - **JSON/JSONL fields (triad per item)**: include Ψ_exact, Ψ_taylor, Ψ_rk4_band, chosen Ψ, eps (rk4, taylor, geom, total, budget), invariants, margin (τ, |Ψ−τ|), gate (passed, reason), decision, and bifurcation flags.
+  - **JSONL for chains (HMC) and triad**: keep consistent keys (`chain`, `i`, `S`,`N`,`alpha`,`beta`) and per‑decision triad rows.
+  - **Figures/notebook**: public notebook (pixi env) to load JSONL, compute agreement/margins, plot R̂/ESS, ε break‑downs, and decision ROC/sweep; export SVG/PNG plus CSV tables.
+
+- **Performance and graceful degradation**
+  - **Stencils/caches**: precompute E[pen·P], E[pen·pβ], and band bounds once per dataset; reuse across items.
+  - **Adaptive h**: PI controller targets ε_RK4; expand/shrink trust radius for Taylor based on recent remainder bounds.
+  - **Budget‑aware**: if time budget tight, prefer Taylor or lower‑order fast path; log increased ε_total with cause.
+
+- **Risk controls**
+  - **Determinism**: fixed seeds; versioned params and priors; frozen trust‑region radius per release.
+  - **Safety**: cap β effects; clamp Ψ; reject if invariants fail or disagreement > threshold.
+  - **Data/PII**: log redacted IDs; hash large payloads; keep source URLs only.
+  - **Ops**: timeouts per stage; backpressure; memory/entry caps for caches; health/metrics endpoints; JSONL rotation.
+  - **Governance**: signed protocol prereg; change log on thresholds/ε; audit trails with idempotency keys.
+
+- **Minimal task list (triad)**
+  - **RK4 PI**: single‑step API, controller tuning, ε_RK4 logging, tests (convergence, clamp under budget).
+  - **Taylor R4**: 2nd–4th terms, tight remainder; trust‑region adaptation; ε_Taylor logging; tests vs. exact.
+  - **Geometry**: sign/band checks; per‑violation penalties; ε_geom; tests (synthetic flips).
+  - **Runtime**: integrate in `UnifiedPsiRuntime`; budget selection; degradation path.
+  - **Logging/CLI**: JSONL emit; env/flags for τ, ε_total, trust radius, h limits.
+  - **Bench/tests**: microbenchmarks (p50/p95 latency), determinism, disagreement sweeps, replay on bifurcations.
+  - **Docs**: prereg template, JSON/JSONL field docs, ops runbook, notebook + figures.
+
+- **Summary**
+  - Defined ground‑truthing and bifurcation logging; set triangulation metrics and accept/reject gate.
+  - Provided 4–6 week integration/runtime plan, JSON/JSONL schemas, and reproducibility protocol.
+  - Outlined performance hooks and risk controls; included a minimal, actionable task list to implement the triad.
+
 ### Audit System
 - [ ] **Implement persistent audit sinks**
   - [x] Database-backed audit sink (PostgreSQL/MySQL)
@@ -126,6 +192,55 @@ SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
 - [ ] Triangulation metrics
   - [ ] Report per‑run: ε_RK4, |R4|, curvature stats, Ψ agreement deltas, Φ correlation
   - [ ] Reject/accept analysis: show where any leg fails and why (step‑size too large, Taylor radius exceeded, geometry out‑of‑band)
+
+#### Canonical dynamics reporting schema
+- System
+  - system_id, sweep_grid (min, max, step), seed, horizon, dt
+- Onset (bifurcation) metrics
+  - expected_onset: logistic r=3.0 (1st period‑doubling), saddle‑node μ=0, Hopf μ=0
+  - measured_onset: arg where stability flips (sign(Re λ_max)=0 or λ_max≈0)
+  - onset_ci: bootstrap/fit CI
+  - onset_delta: |measured_onset − expected_onset|
+  - onset_budget: ε_param + ε_fit
+  - within_budget: onset_delta ≤ onset_budget
+- Stability/Lyapunov evidence
+  - re_lambda_max_before/after: max real eigenvalue at fixed point (± small offset)
+  - lyap_max_crossing: λ_max at/on both sides of onset; crossing_zero: bool
+  - hopf_freq: imag(λ_pair) at crossing (for Hopf)
+  - logistic_multiplier: f′(x) magnitude at r near 3 (|f′| crossing 1)
+- Numerical integrity
+  - eps_rk4_max, r4_rms (step‑doubling)
+  - h_stats: {mean, p95, max}
+  - L_hat: empirical Lipschitz bound
+  - div_count (HMC or sim), divergence_threshold used
+- Geometry (optional if enabled)
+  - curvature_mean/max/p95
+  - geom_band_ok: bool
+- Agreement/accuracy
+  - psi_delta_max/median (vs reference tight‑tol run)
+  - auc, tpr_at_fpr (if classification applied)
+- Decision
+  - accepted: bool
+  - reasons: [strings]
+
+##### Stability/Lyapunov computation notes
+- re_lambda_max_before/after
+  - ODEs: find fixed point x*(μ) near onset (e.g., Newton). Compute Jacobian J = ∂f/∂x|_{x*,μ} and eigenvalues {λ_i}. Report max real part before (μ−δ) and after (μ+δ): max_i Re λ_i.
+  - Maps: use Jacobian of the map at fixed point; in 1D it’s f′(x*).
+- lyap_max_crossing
+  - ODEs: largest Lyapunov exponent via Benettin/QR method on the variational flow ẋ = f(x,μ), ṽ = J(x,μ) v with periodic renormalization; λ_max ≈ (1/T) Σ log(||v_k||/||v_{k-1}||).
+  - Maps (logistic): λ_max ≈ (1/N) Σ_n log |f′(x_n)|.
+  - crossing_zero = (λ_max at μ−δ) > 0 XOR (λ_max at μ+δ) > 0.
+- hopf_freq
+  - At Hopf onset, the conjugate pair is λ(μ*) = ± i ω. Compute J at the equilibrium and take ω = |Im λ| (optionally report f = ω/(2π)).
+- logistic_multiplier
+  - Logistic map x_{n+1} = r x_n (1−x_n); fixed point x* = 1−1/r (r>1).
+  - Multiplier m = f′(x*) = r − 2 r x* = 2 − r. Detect first period‑doubling at |m| crossing 1 → r = 3.
+  - Report |f′(x*)| near r≈3 and flag the |f′|=1 crossing.
+- Notes (minimal numerics)
+  - Use small δ around the control parameter to compute before/after.
+  - Prefer analytic Jacobians when available; else central differences.
+  - For Lyapunov in ODEs, integrate sufficiently long after transient; for maps, discard burn‑in before averaging.
 
 #### Integration and runtime (4–6 weeks)
 - [ ] Unified detector
