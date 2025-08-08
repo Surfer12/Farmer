@@ -1,0 +1,4 @@
+module UOIFPackageTests {
+    header "/Users/ryan_david_oates/Farmer/.build/arm64-apple-macosx/debug/UOIFPackageTests.build/UOIFPackageTests-Swift.h"
+    requires objc
+}

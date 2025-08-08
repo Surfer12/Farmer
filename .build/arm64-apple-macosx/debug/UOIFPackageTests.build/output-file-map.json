@@ -1,0 +1,11 @@
+{
+  "": {
+    "swift-dependencies": "/Users/ryan_david_oates/Farmer/.build/arm64-apple-macosx/debug/UOIFPackageTests.build/master.swiftdeps"
+  },
+  "/Users/ryan_david_oates/Farmer/.build/arm64-apple-macosx/debug/UOIFPackageTests.derived/runner.swift": {
+    "dependencies": "/Users/ryan_david_oates/Farmer/.build/arm64-apple-macosx/debug/UOIFPackageTests.build/runner.d",
+    "object": "/Users/ryan_david_oates/Farmer/.build/arm64-apple-macosx/debug/UOIFPackageTests.build/runner.swift.o",
+    "swiftmodule": "/Users/ryan_david_oates/Farmer/.build/arm64-apple-macosx/debug/UOIFPackageTests.build/runner~partial.swiftmodule",
+    "swift-dependencies": "/Users/ryan_david_oates/Farmer/.build/arm64-apple-macosx/debug/UOIFPackageTests.build/runner.swiftdeps"
+  }
+}

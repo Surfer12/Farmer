@@ -1,0 +1,11 @@
+{
+  "": {
+    "swift-dependencies": "/Users/ryan_david_oates/Farmer/.build/arm64-apple-macosx/debug/UOIFCLI.build/master.swiftdeps"
+  },
+  "/Users/ryan_david_oates/Farmer/Sources/UOIFCLI/main.swift": {
+    "dependencies": "/Users/ryan_david_oates/Farmer/.build/arm64-apple-macosx/debug/UOIFCLI.build/main.d",
+    "object": "/Users/ryan_david_oates/Farmer/.build/arm64-apple-macosx/debug/UOIFCLI.build/main.swift.o",
+    "swiftmodule": "/Users/ryan_david_oates/Farmer/.build/arm64-apple-macosx/debug/UOIFCLI.build/main~partial.swiftmodule",
+    "swift-dependencies": "/Users/ryan_david_oates/Farmer/.build/arm64-apple-macosx/debug/UOIFCLI.build/main.swiftdeps"
+  }
+}

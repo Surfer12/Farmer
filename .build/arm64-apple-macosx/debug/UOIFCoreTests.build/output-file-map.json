@@ -1,0 +1,11 @@
+{
+  "": {
+    "swift-dependencies": "/Users/ryan_david_oates/Farmer/.build/arm64-apple-macosx/debug/UOIFCoreTests.build/master.swiftdeps"
+  },
+  "/Users/ryan_david_oates/Farmer/Tests/UOIFCoreTests/PsiModelTests.swift": {
+    "dependencies": "/Users/ryan_david_oates/Farmer/.build/arm64-apple-macosx/debug/UOIFCoreTests.build/PsiModelTests.d",
+    "object": "/Users/ryan_david_oates/Farmer/.build/arm64-apple-macosx/debug/UOIFCoreTests.build/PsiModelTests.swift.o",
+    "swiftmodule": "/Users/ryan_david_oates/Farmer/.build/arm64-apple-macosx/debug/UOIFCoreTests.build/PsiModelTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/ryan_david_oates/Farmer/.build/arm64-apple-macosx/debug/UOIFCoreTests.build/PsiModelTests.swiftdeps"
+  }
+}
