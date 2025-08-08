@@ -14,7 +14,8 @@ SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
   - [ ] Diagonal mass-matrix adaptation (momentum preconditioning)
   - [ ] Dynamic trajectory length (NUTS-style) and simple divergence checks
   - [ ] Multi-chain runner: warmup schedule, seed control, persistent draws
-  - [ ] Analytic gradient for SteinGradLogP (replace finite-diff; reuse dlogPost)
+  - [x] Analytic gradient for SteinGradLogP (replace finite-diff; reuse dlogPost)
+  - [x] Switch Stein to z-space origin (logit/exp) with Jacobian-corrected score; expose `gradLogTargetZ` and use prepared, thresholded parallel gradients
   - [ ] CLI flags for HMC params (override env); JSON summary output
   - [x] Implement proper log-prior calculations for all parameters
   - [x] Add convergence diagnostics and effective sample size calculations (prototype)
@@ -118,6 +119,7 @@ SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
   - [x] Memory usage optimization
   - [x] Parallel computation for large datasets
   - [x] Caching strategies
+  - [x] Prepared dataset cache: in-memory LRU with TTL and weight-based eviction plus disk write-through (`DatasetPreparedDiskStore`)
   - [ ] JVM tuning recommendations
 
 ## 🧪 Research & Exploration
