@@ -1,0 +1,41 @@
+Quick status: Plugged in concrete citations (Evan Chen’s 2025 notes PDF and AoPS problem threads), referenced the historical mirror for primitives/context, assigned roles, then re-scored sources, set α(t), and recomputed Ψ(x).
+
+### Citations and roles
+- Historical mirror (context, primitives once 2025 posts appear): [olympiads.win.tue.nl/imo](https://olympiads.win.tue.nl/imo)
+- Expert explainer (interpretive): Evan Chen, “IMO 2025 Solution Notes,” PDF: [web.evanchen.cc/exams/IMO-2025-notes.pdf](https://web.evanchen.cc/exams/IMO-2025-notes.pdf)
+- Community solution threads (interpretive support; per problem):
+  - P1: [aops.com/community/p35332003](https://aops.com/community/p35332003)
+  - P2: [aops.com/community/p35332018](https://aops.com/community/p35332018)
+  - P3: [aops.com/community/p35332016](https://aops.com/community/p35332016)
+  - P4: [aops.com/community/p35347364](https://aops.com/community/p35347364)
+  - P5: [aops.com/community/p35341177](https://aops.com/community/p35341177)
+  - P6: [aops.com/community/p35341197](https://aops.com/community/p35341197)
+
+Optional context (prior year, methodology template):
+- Evan Chen, “IMO 2024 Solution Notes”: root site [web.evanchen.cc](https://web.evanchen.cc/) (use year-specific PDF when needed)
+
+### Roles
+- Evan 2025 PDF: Interpretive/expert compendium derived from official + community sources.
+- AoPS threads: Community corroboration and solution diversity.
+- Historical mirror: Context for primitives; upgrade to canonical once 2025 is posted there or at the official IMO site.
+
+### Relevance/reliability scores s(c) (sketch)
+- Evan 2025 PDF: Authority mid-high, verifiability high (authored compendium), depth high → s ≈ 0.78
+- AoPS per-problem: Authority mid, verifiability mid, depth mid-high → s ≈ 0.70–0.74
+- Mirror (context): Authority mid, verifiability mid, depth low for 2025 until posted → s ≈ 0.55
+
+### Allocation and posterior
+- Primitives: α(t) = 0.18 (favor external artifacts); Interpretations: α(t) ~ 0.40 (require ≥1 AoPS/Evan link)
+- Set S(x) = 0.60, N(x) = 0.90 (Evan 2025 + AoPS strengthen external evidence), R_cognitive = 0.25, R_efficiency = 0.10, λ1 = 0.85, λ2 = 0.15
+- P(H|E) = 0.88, β = 1.05 ⇒ P(H|E,β) = 0.924
+- Penalty: exp(−(0.85·0.25 + 0.15·0.10)) = exp(−0.2275) ≈ 0.7965
+
+Hybrid output and Ψ(x)
+- O_hybrid = 0.18·0.60 + 0.82·0.90 = 0.846
+- Ψ(x) ≈ 0.846 · 0.7965 · 0.924 ≈ 0.622
+
+Decision and labels
+- With Ψ(x) ≈ 0.62: “Interpretive/Contextual; strong expert + community corroboration.” Promote primitives to “Empirically grounded” once official 2025 problem/solution/jury artifacts go live on a canonical site (then raise N(x) → 0.95–0.98, drop α for primitives → 0.10–0.15, and Ψ will clear a higher threshold).
+
+- Replaced placeholders with: Evan’s 2025 PDF, AoPS threads, and historical mirror; assigned roles. 
+- Recomputed s(c), α(t), and Ψ(x). Current Ψ(x) ≈ 0.62 → keep as Interpretive/Contextual pending official postings.

@@ -6,6 +6,60 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		6F5261DF2E45B35A00E956DA /* Quick status: Expanded the ruleset to co in Resources */ = {isa = PBXBuildFile; fileRef = 6F5261DC2E45B35A00E956DA /* Quick status: Expanded the ruleset to co */; };
+		6F5261E02E45B35A00E956DA /* ### Hyper-Meta Ruleset: Synthesizing Use.md in Resources */ = {isa = PBXBuildFile; fileRef = 6F5261D82E45B35A00E956DA /* ### Hyper-Meta Ruleset: Synthesizing Use.md */; };
+		6F5261E12E45B35A00E956DA /* Quick status: Plugged in concrete citati in Resources */ = {isa = PBXBuildFile; fileRef = 6F5261DE2E45B35A00E956DA /* Quick status: Plugged in concrete citati */; };
+		6F5261E22E45B35A00E956DA /* # A Hyper-Meta-Reconstruction: Synergizi.sty in Resources */ = {isa = PBXBuildFile; fileRef = 6F5261D72E45B35A00E956DA /* # A Hyper-Meta-Reconstruction: Synergizi.sty */; };
+		6F5261E32E45B35A00E956DA /* IMO-2025-notes-evanchen.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 6F5261DA2E45B35A00E956DA /* IMO-2025-notes-evanchen.pdf */; };
+		6F5261E42E45B35A00E956DA /* imousa2025EC.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 6F5261DB2E45B35A00E956DA /* imousa2025EC.pdf */; };
+		6F5261E52E45B35A00E956DA /* Quick status: I replaced the placeholder.ini in Resources */ = {isa = PBXBuildFile; fileRef = 6F5261DD2E45B35A00E956DA /* Quick status: I replaced the placeholder.ini */; };
+		6F5261E62E45B35A00E956DA /* cursor_upcoming_openai_livestream_event.md in Resources */ = {isa = PBXBuildFile; fileRef = 6F5261D92E45B35A00E956DA /* cursor_upcoming_openai_livestream_event.md */; };
+		6F5261E72E45B35A00E956DA /* Quick status: Expanded the ruleset to co in Resources */ = {isa = PBXBuildFile; fileRef = 6F5261DC2E45B35A00E956DA /* Quick status: Expanded the ruleset to co */; };
+		6F5261E82E45B35A00E956DA /* ### Hyper-Meta Ruleset: Synthesizing Use.md in Resources */ = {isa = PBXBuildFile; fileRef = 6F5261D82E45B35A00E956DA /* ### Hyper-Meta Ruleset: Synthesizing Use.md */; };
+		6F5261E92E45B35A00E956DA /* Quick status: Plugged in concrete citati in Resources */ = {isa = PBXBuildFile; fileRef = 6F5261DE2E45B35A00E956DA /* Quick status: Plugged in concrete citati */; };
+		6F5261EA2E45B35A00E956DA /* # A Hyper-Meta-Reconstruction: Synergizi.sty in Resources */ = {isa = PBXBuildFile; fileRef = 6F5261D72E45B35A00E956DA /* # A Hyper-Meta-Reconstruction: Synergizi.sty */; };
+		6F5261EB2E45B35A00E956DA /* IMO-2025-notes-evanchen.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 6F5261DA2E45B35A00E956DA /* IMO-2025-notes-evanchen.pdf */; };
+		6F5261EC2E45B35A00E956DA /* imousa2025EC.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 6F5261DB2E45B35A00E956DA /* imousa2025EC.pdf */; };
+		6F5261ED2E45B35A00E956DA /* Quick status: I replaced the placeholder.ini in Resources */ = {isa = PBXBuildFile; fileRef = 6F5261DD2E45B35A00E956DA /* Quick status: I replaced the placeholder.ini */; };
+		6F5261EE2E45B35A00E956DA /* cursor_upcoming_openai_livestream_event.md in Resources */ = {isa = PBXBuildFile; fileRef = 6F5261D92E45B35A00E956DA /* cursor_upcoming_openai_livestream_event.md */; };
+		6F5261EF2E45B35A00E956DA /* Quick status: Expanded the ruleset to co in Resources */ = {isa = PBXBuildFile; fileRef = 6F5261DC2E45B35A00E956DA /* Quick status: Expanded the ruleset to co */; };
+		6F5261F02E45B35A00E956DA /* ### Hyper-Meta Ruleset: Synthesizing Use.md in Resources */ = {isa = PBXBuildFile; fileRef = 6F5261D82E45B35A00E956DA /* ### Hyper-Meta Ruleset: Synthesizing Use.md */; };
+		6F5261F12E45B35A00E956DA /* Quick status: Plugged in concrete citati in Resources */ = {isa = PBXBuildFile; fileRef = 6F5261DE2E45B35A00E956DA /* Quick status: Plugged in concrete citati */; };
+		6F5261F22E45B35A00E956DA /* # A Hyper-Meta-Reconstruction: Synergizi.sty in Resources */ = {isa = PBXBuildFile; fileRef = 6F5261D72E45B35A00E956DA /* # A Hyper-Meta-Reconstruction: Synergizi.sty */; };
+		6F5261F32E45B35A00E956DA /* IMO-2025-notes-evanchen.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 6F5261DA2E45B35A00E956DA /* IMO-2025-notes-evanchen.pdf */; };
+		6F5261F42E45B35A00E956DA /* imousa2025EC.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 6F5261DB2E45B35A00E956DA /* imousa2025EC.pdf */; };
+		6F5261F52E45B35A00E956DA /* Quick status: I replaced the placeholder.ini in Resources */ = {isa = PBXBuildFile; fileRef = 6F5261DD2E45B35A00E956DA /* Quick status: I replaced the placeholder.ini */; };
+		6F5261F62E45B35A00E956DA /* cursor_upcoming_openai_livestream_event.md in Resources */ = {isa = PBXBuildFile; fileRef = 6F5261D92E45B35A00E956DA /* cursor_upcoming_openai_livestream_event.md */; };
+		6F5261F82E45B77C00E956DA /* cursor_integration_of_deepmind_material.md in Resources */ = {isa = PBXBuildFile; fileRef = 6F5261F72E45B77C00E956DA /* cursor_integration_of_deepmind_material.md */; };
+		6F5261F92E45B77C00E956DA /* cursor_integration_of_deepmind_material.md in Resources */ = {isa = PBXBuildFile; fileRef = 6F5261F72E45B77C00E956DA /* cursor_integration_of_deepmind_material.md */; };
+		6F5261FA2E45B77C00E956DA /* cursor_integration_of_deepmind_material.md in Resources */ = {isa = PBXBuildFile; fileRef = 6F5261F72E45B77C00E956DA /* cursor_integration_of_deepmind_material.md */; };
+		6F5261FC2E45BA1900E956DA /* tex3.tex in Resources */ = {isa = PBXBuildFile; fileRef = 6F5261FB2E45BA1900E956DA /* tex3.tex */; };
+		6F5261FD2E45BA1900E956DA /* tex3.tex in Resources */ = {isa = PBXBuildFile; fileRef = 6F5261FB2E45BA1900E956DA /* tex3.tex */; };
+		6F5261FE2E45BA1900E956DA /* tex3.tex in Resources */ = {isa = PBXBuildFile; fileRef = 6F5261FB2E45BA1900E956DA /* tex3.tex */; };
+		6F5262002E45BA2E00E956DA /* tex2reflect.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6F5261FF2E45BA2E00E956DA /* tex2reflect.txt */; };
+		6F5262012E45BA2E00E956DA /* tex2reflect.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6F5261FF2E45BA2E00E956DA /* tex2reflect.txt */; };
+		6F5262022E45BA2E00E956DA /* tex2reflect.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6F5261FF2E45BA2E00E956DA /* tex2reflect.txt */; };
+		6F5262082E45BA6000E956DA /* rule2025recalc1.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6F5262072E45BA6000E956DA /* rule2025recalc1.txt */; };
+		6F5262092E45BA6000E956DA /* rule2025recalc1.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6F5262072E45BA6000E956DA /* rule2025recalc1.txt */; };
+		6F52620A2E45BA6000E956DA /* rule2025recalc1.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6F5262072E45BA6000E956DA /* rule2025recalc1.txt */; };
+		6F52620C2E45BA9400E956DA /* integ20242025000.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6F52620B2E45BA9400E956DA /* integ20242025000.txt */; };
+		6F52620D2E45BA9400E956DA /* integ20242025000.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6F52620B2E45BA9400E956DA /* integ20242025000.txt */; };
+		6F52620E2E45BA9400E956DA /* integ20242025000.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6F52620B2E45BA9400E956DA /* integ20242025000.txt */; };
+		6F5262102E45BABE00E956DA /* ufofrulesetreflect1.tex in Resources */ = {isa = PBXBuildFile; fileRef = 6F52620F2E45BABE00E956DA /* ufofrulesetreflect1.tex */; };
+		6F5262112E45BABE00E956DA /* ufofrulesetreflect1.tex in Resources */ = {isa = PBXBuildFile; fileRef = 6F52620F2E45BABE00E956DA /* ufofrulesetreflect1.tex */; };
+		6F5262122E45BABE00E956DA /* ufofrulesetreflect1.tex in Resources */ = {isa = PBXBuildFile; fileRef = 6F52620F2E45BABE00E956DA /* ufofrulesetreflect1.tex */; };
+		6F5262142E45BADC00E956DA /* ufofruleset1.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6F5262132E45BADC00E956DA /* ufofruleset1.txt */; };
+		6F5262152E45BADC00E956DA /* ufofruleset1.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6F5262132E45BADC00E956DA /* ufofruleset1.txt */; };
+		6F5262162E45BADC00E956DA /* ufofruleset1.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6F5262132E45BADC00E956DA /* ufofruleset1.txt */; };
+		6F5262182E45BAF500E956DA /* thoughtsufofrules1.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6F5262172E45BAF500E956DA /* thoughtsufofrules1.txt */; };
+		6F5262192E45BAF500E956DA /* thoughtsufofrules1.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6F5262172E45BAF500E956DA /* thoughtsufofrules1.txt */; };
+		6F52621A2E45BAF500E956DA /* thoughtsufofrules1.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6F5262172E45BAF500E956DA /* thoughtsufofrules1.txt */; };
+		6F52621C2E45BEBF00E956DA /* 3gpt5.tex in Resources */ = {isa = PBXBuildFile; fileRef = 6F52621B2E45BEBF00E956DA /* 3gpt5.tex */; };
+		6F52621D2E45BEBF00E956DA /* 3gpt5.tex in Resources */ = {isa = PBXBuildFile; fileRef = 6F52621B2E45BEBF00E956DA /* 3gpt5.tex */; };
+		6F52621E2E45BEBF00E956DA /* 3gpt5.tex in Resources */ = {isa = PBXBuildFile; fileRef = 6F52621B2E45BEBF00E956DA /* 3gpt5.tex */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		6F5261BA2E45A98500E956DA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,6 +81,23 @@
 		6F5261A52E45A98300E956DA /* Farmer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Farmer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6F5261B92E45A98500E956DA /* FarmerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FarmerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6F5261C32E45A98500E956DA /* FarmerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FarmerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		6F5261D72E45B35A00E956DA /* # A Hyper-Meta-Reconstruction: Synergizi.sty */ = {isa = PBXFileReference; lastKnownFileType = text; path = "# A Hyper-Meta-Reconstruction: Synergizi.sty"; sourceTree = "<group>"; };
+		6F5261D82E45B35A00E956DA /* ### Hyper-Meta Ruleset: Synthesizing Use.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "### Hyper-Meta Ruleset: Synthesizing Use.md"; sourceTree = "<group>"; };
+		6F5261D92E45B35A00E956DA /* cursor_upcoming_openai_livestream_event.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = cursor_upcoming_openai_livestream_event.md; sourceTree = "<group>"; };
+		6F5261DA2E45B35A00E956DA /* IMO-2025-notes-evanchen.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "IMO-2025-notes-evanchen.pdf"; sourceTree = "<group>"; };
+		6F5261DB2E45B35A00E956DA /* imousa2025EC.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = imousa2025EC.pdf; sourceTree = "<group>"; };
+		6F5261DC2E45B35A00E956DA /* Quick status: Expanded the ruleset to co */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Quick status: Expanded the ruleset to co"; sourceTree = "<group>"; };
+		6F5261DD2E45B35A00E956DA /* Quick status: I replaced the placeholder.ini */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Quick status: I replaced the placeholder.ini"; sourceTree = "<group>"; };
+		6F5261DE2E45B35A00E956DA /* Quick status: Plugged in concrete citati */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Quick status: Plugged in concrete citati"; sourceTree = "<group>"; };
+		6F5261F72E45B77C00E956DA /* cursor_integration_of_deepmind_material.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = cursor_integration_of_deepmind_material.md; sourceTree = "<group>"; };
+		6F5261FB2E45BA1900E956DA /* tex3.tex */ = {isa = PBXFileReference; lastKnownFileType = text; path = tex3.tex; sourceTree = "<group>"; };
+		6F5261FF2E45BA2E00E956DA /* tex2reflect.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = tex2reflect.txt; sourceTree = "<group>"; };
+		6F5262072E45BA6000E956DA /* rule2025recalc1.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = rule2025recalc1.txt; sourceTree = "<group>"; };
+		6F52620B2E45BA9400E956DA /* integ20242025000.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = integ20242025000.txt; sourceTree = "<group>"; };
+		6F52620F2E45BABE00E956DA /* ufofrulesetreflect1.tex */ = {isa = PBXFileReference; lastKnownFileType = text; path = ufofrulesetreflect1.tex; sourceTree = "<group>"; };
+		6F5262132E45BADC00E956DA /* ufofruleset1.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = ufofruleset1.txt; sourceTree = "<group>"; };
+		6F5262172E45BAF500E956DA /* thoughtsufofrules1.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = thoughtsufofrules1.txt; sourceTree = "<group>"; };
+		6F52621B2E45BEBF00E956DA /* 3gpt5.tex */ = {isa = PBXFileReference; lastKnownFileType = text; path = 3gpt5.tex; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -88,6 +159,23 @@
 		6F52619C2E45A98300E956DA = {
 			isa = PBXGroup;
 			children = (
+				6F5261FB2E45BA1900E956DA /* tex3.tex */,
+				6F5261FF2E45BA2E00E956DA /* tex2reflect.txt */,
+				6F5262072E45BA6000E956DA /* rule2025recalc1.txt */,
+				6F52620B2E45BA9400E956DA /* integ20242025000.txt */,
+				6F52620F2E45BABE00E956DA /* ufofrulesetreflect1.tex */,
+				6F5262132E45BADC00E956DA /* ufofruleset1.txt */,
+				6F5262172E45BAF500E956DA /* thoughtsufofrules1.txt */,
+				6F52621B2E45BEBF00E956DA /* 3gpt5.tex */,
+				6F5261F72E45B77C00E956DA /* cursor_integration_of_deepmind_material.md */,
+				6F5261D72E45B35A00E956DA /* # A Hyper-Meta-Reconstruction: Synergizi.sty */,
+				6F5261D82E45B35A00E956DA /* ### Hyper-Meta Ruleset: Synthesizing Use.md */,
+				6F5261D92E45B35A00E956DA /* cursor_upcoming_openai_livestream_event.md */,
+				6F5261DA2E45B35A00E956DA /* IMO-2025-notes-evanchen.pdf */,
+				6F5261DB2E45B35A00E956DA /* imousa2025EC.pdf */,
+				6F5261DC2E45B35A00E956DA /* Quick status: Expanded the ruleset to co */,
+				6F5261DD2E45B35A00E956DA /* Quick status: I replaced the placeholder.ini */,
+				6F5261DE2E45B35A00E956DA /* Quick status: Plugged in concrete citati */,
 				6F5261A72E45A98300E956DA /* Farmer */,
 				6F5261BC2E45A98500E956DA /* FarmerTests */,
 				6F5261C62E45A98500E956DA /* FarmerUITests */,
@@ -225,6 +313,23 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6F5261EF2E45B35A00E956DA /* Quick status: Expanded the ruleset to co in Resources */,
+				6F5262092E45BA6000E956DA /* rule2025recalc1.txt in Resources */,
+				6F5261F02E45B35A00E956DA /* ### Hyper-Meta Ruleset: Synthesizing Use.md in Resources */,
+				6F5262022E45BA2E00E956DA /* tex2reflect.txt in Resources */,
+				6F5261F12E45B35A00E956DA /* Quick status: Plugged in concrete citati in Resources */,
+				6F5262192E45BAF500E956DA /* thoughtsufofrules1.txt in Resources */,
+				6F5262122E45BABE00E956DA /* ufofrulesetreflect1.tex in Resources */,
+				6F5262162E45BADC00E956DA /* ufofruleset1.txt in Resources */,
+				6F5261FA2E45B77C00E956DA /* cursor_integration_of_deepmind_material.md in Resources */,
+				6F52620C2E45BA9400E956DA /* integ20242025000.txt in Resources */,
+				6F5261F22E45B35A00E956DA /* # A Hyper-Meta-Reconstruction: Synergizi.sty in Resources */,
+				6F5261F32E45B35A00E956DA /* IMO-2025-notes-evanchen.pdf in Resources */,
+				6F5261F42E45B35A00E956DA /* imousa2025EC.pdf in Resources */,
+				6F5261F52E45B35A00E956DA /* Quick status: I replaced the placeholder.ini in Resources */,
+				6F52621C2E45BEBF00E956DA /* 3gpt5.tex in Resources */,
+				6F5261F62E45B35A00E956DA /* cursor_upcoming_openai_livestream_event.md in Resources */,
+				6F5261FC2E45BA1900E956DA /* tex3.tex in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -232,6 +337,23 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6F5261FD2E45BA1900E956DA /* tex3.tex in Resources */,
+				6F52620D2E45BA9400E956DA /* integ20242025000.txt in Resources */,
+				6F5261E72E45B35A00E956DA /* Quick status: Expanded the ruleset to co in Resources */,
+				6F5262082E45BA6000E956DA /* rule2025recalc1.txt in Resources */,
+				6F5261E82E45B35A00E956DA /* ### Hyper-Meta Ruleset: Synthesizing Use.md in Resources */,
+				6F52621E2E45BEBF00E956DA /* 3gpt5.tex in Resources */,
+				6F5262142E45BADC00E956DA /* ufofruleset1.txt in Resources */,
+				6F52621A2E45BAF500E956DA /* thoughtsufofrules1.txt in Resources */,
+				6F5261F82E45B77C00E956DA /* cursor_integration_of_deepmind_material.md in Resources */,
+				6F5262102E45BABE00E956DA /* ufofrulesetreflect1.tex in Resources */,
+				6F5261E92E45B35A00E956DA /* Quick status: Plugged in concrete citati in Resources */,
+				6F5261EA2E45B35A00E956DA /* # A Hyper-Meta-Reconstruction: Synergizi.sty in Resources */,
+				6F5261EB2E45B35A00E956DA /* IMO-2025-notes-evanchen.pdf in Resources */,
+				6F5261EC2E45B35A00E956DA /* imousa2025EC.pdf in Resources */,
+				6F5261ED2E45B35A00E956DA /* Quick status: I replaced the placeholder.ini in Resources */,
+				6F5262002E45BA2E00E956DA /* tex2reflect.txt in Resources */,
+				6F5261EE2E45B35A00E956DA /* cursor_upcoming_openai_livestream_event.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -239,6 +361,23 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6F5261FE2E45BA1900E956DA /* tex3.tex in Resources */,
+				6F52620E2E45BA9400E956DA /* integ20242025000.txt in Resources */,
+				6F5261DF2E45B35A00E956DA /* Quick status: Expanded the ruleset to co in Resources */,
+				6F52620A2E45BA6000E956DA /* rule2025recalc1.txt in Resources */,
+				6F5261E02E45B35A00E956DA /* ### Hyper-Meta Ruleset: Synthesizing Use.md in Resources */,
+				6F52621D2E45BEBF00E956DA /* 3gpt5.tex in Resources */,
+				6F5262152E45BADC00E956DA /* ufofruleset1.txt in Resources */,
+				6F5262182E45BAF500E956DA /* thoughtsufofrules1.txt in Resources */,
+				6F5261F92E45B77C00E956DA /* cursor_integration_of_deepmind_material.md in Resources */,
+				6F5262112E45BABE00E956DA /* ufofrulesetreflect1.tex in Resources */,
+				6F5261E12E45B35A00E956DA /* Quick status: Plugged in concrete citati in Resources */,
+				6F5261E22E45B35A00E956DA /* # A Hyper-Meta-Reconstruction: Synergizi.sty in Resources */,
+				6F5261E32E45B35A00E956DA /* IMO-2025-notes-evanchen.pdf in Resources */,
+				6F5261E42E45B35A00E956DA /* imousa2025EC.pdf in Resources */,
+				6F5261E52E45B35A00E956DA /* Quick status: I replaced the placeholder.ini in Resources */,
+				6F5262012E45BA2E00E956DA /* tex2reflect.txt in Resources */,
+				6F5261E62E45B35A00E956DA /* cursor_upcoming_openai_livestream_event.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
