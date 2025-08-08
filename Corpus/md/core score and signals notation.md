@@ -420,3 +420,48 @@ I need to create a bullet list for public methods, keeping it concise with typed
   - Idempotency key to avoid duplicates; append-only storage.
   - Redact sensitive fields; include schema/version and clock source.
   - Support dryRun=true to no-op in scenarios that require purity.
+Outlining containment strategies
+I need to provide a clear and concise response to the question about the auditTrail side effect. I can explain the containment strategies we apply: interface abstraction, dependency injection, transaction boundaries, and so on. It’s important to reassure them that the side effect is isolated behind the logger interface and defaults to a no-op in unit tests. Then, I will briefly outline commit semantics and failure behavior while also linking this to the previous specifications. Keeping it straightforward!
+Summarizing containment measures
+Let's respond clearly about the auditTrail being the only impure method. It's protected by an interface, using an append-only file or memory as the default sink, controlled by environment variables and features like dryRun, idempotency key, retries, and measures like backpressure and timeouts. If the sink is unavailable, it degrades to a no-op with a counter metric. I’ll include bullet points for key containment strategies, confirming that failure doesn’t affect the main decision, and providing brief status updates as specified.
+Creating versioned audit event schema
+I need to focus on providing a versioned audit event schema. It’s crucial to ensure that the schema is clear and well-organized for future reference. Versioning helps with tracking changes and maintaining compatibility as updates are made. I’ll make sure to define the necessary fields and their respective types, along with any constraints. This way, we can ensure that the audit events remain reliable and informative. Let's nail down the details!
+
+  Yes.
+Boundary: auditTrail is the only impure call and is isolated behind a logger/sink interface (DI). In tests it’s a no-op/fake by default.
+Controls: feature flag (on/off), dryRun=true (no write), and per-call idempotencyKey to ensure at-most-once.
+Safety: append-only sink, timeouts, retries with backoff, circuit breaker; failure to log never fails the main decision path.
+Privacy: field-level redaction, schema versioning, content hashing; optional at-rest encryption.
+Flow: async queue with backpressure; bounded buffers and drop-policy configured to avoid blocking.
+Side effect is confined to a single interface with flags, idempotency, and failure isolation so it can’t impact core decisions.
+
+I'm considering how to ensure that side effects don't lead to failures in the main process. It's crucial to mark failures effectively, so they don't disrupt the overall flow. I want to finalize everything properly and make sure to summarize the key points in bullet form. This way, the important takeaways are clear and accessible for anyone reviewing the information. Let's wrap it up thoughtfully!
+
+- What and why
+  - auditTrail is the only impure method. All other public methods are pure (no I/O), keeping determinism, reproducibility, and easy reasoning.
+  - Isolating the side effect behind a logger/sink interface confines all I/O to a single choke point for fault, performance, and privacy control. Core decision logic never touches I/O.
+
+- Test behavior (no-op by default)
+  - Unit tests use a Null/No‑Op sink so tests are hermetic (no network/disk), fast, and flake‑free.
+  - Integration/e2e can swap in an InMemory or real sink to assert records or exercise the pipeline.
+
+- Operational controls at the boundary
+  - Dependency injection: pass a sink implementation per environment.
+  - Flags: on/off and dryRun (no write).
+  - Idempotency: idempotencyKey prevents duplicates (at‑most‑once).
+  - Failure policy: fail‑open (logging failure never breaks decisions), timeouts/backoff/circuit breaker.
+  - Privacy: redaction, schema versioning, hashing/encryption applied in the sink.
+
+- Minimal interface sketch
+  - Logger/sink boundary:
+    - write(record: AuditRecord, opts?: { idempotencyKey?: string }): Promise<void>
+  - Defaults:
+    - NullSink.write = async () => {} (unit tests)
+    - AsyncBufferedSink (prod) with backpressure and retries
+
+- Why this design
+  - Preserves referential transparency of decision functions.
+  - Localizes side effects for reliability, observability, and compliance.
+  - Enables fast, reliable tests and easy environment-specific behavior via DI.
+
+- auditTrail is the only impure method, isolated behind a logger/sink interface; in unit tests it defaults to a no‑op for hermeticity and speed.
