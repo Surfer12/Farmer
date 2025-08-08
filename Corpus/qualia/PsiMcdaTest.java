@@ -8,18 +8,18 @@ public final class PsiMcdaTest {
     public static void main(String[] args) {
         int passed = 0, total = 0;
 
-        total++; if (testComputePsiDeterminismAndRanges()) passed++; else System.out.println("FAIL: testComputePsiDeterminismAndRanges");
-        total++; if (testComputePsiTemporalMean()) passed++; else System.out.println("FAIL: testComputePsiTemporalMean");
-        total++; if (testThresholdTransfer()) passed++; else System.out.println("FAIL: testThresholdTransfer");
-        total++; if (testNormalizeCriterion()) passed++; else System.out.println("FAIL: testNormalizeCriterion");
-        total++; if (testMapGovernanceWeights()) passed++; else System.out.println("FAIL: testMapGovernanceWeights");
-        total++; if (testGateByPsi()) passed++; else System.out.println("FAIL: testGateByPsi");
-        total++; if (testWSM_WPM()) passed++; else System.out.println("FAIL: testWSM_WPM");
-        total++; if (testTopsisTrivial()) passed++; else System.out.println("FAIL: testTopsisTrivial");
-        total++; if (testAHPIdentity()) passed++; else System.out.println("FAIL: testAHPIdentity");
-        total++; if (testBounds()) passed++; else System.out.println("FAIL: testBounds");
-        total++; if (testGradPsiSigns()) passed++; else System.out.println("FAIL: testGradPsiSigns");
-        total++; if (testTieBreak()) passed++; else System.out.println("FAIL: testTieBreak");
+        total++; if (testComputePsiDeterminismAndRanges()) passed++; else throw new AssertionError("testComputePsiDeterminismAndRanges");
+        total++; if (testComputePsiTemporalMean()) passed++; else throw new AssertionError("testComputePsiTemporalMean");
+        total++; if (testThresholdTransfer()) passed++; else throw new AssertionError("testThresholdTransfer");
+        total++; if (testNormalizeCriterion()) passed++; else throw new AssertionError("testNormalizeCriterion");
+        total++; if (testMapGovernanceWeights()) passed++; else throw new AssertionError("testMapGovernanceWeights");
+        total++; if (testGateByPsi()) passed++; else throw new AssertionError("testGateByPsi");
+        total++; if (testWSM_WPM()) passed++; else throw new AssertionError("testWSM_WPM");
+        total++; if (testTopsisTrivial()) passed++; else throw new AssertionError("testTopsisTrivial");
+        total++; if (testAHPIdentity()) passed++; else throw new AssertionError("testAHPIdentity");
+        total++; if (testBounds()) passed++; else throw new AssertionError("testBounds");
+        total++; if (testGradPsiSigns()) passed++; else throw new AssertionError("testGradPsiSigns");
+        total++; if (testTieBreak()) passed++; else throw new AssertionError("testTieBreak");
 
         System.out.println("PsiMcdaTest: passed " + passed + "/" + total + " tests");
         if (passed != total) System.exit(1);

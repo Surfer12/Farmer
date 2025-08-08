@@ -72,7 +72,9 @@ public final class FileAuditSink implements AuditSink {
         currentFile = new File(directory, name);
         try {
             writer = new BufferedWriter(new FileWriter(currentFile, true));
+            MetricsRegistry.get().incCounter("audit_rotate_total");
         } catch (IOException e) {
+            MetricsRegistry.get().incCounter("audit_file_open_fail_total");
             throw new PersistenceException("Failed to open audit file", e);
         }
     }
@@ -106,7 +108,9 @@ public final class FileAuditSink implements AuditSink {
             String json = toJson(rec);
             try {
                 writeLine(json);
+                MetricsRegistry.get().incCounter("audit_file_write_total");
             } catch (IOException e) {
+                MetricsRegistry.get().incCounter("audit_write_fail_total");
                 throw new AuditWriteException("Failed to write audit record", e);
             }
         }, executor);

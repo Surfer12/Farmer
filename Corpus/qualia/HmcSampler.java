@@ -160,6 +160,7 @@ final class HmcSampler {
         double[] m2Z = new double[4];
         int massN = 0;
         int divergenceCount = 0;
+        double divThreshold = getEnvDouble("HMC_DIVERGENCE_THRESHOLD", 50.0);
 
         // Warmup loop
         for (int iter = 0; iter < warmupIters; iter++) {
@@ -192,7 +193,7 @@ final class HmcSampler {
             }
 
             // Divergence check: large energy error or NaN
-            if (!Double.isFinite(H0) || !Double.isFinite(H1) || (H1 - H0) > 50.0) {
+            if (!Double.isFinite(H0) || !Double.isFinite(H1) || (H1 - H0) > divThreshold) {
                 divergenceCount++;
             }
 
@@ -279,10 +280,17 @@ final class HmcSampler {
         }
 
         double accRate = accepted / (double) Math.max(1, samplingIters);
-        // Post-adjust tuned step if acceptance far from target
-        if (accRate < 0.60) tunedStep *= 0.8;
-        else if (accRate > 0.90) tunedStep *= 1.2;
         return new AdaptiveResult(kept, accRate, tunedStep, tunedMass, divergenceCount);
+    }
+
+    private static double getEnvDouble(String key, double fallback) {
+        try {
+            String v = System.getenv(key);
+            if (v == null || v.isEmpty()) return fallback;
+            return Double.parseDouble(v);
+        } catch (Exception e) {
+            return fallback;
+        }
     }
 
     /** logTarget(z) = logPosterior(θ(z)) + log|J(z)| */

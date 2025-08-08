@@ -33,6 +33,7 @@ public final class Core {
             case "mcda" -> runMcda();
             case "rmala" -> runRmala();
             case "hmc_adapt" -> runHmcAdaptive(args);
+            case "hmcmulti" -> runHmcMulti();
             default -> printUsageAndExit();
         }
     }
@@ -87,7 +88,7 @@ public final class Core {
         }
 
         // 2) Model and MCMC samples (via DI)
-        ServiceLocator sl = ServiceLocator.builder().build();
+        ServiceLocator sl = ServiceLocator.builder().fromEnvironment().build();
         HierarchicalBayesianModel model = (HierarchicalBayesianModel) sl.psiModel(ModelPriors.defaults(), 2048);
         HierarchicalBayesianModel hb = (HierarchicalBayesianModel) model;
         int sampleCount = 60; // keep small for demo speed
@@ -115,7 +116,7 @@ public final class Core {
     }
 
     private static void printUsageAndExit() {
-        System.err.println("Usage: java -cp <cp> qualia.Core <console|file|jdbc|stein|hmc|hmc_adapt|mcda|rmala> [key=value ...]");
+        System.err.println("Usage: java -cp <cp> qualia.Core <console|file|jdbc|stein|hmc|hmc_adapt|hmcmulti|mcda|rmala> [key=value ...]");
         System.exit(1);
     }
 
@@ -128,7 +129,7 @@ public final class Core {
                     Math.abs(rng.nextGaussian()) * 0.3, Math.min(1.0, Math.max(0.0, 0.5 + 0.2 * rng.nextGaussian()))));
         }
 
-        ServiceLocator sl = ServiceLocator.builder().build();
+        ServiceLocator sl = ServiceLocator.builder().fromEnvironment().build();
         HierarchicalBayesianModel model = (HierarchicalBayesianModel) sl.psiModel(ModelPriors.defaults(), 2048);
         RmalaSampler sampler = new RmalaSampler(model, dataset);
 
@@ -163,7 +164,7 @@ public final class Core {
                     Math.min(1.0, Math.max(0.0, 0.5 + 0.2 * rng.nextGaussian()))));
         }
 
-        ServiceLocator sl = ServiceLocator.builder().build();
+        ServiceLocator sl = ServiceLocator.builder().fromEnvironment().build();
         HierarchicalBayesianModel model = (HierarchicalBayesianModel) sl.psiModel(ModelPriors.defaults(), 2048);
         HmcSampler hmc = new HmcSampler(model, dataset);
 
@@ -219,6 +220,40 @@ public final class Core {
                 + ", N=" + String.format("%.1f", diag.essN)
                 + ", alpha=" + String.format("%.1f", diag.essAlpha)
                 + ", beta=" + String.format("%.1f", diag.essBeta));
+    }
+
+    private static void runHmcMulti() {
+        // small synthetic dataset
+        java.util.List<ClaimData> dataset = new java.util.ArrayList<>();
+        java.util.Random rng = new java.util.Random(13);
+        for (int i = 0; i < 80; i++) {
+            dataset.add(new ClaimData("m-" + i, rng.nextBoolean(),
+                    Math.abs(rng.nextGaussian()) * 0.4,
+                    Math.abs(rng.nextGaussian()) * 0.4,
+                    Math.min(1.0, Math.max(0.0, 0.5 + 0.2 * rng.nextGaussian()))));
+        }
+
+        ServiceLocator sl = ServiceLocator.builder().build();
+        HierarchicalBayesianModel model = (HierarchicalBayesianModel) sl.psiModel(ModelPriors.defaults(), 2048);
+
+        // Defaults with env overrides
+        int chains = getEnvInt("HMC_CHAINS", 4);
+        int warm = getEnvInt("HMC_WARMUP", 1000);
+        int iters = getEnvInt("HMC_ITERS", 3000);
+        int thin = getEnvInt("HMC_THIN", 3);
+        double eps0 = getEnvDouble("HMC_STEP_SIZE", 0.01);
+        int leap = getEnvInt("HMC_LEAP", 32);
+        double target = getEnvDouble("HMC_TARGET_ACC", 0.75);
+        long seed = (long) getEnvInt("HMC_SEED", 20240810);
+        String out = System.getenv().getOrDefault("HMC_OUT", "hmc-out");
+        double[] z0 = new double[] { logit(0.7), logit(0.6), logit(0.5), Math.log(1.0) };
+
+        HmcMultiChainRunner runner = new HmcMultiChainRunner(
+                model, dataset, chains, warm, iters, thin, seed, z0, eps0, leap, target,
+                new java.io.File(out)
+        );
+        HmcMultiChainRunner.Summary summary = runner.run();
+        System.out.println("hmcmulti: " + summary.toJson());
     }
 
     private static double logit(double x) {

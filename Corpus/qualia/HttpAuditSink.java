@@ -63,17 +63,22 @@ public final class HttpAuditSink implements AuditSink {
                 .thenCompose(resp -> {
                     int code = resp.statusCode();
                     if (code >= 200 && code < 300) {
+                        MetricsRegistry.get().incCounter("http_audit_post_success_total");
                         return CompletableFuture.completedFuture(null);
                     }
                     if (attempt >= maxRetries) {
+                        MetricsRegistry.get().incCounter("http_audit_post_fail_total");
                         return CompletableFuture.failedFuture(new NetworkException("HTTP " + code));
                     }
+                    MetricsRegistry.get().incCounter("http_retry_total");
                     return delayed(backoff).thenCompose(v -> sendWithRetry(json, attempt + 1, nextBackoff(backoff)));
                 })
                 .exceptionallyCompose(ex -> {
                     if (attempt >= maxRetries) {
+                        MetricsRegistry.get().incCounter("http_audit_post_fail_total");
                         return CompletableFuture.failedFuture(new NetworkException("HTTP send failed", ex));
                     }
+                    MetricsRegistry.get().incCounter("http_retry_total");
                     return delayed(backoff).thenCompose(v -> sendWithRetry(json, attempt + 1, nextBackoff(backoff)));
                 });
     }

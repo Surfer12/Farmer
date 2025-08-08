@@ -37,6 +37,14 @@ SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
   - [x] Network audit sink (HTTP/REST) with retry/backoff
   - [x] Add audit record serialization/deserialization (JSON Lines)
 
+### Error Handling & Metrics
+- [x] Introduce custom exception hierarchy (`QualiaException`, `ConfigurationException`, `ValidationException`, `NetworkException`, `PersistenceException`, `ComputationException`, `AuditWriteException`)
+- [x] Add minimal `ErrorReporter` that logs to stderr and increments metrics
+- [x] Wire error reporting into `AuditTrail`, `FileAuditSink`, `HttpAuditSink`
+- [x] Add per-component counters (e.g., `audit_write_fail_total`, `http_retry_total`, `audit_rotate_total`, `http_audit_post_success_total`, `http_audit_post_fail_total`)
+- [ ] Expose `MetricsRegistry.toPrometheus()` via a tiny HTTP endpoint (optional)
+- [ ] Add unit tests for error paths (file open failure, HTTP 5xx retries, emit fail-open)
+
 ### Testing & Validation
 - [ ] **Comprehensive test suite**
   - [ ] Unit tests for all model components
@@ -56,6 +64,7 @@ SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
   - [ ] Disk corruption/partial-file handling: fallback to compute and re-write
   - [ ] Concurrency: single-flight ensures one compute under load (stress with threads)
   - [ ] Integration: read-through/write-back path exercised via `precompute(...)` and stats validated
+- [x] Remove temporary FAIL prints from `PsiMcdaTest` or keep for triage (set to assertions)
 
 ## 🔧 Medium Priority
 
@@ -84,6 +93,8 @@ SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
   - [ ] Cache knobs: PREP cache `maxEntries`, `ttl`, `maxWeightBytes`, disk directory
   - [ ] Feature flags: enable/disable disk layer; enable/disable in-memory layer
   - [ ] Sanity clamps and defaults for cache settings
+
+- [x] Scripts/automation: add `scripts/test_qualia.sh` and `make test-qualia`
 
 ## 📊 Low Priority
 
@@ -206,17 +217,8 @@ SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
 ## Quick Commands
 
 ```bash
-# Run tests
-./gradlew test
-
-# Build project
-./gradlew build
-
-# Generate documentation
-./gradlew javadoc
-
-# Run with specific configuration
-java -jar qualia.jar --config config.yaml
+# One-shot Psi + sinks tests
+make test-qualia
 ```
 
 

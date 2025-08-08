@@ -35,10 +35,12 @@ public final class AuditTrail {
         try {
             return sink.write(record, opts).exceptionally(ex -> {
                 ErrorReporter.report("AuditTrail.emit", ex);
+                MetricsRegistry.get().incCounter("audit_emit_fail_total");
                 return null;
             });
         } catch (RuntimeException ex) {
             ErrorReporter.report("AuditTrail.emit", ex);
+            MetricsRegistry.get().incCounter("audit_emit_fail_total");
             return CompletableFuture.completedFuture(null);
         }
     }
