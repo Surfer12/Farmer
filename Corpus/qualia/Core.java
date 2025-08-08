@@ -2,6 +2,9 @@ package qualia;
 
 import java.io.File;
 import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 /**
  * Core entrypoint for quick demos of available AuditSink implementations.
@@ -23,6 +26,8 @@ public final class Core {
             case "console" -> runConsole();
             case "file" -> runFile();
             case "jdbc" -> runJdbc();
+            case "stein" -> runStein();
+            case "rmala" -> runRmala();
             default -> printUsageAndExit();
         }
     }
@@ -62,9 +67,81 @@ public final class Core {
         }
     }
 
+    private static void runStein() {
+        // 1) Small synthetic dataset for speed
+        List<ClaimData> dataset = new ArrayList<>();
+        Random rng = new Random(42);
+        int n = 50;
+        for (int i = 0; i < n; i++) {
+            String id = "c-" + i;
+            boolean y = rng.nextBoolean();
+            double ra = Math.abs(rng.nextGaussian()) * 0.5; // small risks
+            double rv = Math.abs(rng.nextGaussian()) * 0.5;
+            double pHe = Math.min(1.0, Math.max(0.0, 0.5 + 0.2 * rng.nextGaussian()));
+            dataset.add(new ClaimData(id, y, ra, rv, pHe));
+        }
+
+        // 2) Model and MCMC samples
+        HierarchicalBayesianModel model = new HierarchicalBayesianModel();
+        int sampleCount = 60; // keep small for demo speed
+        List<ModelParameters> samples = model.performInference(dataset, sampleCount);
+
+        // 3) Define integrand f(params): average Psi over dataset
+        double[] fvals = new double[samples.size()];
+        for (int i = 0; i < samples.size(); i++) {
+            ModelParameters p = samples.get(i);
+            double sumPsi = 0.0;
+            for (ClaimData c : dataset) sumPsi += model.calculatePsi(c, p);
+            fvals[i] = sumPsi / dataset.size();
+        }
+
+        // 4) Build Stein estimator and compute c_N
+        double lengthScale = 0.5; // demo value
+        SteinEstimator est = new SteinEstimator(lengthScale, model, dataset, samples);
+        double cN = est.estimate(fvals, 50, 1e-3);
+
+        // 5) Compare to plain MC average
+        double mc = 0.0; for (double v : fvals) mc += v; mc /= fvals.length;
+
+        System.out.println("stein: c_N (Stein) = " + cN);
+        System.out.println("stein: MC average  = " + mc);
+    }
+
     private static void printUsageAndExit() {
-        System.err.println("Usage: java -cp <cp> qualia.Core <console|file|jdbc>");
+        System.err.println("Usage: java -cp <cp> qualia.Core <console|file|jdbc|stein|rmala>");
         System.exit(1);
+    }
+
+    private static void runRmala() {
+        // small synthetic dataset
+        List<ClaimData> dataset = new ArrayList<>();
+        Random rng = new Random(7);
+        for (int i = 0; i < 60; i++) {
+            dataset.add(new ClaimData("r-" + i, rng.nextBoolean(), Math.abs(rng.nextGaussian()) * 0.3,
+                    Math.abs(rng.nextGaussian()) * 0.3, Math.min(1.0, Math.max(0.0, 0.5 + 0.2 * rng.nextGaussian()))));
+        }
+
+        HierarchicalBayesianModel model = new HierarchicalBayesianModel();
+        RmalaSampler sampler = new RmalaSampler(model, dataset);
+
+        // constant step size baseline policy
+        RmalaSampler.StepSizePolicy constant = x -> 0.05;
+        double[] x0 = new double[] {0.6, 0.5, 0.5, 1.0};
+
+        RmalaSampler.Result res = sampler.sample(5000, 1000, 10, 123L, x0, constant);
+        System.out.println("rmala: kept " + res.samples.size() + " samples");
+        System.out.println("rmala: acceptanceRate = " + String.format("%.3f", res.acceptanceRate));
+        System.out.println("rmala: avgCDLB = " + String.format("%.6f", res.avgCdlb));
+
+        // report a simple f average (mean Ψ) from RMALA samples
+        double meanPsi = 0.0;
+        for (ModelParameters p : res.samples) {
+            double sum = 0.0;
+            for (ClaimData c : dataset) sum += model.calculatePsi(c, p);
+            meanPsi += sum / dataset.size();
+        }
+        if (!res.samples.isEmpty()) meanPsi /= res.samples.size();
+        System.out.println("rmala: mean Ψ over RMALA samples = " + String.format("%.6f", meanPsi));
     }
 }
 
