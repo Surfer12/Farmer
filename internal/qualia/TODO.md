@@ -9,7 +9,7 @@ SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
 - [x] Introduce `PsiModel` interface and make `HierarchicalBayesianModel` implement it
 - [x] Add simple DI: `ModelFactory` and `ServiceLocator` for wiring
 - [ ] Introduce abstract base classes where useful (e.g., `AbstractAuditSink`, `AbstractModel`)
-- [ ] DI configuration via environment: select `AuditSink` (console/file/http/jdbc) and params
+- [x] DI configuration via environment: select `AuditSink` (console/file/http/jdbc) and params
 - [ ] Unit tests: factory creation paths and service locator bindings
 
 ### Core Model Implementation
@@ -17,13 +17,16 @@ SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
   - [ ] Integrate HMC/NUTS sampler library (e.g., Stan4j, JAGS Java bindings)
   - [x] Implement internal HMC sampler (unconstrained reparam + Jacobian)
   - [x] Env-based tuning knobs for `stepSize`/`leapfrogSteps` (HMC_STEP_SIZE/HMC_LEAP)
-  - [ ] Dual-averaging step-size adaptation to target 0.65–0.80 acceptance
-  - [ ] Diagonal mass-matrix adaptation (momentum preconditioning)
-  - [ ] Dynamic trajectory length (NUTS-style) and simple divergence checks
-  - [ ] Multi-chain runner: warmup schedule, seed control, persistent draws
+  - [x] Dual-averaging step-size adaptation to target 0.65–0.80 acceptance
+  - [x] Diagonal mass-matrix adaptation (momentum preconditioning)
+  - [ ] Dynamic trajectory length (NUTS-style)
+  - [x] Simple divergence checks (energy error, non-finite H) in HMC
+  - [x] Multi-chain runner: warmup schedule, seed control (PHI64 spacing), persistent draws (JSONL/meta), summary JSON
+  - [x] Metrics export from multi-chain: per-chain acceptance/divergences/ε; diagnostics gauges (R̂)
   - [x] Analytic gradient for SteinGradLogP (replace finite-diff; reuse dlogPost)
   - [x] Switch Stein to z-space origin (logit/exp) with Jacobian-corrected score; expose `gradLogTargetZ` and use prepared, thresholded parallel gradients
-  - [ ] CLI flags for HMC params (override env); JSON summary output
+  - [ ] CLI flags for HMC params (override env)
+  - [x] JSON summary output for HMC runs
   - [x] Implement proper log-prior calculations for all parameters
   - [x] Add convergence diagnostics and effective sample size calculations (prototype)
   - [x] Add parallel sampling support (independent MH chains)
@@ -42,6 +45,7 @@ SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
 - [x] Add minimal `ErrorReporter` that logs to stderr and increments metrics
 - [x] Wire error reporting into `AuditTrail`, `FileAuditSink`, `HttpAuditSink`
 - [x] Add per-component counters (e.g., `audit_write_fail_total`, `http_retry_total`, `audit_rotate_total`, `http_audit_post_success_total`, `http_audit_post_fail_total`)
+- [x] Export HMC multi-chain metrics in runner (per-chain gauges, total divergences, diagnostics)
 - [ ] Expose `MetricsRegistry.toPrometheus()` via a tiny HTTP endpoint (optional)
 - [ ] Add unit tests for error paths (file open failure, HTTP 5xx retries, emit fail-open)
 
@@ -64,7 +68,8 @@ SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
   - [ ] Disk corruption/partial-file handling: fallback to compute and re-write
   - [ ] Concurrency: single-flight ensures one compute under load (stress with threads)
   - [ ] Integration: read-through/write-back path exercised via `precompute(...)` and stats validated
-- [x] Remove temporary FAIL prints from `PsiMcdaTest` or keep for triage (set to assertions)
+  - [ ] Multi-chain runner: reproducibility (seed spacing), output format validation (JSONL/meta/summary), R̂/ESS sanity
+  - [x] Remove temporary FAIL prints from `PsiMcdaTest` or keep for triage (set to assertions)
 
 ## 🔧 Medium Priority
 

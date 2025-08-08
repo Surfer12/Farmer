@@ -47,7 +47,7 @@ public final class FileAuditSink implements AuditSink {
         this.maxMillis = maxMillis <= 0 ? TimeUnit.HOURS.toMillis(1) : maxMillis; // default 1h
         this.executor = newBoundedExecutor(maxQueue);
         if (!directory.exists() && !directory.mkdirs()) {
-            throw new IllegalStateException("Could not create directory: " + directory);
+            throw new PersistenceException("Could not create directory: " + directory);
         }
         rotate();
     }

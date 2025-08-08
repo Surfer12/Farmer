@@ -141,6 +141,12 @@ final class HmcSampler {
         // Mass diag initialised to ones
         double[] massDiag = new double[] {1.0, 1.0, 1.0, 1.0};
 
+        // Realtime metrics setup (gauges are longs; scale doubles to micros where applicable)
+        MetricsRegistry.get().setGauge("hmc_warmup_iters", warmupIters);
+        MetricsRegistry.get().setGauge("hmc_sampling_iters", samplingIters);
+        MetricsRegistry.get().setGauge("hmc_thin", Math.max(1, thin));
+        MetricsRegistry.get().setGauge("hmc_leapfrog_steps", Math.max(1, leapfrogSteps));
+
         int findWindow = Math.max(10, (int) Math.round(warmupIters * 0.15));
         int adaptWindow = Math.max(10, (int) Math.round(warmupIters * 0.60));
         int massWindow = Math.max(10, warmupIters - findWindow - adaptWindow);
@@ -190,11 +196,15 @@ final class HmcSampler {
             boolean accept = rng.nextDouble() < acceptProb;
             if (!accept) {
                 z = zCur;
+                MetricsRegistry.get().incCounter("hmc_warmup_reject_total");
+            } else {
+                MetricsRegistry.get().incCounter("hmc_warmup_accept_total");
             }
 
             // Divergence check: large energy error or NaN
             if (!Double.isFinite(H0) || !Double.isFinite(H1) || (H1 - H0) > divThreshold) {
                 divergenceCount++;
+                MetricsRegistry.get().incCounter("hmc_divergences_total");
             }
 
             // Phase-specific adaptation
@@ -243,12 +253,21 @@ final class HmcSampler {
             }
         }
 
+        // Publish tuned parameters
+        MetricsRegistry.get().setGauge("hmc_tuned_step_micros", toMicros(tunedStep));
+        MetricsRegistry.get().setGauge("hmc_mass_diag0_micros", toMicros(tunedMass[0]));
+        MetricsRegistry.get().setGauge("hmc_mass_diag1_micros", toMicros(tunedMass[1]));
+        MetricsRegistry.get().setGauge("hmc_mass_diag2_micros", toMicros(tunedMass[2]));
+        MetricsRegistry.get().setGauge("hmc_mass_diag3_micros", toMicros(tunedMass[3]));
+        MetricsRegistry.get().setGauge("hmc_warmup_divergences", divergenceCount);
+
         // Sampling with tuned parameters
         List<ModelParameters> kept = new ArrayList<>();
         int accepted = 0;
         int keepEvery = Math.max(1, thin);
         int keptCount = 0;
         for (int iter = 0; iter < samplingIters; iter++) {
+            MetricsRegistry.get().incCounter("hmc_iterations_total");
             double[] p = new double[4];
             for (int i = 0; i < 4; i++) p[i] = rng.nextGaussian() * Math.sqrt(tunedMass[i]);
             double[] zCur = z.clone();
@@ -269,8 +288,10 @@ final class HmcSampler {
             double acceptProb = Math.min(1.0, Math.exp(H0 - H1));
             if (rng.nextDouble() < acceptProb) {
                 accepted++;
+                MetricsRegistry.get().incCounter("hmc_accept_total");
             } else {
                 z = zCur;
+                MetricsRegistry.get().incCounter("hmc_reject_total");
             }
 
             if ((iter % keepEvery) == 0) {
@@ -280,6 +301,8 @@ final class HmcSampler {
         }
 
         double accRate = accepted / (double) Math.max(1, samplingIters);
+        MetricsRegistry.get().setGauge("hmc_last_acceptance_ppm", (long) Math.round(accRate * 1_000_000L));
+        MetricsRegistry.get().setGauge("hmc_samples_kept", kept.size());
         return new AdaptiveResult(kept, accRate, tunedStep, tunedMass, divergenceCount);
     }
 
@@ -365,6 +388,8 @@ final class HmcSampler {
     private static double dotInvMass(double[] p, double[] massDiag) {
         double s = 0.0; for (int i = 0; i < p.length; i++) s += (p[i] * p[i]) / Math.max(1e-12, massDiag[i]); return s;
     }
+
+    private static long toMicros(double x) { return Math.round(x * 1_000_000.0); }
 }
 
 
