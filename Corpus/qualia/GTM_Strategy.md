@@ -1,6 +1,6 @@
 # Ψ Framework Go To Market Strategy
 
-SPDX-License-Identifier: GPL-3.0-only
+SPDX-License-Identifier: LicenseRef-Internal-Use-Only
 SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
 
 ## 🎯 Executive Summary

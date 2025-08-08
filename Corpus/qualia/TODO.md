@@ -1,5 +1,8 @@
 # Qualia Package TODO
 
+SPDX-License-Identifier: LicenseRef-Internal-Use-Only
+SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
+
 ## 🚀 High Priority
 
 ### Core Model Implementation
