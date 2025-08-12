@@ -1,8 +1,7 @@
 ---
 description: Ψ model invariants and MCDA integration when editing decision code
-globs: Corpus/qualia/*.java,Corpus/qualia/**.java
+alwaysApply: false
 ---
-
 # Ψ Model & MCDA Invariants
 
 - Core structure
@@ -22,6 +21,8 @@ globs: Corpus/qualia/*.java,Corpus/qualia/**.java
 - Where to apply
   - Scoring and gradients: [PsiMcda.java](mdc:Corpus/qualia/PsiMcda.java), [PsiModel.java](mdc:Corpus/qualia/PsiModel.java)
   - MCDA ops: [Mcda.java](mdc:Corpus/qualia/Mcda.java)
+  - Documentation: [docs/notes/how_i_decide_step_by_step.md](mdc:docs/notes/how_i_decide_step_by_step.md), [docs/notes/mcda_references.md](mdc:docs/notes/mcda_references.md), [docs/notes/status_ruleset_expansion.md](mdc:docs/notes/status_ruleset_expansion.md), [docs/notes/formalization_analysis.md](mdc:docs/notes/formalization_analysis.md), [docs/notes/decision_model_status.md](mdc:docs/notes/decision_model_status.md), [docs/notes/decision_model_status.md](mdc:docs/notes/decision_model_status.md)       
+  - Framework analysis: [docs/notes/formalization_analysis.md](mdc:docs/notes/formalization_analysis.md)
 
 - Tests
   - Maintain invariance tests and threshold-transfer examples alongside changes.

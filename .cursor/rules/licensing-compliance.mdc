@@ -1,6 +1,6 @@
 ---
-alwaysApply: true
-description: Licensing and REUSE usage; SPDX defaults and overrides
+description: "Licensing and REUSE usage; SPDX defaults and overrides. This includes GPL-3.0-only for public code, internal-only areas, and optional non-code CC0 for selected non-code assets. This is a work in progress. SPDX header examples: Java (public), LaTeX (internal), Markdown (public), Markdown/asset (optional CC0 areas only). License texts live in `LICENSES/`: GPL-3.0-only.txt, LicenseRef-Internal-Use-Only.txt, CC0-1.0.txt. Notices: [NOTICE](mdc:NOTICE) and [COPYRIGHT](mdc:COPYRIGHT) must remain present."
+alwaysApply: false
 ---
 
 # Licensing & REUSE
