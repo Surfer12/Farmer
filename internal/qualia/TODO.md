@@ -114,6 +114,48 @@ SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
   - Provided 4–6 week integration/runtime plan, JSON/JSONL schemas, and reproducibility protocol.
   - Outlined performance hooks and risk controls; included a minimal, actionable task list to implement the triad.
 
+### AI Factory Assistants (HR/IT) — Hardening and Ψ Integration (High Priority)
+
+- [ ] Security and Access Controls
+  - [ ] Default bind to `127.0.0.1`; make `0.0.0.0` opt-in via `ALLOW_REMOTE=1`
+  - [ ] Require bearer auth if `REQUIRE_AUTH=1`; token from `AUTH_TOKEN`
+  - [ ] Add simple rate limiting (`RATE_LIMIT_RPS`, burst) and request body size/time limits
+  - [ ] Explicit CORS policy off by default; allowlist domains via `CORS_ALLOW_ORIGINS`
+
+- [ ] Configuration & Prompts
+  - [ ] Read `MODEL`, `PORT`, `LOG_PATH`, `REQUIRE_AUTH`, `RATE_LIMIT_RPS`, `TIMEOUT_MS` from env
+  - [ ] Externalize system/user prompts to files under `assistants/prompts/` with versioning
+
+- [ ] Observability & Unified Logging
+  - [ ] Emit Prometheus `/metrics` (requests, latency, errors) and include `trace_id` per request
+  - [ ] Move logs to `data/logs/assistants.jsonl` (rotated); deprecate per-service local logs
+  - [ ] Structured log schema additions: `trace_id`, `service`, `user`, `question_hash`, `answer_hash`, `model_used`, `latency_ms`
+  - [ ] PII redaction before logging (email, phone, SSN patterns); keep only hashes for large payloads
+
+- [ ] Ψ Integration (Real Confidence)
+  - [ ] Bridge to Ψ: call local Java service/CLI for `psi` with inputs; configurable endpoint/CLI via env
+  - [ ] Log Ψ fields per `internal/NOTATION.md`: `psi`, `s`, `n`, `alpha`, `ra`, `rv`, `beta`, `tau`, `threshold_transfer`
+  - [ ] Enforce timeouts and fallback behavior; annotate fallback in logs
+
+- [ ] API Hardening
+  - [ ] Split `/healthz` (liveness) and `/readyz` (readiness); include build/version in response
+  - [ ] Input validation (pydantic) with max lengths; clear error messages; consistent error codes
+
+- [ ] Tests & Tooling
+  - [ ] Pytest + HTTPX smoke tests: `/healthz`, `/readyz`, `/query` happy-path
+  - [ ] Negative tests: auth required, rate limit exceeded, payload too large, timeout fallback
+  - [ ] Golden tests for redaction and logging schema validation
+  - [ ] Extend `Makefile`: `run-assistants`, `test-assistants`, `lint-assistants`
+
+- [ ] Launcher & Deployment
+  - [ ] Consolidate to Python launcher; remove drifting shell script
+  - [ ] Ensure env propagation to child processes (ports, auth, log path)
+  - [ ] Add dev run docs and optional `docker-compose.yml` for local
+
+- [ ] Governance & Audit
+  - [ ] Decision trail completeness check in CI: % of records with full Ψ fields
+  - [ ] Privacy review and ops runbook (secrets management, rotation, incident response)
+
 ### Audit System
 - [ ] **Implement persistent audit sinks**
   - [x] Database-backed audit sink (PostgreSQL/MySQL)

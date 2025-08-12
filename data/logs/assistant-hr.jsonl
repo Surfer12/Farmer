@@ -1,0 +1,2 @@
+{"timestamp": "2025-08-12T15:47:23.038372Z", "service": "hr-assistant", "event": "request", "method": "GET", "path": "/docs", "status": 200, "duration_ms": 0, "client_ip": "127.0.0.1", "request_id": "b85779b9-a690-402c-9f6e-41a16b4d3147", "auth": "required"}
+{"timestamp": "2025-08-12T15:48:47.939211Z", "service": "hr-assistant", "event": "request", "method": "GET", "path": "/docs", "status": 200, "duration_ms": 0, "client_ip": "127.0.0.1", "request_id": "39fd9903-ce4c-4707-9c8f-dcf69aad2c42", "auth": "required"}
