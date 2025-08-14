@@ -5,12 +5,12 @@
 fastapi==0.104.1
 uvicorn[standard]==0.24.0
 pydantic==2.5.0
-python-multipart==0.0.6
+python-multipart==0.0.12  # Updated from 0.0.6 - fixes DoS and ReDoS vulnerabilities
 
 # ASGI servers and performance
 uvloop==0.19.0
 httptools==0.6.1
-gunicorn==21.2.0
+gunicorn==23.0.0  # Updated from 21.2.0 - fixes HTTP Request/Response Smuggling vulnerabilities
 
 # OpenAI integration
 openai==1.3.7
@@ -23,15 +23,15 @@ matplotlib==3.8.2
 seaborn==0.13.0
 
 # Additional utilities
-requests==2.31.0
+requests==2.32.3  # Updated from 2.31.0 - fixes .netrc credentials leak and session verification issues
 aiofiles==23.2.1
-python-jose[cryptography]==3.3.0
+python-jose[cryptography]==3.4.0  # Updated from 3.3.0 - fixes algorithm confusion with OpenSSH ECDSA keys
 passlib[bcrypt]==1.7.4
 
 # Development tools
 pytest==7.4.3
 pytest-asyncio==0.21.1
-black==23.11.0
+black==24.10.0  # Updated from 23.11.0 - fixes ReDoS vulnerability
 flake8==6.1.0
 mypy==1.7.1
 
