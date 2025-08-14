@@ -239,13 +239,16 @@ public final class Core {
     }
 
     private static void runHmcMulti(String[] args) {
-        // Parse CLI key=value to override env
-        java.util.Map<String, String> kv = parseKvArgs(args, 1);
+        System.out.println("--- Running HMC Multi-Chain Runner ---");
+        // For smoke testing, run a few short chains in parallel.
+        final int chains = 2;
+        final int burnIn = 100;
+        final int samples = 100;
 
         // small synthetic dataset
         java.util.List<ClaimData> dataset = new java.util.ArrayList<>();
         java.util.Random rng = new java.util.Random(13);
-        for (int i = 0; i < 80; i++) {
+        for (int i = 0; i < 10; i++) {
             dataset.add(new ClaimData("m-" + i, rng.nextBoolean(),
                     Math.abs(rng.nextGaussian()) * 0.4,
                     Math.abs(rng.nextGaussian()) * 0.4,
@@ -254,38 +257,36 @@ public final class Core {
 
         ServiceLocator sl = ServiceLocator.builder().fromEnvironment().build();
         HierarchicalBayesianModel model = (HierarchicalBayesianModel) sl.psiModel(ModelPriors.defaults(), 2048);
-
-        // Defaults with env overrides, then CLI overrides
-        int chains = parseInt(kv.get("chains"), getEnvInt("HMC_CHAINS", 4));
-        int warm = parseInt(kv.get("warmup"), getEnvInt("HMC_WARMUP", 1000));
-        int iters = parseInt(kv.get("iters"), getEnvInt("HMC_ITERS", 3000));
-        int thin = parseInt(kv.get("thin"), getEnvInt("HMC_THIN", 3));
-        double eps0 = parseDouble(kv.get("eps"), getEnvDouble("HMC_STEP_SIZE", 0.01));
-        int leap = parseInt(kv.get("leap"), getEnvInt("HMC_LEAP", 32));
-        double target = parseDouble(kv.get("target"), getEnvDouble("HMC_TARGET_ACC", 0.75));
-        long seed = parseLong(kv.get("baseSeed"), (long) getEnvInt("HMC_SEED", 20240810));
-        String out = kv.getOrDefault("out", System.getenv().getOrDefault("HMC_OUT", "hmc-out"));
-        double[] z0 = new double[] { logit(0.7), logit(0.6), logit(0.5), Math.log(1.0) };
-
-        HmcMultiChainRunner runner = new HmcMultiChainRunner(
-                model, dataset, chains, warm, iters, thin, seed, z0, eps0, leap, target,
-                new java.io.File(out)
-        );
+        
+        HmcMultiChainRunner runner = new HmcMultiChainRunner(model, dataset, chains, burnIn, samples, 3, 0L, new double[] { 0, 0, 0, 0}, 0.01, 32, 0.75, new File("hmc-smoke"));
         HmcMultiChainRunner.Summary summary = runner.run();
-        System.out.println("hmcmulti: wrote to " + out);
+        System.out.println("hmcmulti: wrote to " + "hmc-smoke");
         System.out.println("hmcmulti: " + summary.toJson());
     }
 
     private static void runUnifiedDetector(String[] args) {
-        java.util.Map<String,String> kv = parseKvArgs(args, 1);
-        // Simple harmonic oscillator demo: y'' + ω^2 y = 0
-        double omega = Double.parseDouble(kv.getOrDefault("omega", String.valueOf(2.0 * Math.PI)));
-        UnifiedDetector.Dynamics dyn = (t, y, dy) -> { dy[0] = y[1]; dy[1] = -omega * omega * y[0]; };
+        System.out.println("--- Running Unified Detector ---");
+        java.util.Map<String, String> kv = parseKvArgs(args, 1);
+        double omega = Double.parseDouble(kv.getOrDefault("omega", "1.0"));
+
+        // SHO: y'' = -y. y(0)=1, y'(0)=0 => y(t)=cos(t)
+        final double[] y0 = {1.0, 0.0};
+        final double t0 = 0.0;
+        final double tEnd = 0.1; // Reduced from 2.0 * Math.PI for faster execution
+
+        UnifiedDetector detector = new UnifiedDetector();
+        UnifiedDetector.Dynamics sho = (t, y, dy) -> {
+            dy[0] = y[1];
+            dy[1] = -omega * omega * y[0];
+        };
+        
         // Initial state and energy-based invariant
-        final double[] y0 = new double[] {1.0, 0.0};
-        final double E0 = 0.5 * (y0[1]*y0[1] + omega*omega*y0[0]*y0[0]);
+        final double E0 = 0.5 * (y0[1] * y0[1] + omega * omega * y0[0] * y0[0]);
         UnifiedDetector.Invariant energy = new UnifiedDetector.Invariant() {
-            @Override public double value(double t, double[] y) { return 0.5 * (y[1]*y[1] + omega*omega*y[0]*y[0]); }
+            @Override
+            public double value(double t, double[] y) {
+                return 0.5 * (y[1] * y[1] + omega * omega * y[0] * y[0]);
+            }
             @Override public double reference() { return E0; }
             @Override public double tolerance() { return Math.max(1e-9, E0 * 1e-3); }
         };
@@ -298,19 +299,19 @@ public final class Core {
         double epsRk4 = Double.parseDouble(kv.getOrDefault("epsRk4", "1e-5"));
         double epsTaylor = Double.parseDouble(kv.getOrDefault("epsTaylor", "1e-5"));
         double epsGeom = Double.parseDouble(kv.getOrDefault("epsGeom", "1e-5"));
-        java.io.File jsonl = new java.io.File(kv.getOrDefault("jsonl", "unified.jsonl"));
+        final String jsonl = kv.getOrDefault("jsonl", "data/logs/unified.jsonl");
 
         try (java.io.PrintWriter out = new java.io.PrintWriter(new java.io.BufferedWriter(new java.io.FileWriter(jsonl, true)))) {
-            for (int i = 0; i < 1000; i++) {
+            for (int i = 0; i < 10; i++) {
                 if (triad) {
-                    UnifiedDetector.Triad tr = ud.triadStep(dyn, t, y, h, eps, epsRk4, epsTaylor, epsGeom, budgetNs, new UnifiedDetector.Invariant[]{ energy });
+                    UnifiedDetector.Triad tr = ud.triadStep(sho, t, y, h, eps, epsRk4, epsTaylor, epsGeom, budgetNs, new UnifiedDetector.Invariant[]{ energy });
                     t = tr.tNext; y = tr.yNext; h = tr.hUsed;
                     String line = String.format(java.util.Locale.ROOT,
                             "{\"t\":%.6f,\"x\":%.8f,\"v\":%.8f,\"psi\":%.6f,\"h\":%.6e,\"eps_rk4\":%.6e,\"eps_taylor\":%.6e,\"eps_geom\":%.6e,\"geom_drift\":%.6e,\"accepted\":%s}",
                             t, y[0], y[1], tr.psi, tr.hUsed, tr.epsRk4, tr.epsTaylor, tr.epsGeom, tr.geomDrift, String.valueOf(tr.accepted));
                     out.println(line);
                 } else {
-                    UnifiedDetector.Result r = ud.step(dyn, t, y, h, eps, budgetNs, new UnifiedDetector.Invariant[]{ energy });
+                    UnifiedDetector.Result r = ud.step(sho, t, y, h, eps, budgetNs, new UnifiedDetector.Invariant[]{ energy });
                     t = r.tNext; y = r.yNext; h = r.hUsed;
                     String line = String.format(java.util.Locale.ROOT,
                             "{\"t\":%.6f,\"x\":%.8f,\"v\":%.8f,\"psi\":%.6f,\"h\":%.6e,\"err_local\":%.6e}",

@@ -12,7 +12,7 @@ help:
 	@echo "  clean-certs   - Remove SSL certificates"
 
 test-qualia:
-	bash scripts/test_qualia.sh
+	mvn clean test
 
 start-http:
 	python3 assistants/launcher/launch_all.py
