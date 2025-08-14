@@ -1,224 +1,377 @@
-# Uncertainty Quantification (UQ) Framework for Reliable Risk Estimates
+# Uncertainty Quantification for Reliable Risk Estimates
 
-A comprehensive Python framework for quantifying and leveraging uncertainty in machine learning predictions to make better risk-based decisions.
+A comprehensive implementation of uncertainty quantification (UQ) methods for machine learning models, enabling reliable risk assessment and decision-making in production environments.
 
-## 🎯 What This Framework Gives You
+## Overview
 
-### Separates Ignorance from Noise
-- **Aleatoric Uncertainty**: Irreducible data noise that's inherent to the problem
-- **Epistemic Uncertainty**: Model ignorance that can be reduced with more data
-- Clear separation helps you understand what can be improved vs. what's fundamental
+This repository provides a complete framework for implementing uncertainty quantification in machine learning systems, transforming unreliable point predictions into trustworthy risk assessments. The implementation separates epistemic uncertainty (model ignorance) from aleatoric uncertainty (inherent randomness) and provides actionable risk management tools.
 
-### Converts Predictions into Actionable Risk
-- **Tail Probabilities**: P(Y ≥ threshold | X) for risk assessment
-- **Confidence Intervals**: Reliable prediction bounds with coverage guarantees
-- **Abstention Triggers**: Know when to escalate to human experts
-- **VaR/CVaR**: Value at Risk and Conditional Value at Risk for financial applications
+## Key Features
 
-### Improves Calibration
-- Predicted probabilities match observed frequencies
-- Temperature scaling and isotonic regression for better calibration
-- Reliability diagrams for visual assessment
+### 🎯 Core UQ Methods
+- **Deep Ensembles**: Strong baseline for epistemic uncertainty estimation
+- **MC Dropout**: Lightweight Bayesian inference for existing models
+- **Heteroscedastic Regression**: Input-dependent noise modeling
+- **Conformal Prediction**: Distribution-free coverage guarantees
+- **Temperature Scaling**: Post-hoc calibration for classification
 
-## 🔧 Core Methods Implemented
+### 📊 Evaluation Framework
+- **Calibration Metrics**: ECE, ACE, Brier score, reliability diagrams
+- **Interval Quality**: Coverage probability, interval width, CRPS
+- **Drift Detection**: PSI, KL divergence, distribution monitoring
+- **Decision Quality**: Expected cost curves, VaR/CVaR analysis
 
-### Deep Ensembles (n≈5)
-Strong, simple baseline for epistemic uncertainty quantification
-```python
-from uncertainty_quantification import DeepEnsemble
-ensemble = DeepEnsemble(RandomForestRegressor, n_models=5)
-ensemble.fit(X_train, y_train)
-uncertainty_est = ensemble.predict_with_uncertainty(X_test)
-```
+### 🚨 Production Monitoring
+- **Real-time Drift Detection**: Input and prediction distribution monitoring
+- **Calibration Monitoring**: Continuous quality assessment
+- **Automated Alerting**: Threshold-based notifications with cooldown
+- **Dashboard Visualization**: Comprehensive monitoring interface
 
-### Bayesian Approximations
-- **MC Dropout**: Lightweight uncertainty via dropout at inference
-- **SWAG**: Stochastic Weight Averaging Gaussian
-- **Laplace Approximation**: Last-layer Bayesian treatment
+### ⚖️ Risk-Aware Decision Making
+- **Expected Cost Minimization**: Optimal action selection
+- **Tail Risk Assessment**: VaR and CVaR calculations
+- **Selective Prediction**: Abstention based on uncertainty thresholds
+- **Business Integration**: Cost matrices and risk budgeting
 
-### Heteroscedastic Heads
-Regress both mean and variance to capture aleatoric uncertainty
-```python
-from uncertainty_quantification import HeteroscedasticHead
-head = HeteroscedasticHead(input_dim=128, output_dim=1)
-mean, var = head(features)
-```
+## Quick Start
 
-### Conformal Prediction
-Distribution-free coverage guarantees regardless of model or data distribution
-```python
-from uncertainty_quantification import ConformalPredictor
-conformal = ConformalPredictor(base_model, alpha=0.1)  # 90% coverage
-conformal.fit(X_cal, y_cal)
-lower, upper = conformal.predict_intervals(X_test)
-```
+### Installation
 
-### Calibration Methods
-- **Temperature Scaling**: Scale logits for better calibration
-- **Isotonic Regression**: Non-parametric calibration mapping
-- **Reliability Diagrams**: Visual calibration assessment
-
-### OOD Detection
-- **Energy Scores**: -T * log(sum(exp(logits/T)))
-- **Dirichlet Prior Networks**: Separate aleatoric/epistemic in classification
-- **Mahalanobis Distance**: Feature-space OOD detection
-
-## 📊 Evaluation Metrics
-
-### Calibration Assessment
-- **Expected Calibration Error (ECE)**: Difference between confidence and accuracy
-- **Reliability Diagrams**: Visual calibration quality
-- **Brier Score**: Probabilistic prediction accuracy
-- **Negative Log-Likelihood (NLL)**: Information-theoretic measure
-
-### Interval Quality
-- **Coverage (PICP)**: Fraction of true values within intervals
-- **Width (MPIW)**: Average interval width (sharpness)
-- **CRPS**: Continuous Ranked Probability Score for distributions
-- **Interval Score**: Combined coverage and sharpness metric
-
-### OOD Detection
-- **AUROC**: Area under ROC curve for OOD detection
-- **FPR@95%TPR**: False positive rate at 95% true positive rate
-
-## ⚠️ Risk-Based Decision Making
-
-### Expected Cost Minimization
-Choose actions that minimize expected cost under uncertainty
-```python
-from uncertainty_quantification import RiskBasedDecisionFramework
-
-optimal_actions = RiskBasedDecisionFramework.expected_cost_minimization(
-    predictions=uncertainty_estimates,
-    cost_matrix=cost_matrix,
-    actions=['conservative', 'moderate', 'aggressive']
-)
-```
-
-### Tail Risk Metrics
-- **VaR(α)**: Value at Risk - α-quantile of loss distribution
-- **CVaR(α)**: Conditional Value at Risk - expected loss beyond VaR
-- **Tail Probabilities**: P(Y ≥ threshold | X)
-
-### Selective Prediction
-Abstain or escalate when uncertainty exceeds threshold
-```python
-threshold = RiskBasedDecisionFramework.selective_prediction_threshold(
-    uncertainties, accuracies, coverage_target=0.9
-)
-```
-
-## 🔍 Monitoring and Guardrails
-
-### Drift Detection
-- **Population Stability Index (PSI)**: Input distribution drift
-- **KL Divergence**: Distribution change measurement
-- **Calibration Drift**: Monitor ECE and Brier score changes
-
-### Online Updates
-- **Conformal Online Updates**: Maintain coverage with streaming data
-- **Temperature Re-fitting**: Periodic calibration updates
-- **Sliding Window Coverage**: Monitor prediction quality over time
-
-### Backtesting
-- **Champion-Challenger**: Compare UQ methods
-- **Coverage Audits**: Validate interval coverage over time
-- **Canary Deployments**: Safe rollout of new UQ methods
-
-## 🚀 Quick-Start Guide
-
-### 1. Install Dependencies
 ```bash
+# Clone the repository
+git clone <repository-url>
+cd uncertainty-quantification
+
+# Install dependencies
 pip install -r requirements.txt
 ```
 
-### 2. Basic Usage
-```python
-from uq_quickstart_example import QuickStartUQPipeline
-from sklearn.ensemble import RandomForestRegressor
+### Basic Usage
 
-# Initialize pipeline
-pipeline = QuickStartUQPipeline(RandomForestRegressor, n_ensemble=5)
-
-# Train with calibration set
-pipeline.fit(X_train, y_train, X_cal, y_cal)
-
-# Generate predictions with risk analysis
-results = pipeline.predict_with_risk_analysis(X_test)
-
-# Evaluate quality
-metrics = pipeline.evaluate_quality(X_test, y_test)
-```
-
-### 3. Run Complete Demo
-```bash
-python uq_quickstart_example.py
-```
-
-## 🔮 Ψ Framework Integration
-
-This UQ framework integrates with the Ψ framework to enhance reliability:
-
-### Calibration Component (Post)
-Better UQ → Better calibrated probabilities → Higher Ψ score
-
-### Verifiability Component (R_v)
-Reproducible uncertainty estimates → Lower verifiability risk → Higher Ψ score
-
-### Authority Component (R_a)
-Stable predictions across distribution shifts → Better authority scoring → Higher Ψ score
+#### 1. Regression with Uncertainty Quantification
 
 ```python
-from uq_quickstart_example import PsiFrameworkIntegration
+from uq_examples import regression_uq_example
 
-psi_integration = PsiFrameworkIntegration(pipeline)
-psi_scores = psi_integration.compute_psi_score(X_val, y_val, X_test, X_shifted)
+# Run comprehensive regression example
+results = regression_uq_example()
+
+# Results include:
+# - Deep ensemble predictions with epistemic uncertainty
+# - MC Dropout uncertainty estimates
+# - Heteroscedastic variance predictions
+# - Conformal prediction intervals with coverage guarantees
 ```
 
-## 📈 Production Deployment Checklist
+#### 2. Classification with Calibration
 
-### Baseline Setup
-- [x] Deep ensemble (n=5) for epistemic uncertainty
-- [x] Temperature scaling for calibration
-- [x] Conformal prediction for coverage guarantees
+```python
+from uq_examples import classification_uq_example
 
-### For Regression
-- [x] Heteroscedastic head or quantile regression
-- [x] Report P(Y>t) and prediction intervals
-- [x] VaR/CVaR risk metrics
+# Run classification with uncertainty quantification
+results = classification_uq_example()
 
-### For Classification
-- [x] Predicted probabilities + entropy
-- [x] Conformal prediction sets
-- [x] Abstention/escalation thresholds
+# Results include:
+# - Temperature-scaled probabilities
+# - Reliability diagrams
+# - Entropy-based uncertainty measures
+# - Conformal prediction sets
+```
 
-### Monitoring
-- [x] Input drift detection (PSI/KL divergence)
-- [x] Calibration drift monitoring
-- [x] Online conformal updates
-- [x] Coverage backtesting
+#### 3. Production Monitoring
 
-### Decision Integration
-- [x] Expected cost minimization
-- [x] Risk-based action selection
-- [x] Selective prediction thresholds
+```python
+from uq_monitoring import simulate_monitoring_scenario
 
-## 📚 Key Benefits
+# Simulate production monitoring with drift detection
+monitor, report = simulate_monitoring_scenario()
 
-1. **Reliability**: Theoretical coverage guarantees via conformal prediction
-2. **Actionability**: Convert uncertainty into concrete risk metrics and decisions
-3. **Robustness**: Multiple complementary UQ methods for comprehensive coverage
-4. **Monitoring**: Built-in drift detection and quality assessment
-5. **Integration**: Seamless integration with Ψ framework for enhanced reliability
-6. **Production-Ready**: Complete pipeline with monitoring and backtesting
+# Features:
+# - Real-time drift detection
+# - Calibration quality monitoring
+# - Automated alerting system
+# - Comprehensive dashboard
+```
 
-## 🎯 Summary
+## Implementation Guide
 
-This framework transforms uncertainty from a nuisance into a strategic advantage by:
-- Providing reliable, well-calibrated uncertainty estimates
-- Converting predictions into actionable risk assessments
-- Enabling principled decision-making under uncertainty
-- Maintaining quality through comprehensive monitoring
-- Integrating with reliability frameworks like Ψ
+### Phase 1: Baseline UQ (Week 1)
+1. **Deep Ensemble Setup**: Train 5 models with different initializations
+2. **Temperature Scaling**: Calibrate on validation set
+3. **Basic Metrics**: Implement ECE and reliability diagrams
+4. **Target**: ECE ≤ 3% on validation data
 
-**Result**: More reliable risk estimates that improve decision quality and reduce unexpected failures.
+### Phase 2: Guarantees (Week 2)
+1. **Conformal Prediction**: Add distribution-free intervals/sets
+2. **Coverage Validation**: Ensure 90-95% nominal coverage
+3. **Width Optimization**: Minimize interval width while maintaining coverage
+4. **Target**: Coverage within ±2% of nominal
+
+### Phase 3: Decision Integration (Week 3)
+1. **Cost Matrix**: Define business-relevant cost structure
+2. **Risk Metrics**: Implement VaR/CVaR calculations
+3. **Abstention Rules**: Set uncertainty-based thresholds
+4. **Target**: Measurable improvement in expected cost
+
+### Phase 4: Production Monitoring (Week 4)
+1. **Drift Detection**: Input and prediction distribution monitoring
+2. **Online Calibration**: Periodic recalibration procedures
+3. **Alerting System**: Automated threshold-based notifications
+4. **Target**: Stable performance under distribution shift
+
+## Core Methods
+
+### Deep Ensembles
+```python
+from uq_examples import DeepEnsemble
+
+# Create ensemble of models
+models = [create_model() for _ in range(5)]
+ensemble = DeepEnsemble(models)
+
+# Get predictions with epistemic uncertainty
+mean, epistemic_var = ensemble.predict(x_test)
+```
+
+### MC Dropout
+```python
+from uq_examples import MCDropoutModel
+
+# Create MC Dropout model
+model = MCDropoutModel(input_dim=10, hidden_dim=64, output_dim=1)
+
+# Get uncertainty estimates
+mean, uncertainty = model.predict_with_uncertainty(x_test, n_samples=100)
+```
+
+### Conformal Prediction
+```python
+from uq_examples import ConformalPredictor
+
+# Setup conformal prediction
+conformal = ConformalPredictor(base_model, alpha=0.1)  # 90% coverage
+conformal.calibrate(x_cal, y_cal)
+
+# Get prediction intervals
+lower, upper = conformal.predict_interval(x_test)
+```
+
+### Temperature Scaling
+```python
+from uq_examples import TemperatureScaling
+
+# Calibrate model predictions
+temp_scaler = TemperatureScaling()
+temp_scaler.fit(logits_val, labels_val)
+
+# Apply calibration
+calibrated_logits = temp_scaler(logits_test)
+```
+
+## Risk-Aware Decision Making
+
+### Expected Cost Framework
+```python
+# Define cost matrix (action vs true state)
+cost_matrix = np.array([
+    [0, 5],    # Action 0: correct=0 cost, wrong=5 cost
+    [3, 0],    # Action 1: wrong=3 cost, correct=0 cost
+    [1, 1]     # Abstain: always 1 cost
+])
+
+# Make risk-optimal decisions
+def make_decision(probabilities, uncertainty_threshold=0.1):
+    if entropy(probabilities) > uncertainty_threshold:
+        return "abstain"
+    else:
+        expected_costs = cost_matrix @ probabilities
+        return np.argmin(expected_costs)
+```
+
+### Tail Risk Assessment
+```python
+def value_at_risk(samples, alpha=0.95):
+    """Value at Risk - alpha-quantile of loss distribution"""
+    return np.quantile(samples, alpha)
+
+def conditional_value_at_risk(samples, alpha=0.95):
+    """Expected loss beyond VaR"""
+    var = value_at_risk(samples, alpha)
+    return samples[samples >= var].mean()
+```
+
+## Production Monitoring
+
+### Setting Up Monitoring
+```python
+from uq_monitoring import UQProductionMonitor
+
+# Initialize monitor
+monitor = UQProductionMonitor(
+    psi_threshold=0.1,           # Input drift threshold
+    calibration_threshold=0.05,  # Calibration degradation threshold
+    coverage_threshold=0.05,     # Coverage drift threshold
+    window_size=1000            # Rolling window size
+)
+
+# Set reference data
+monitor.set_reference_data(
+    features=ref_features,
+    predictions=ref_predictions,
+    uncertainties=ref_uncertainties,
+    true_labels=ref_labels,
+    prediction_intervals=ref_intervals
+)
+```
+
+### Adding New Predictions
+```python
+# Add batch of new predictions
+monitor.add_batch(
+    features=new_features,
+    predictions=new_predictions,
+    uncertainties=new_uncertainties,
+    true_labels=new_labels,
+    prediction_intervals=new_intervals
+)
+
+# Generate monitoring report
+report = monitor.export_monitoring_report(hours_back=24)
+```
+
+## Evaluation Metrics
+
+### Calibration Assessment
+```python
+from uq_examples import expected_calibration_error, reliability_diagram
+
+# Calculate Expected Calibration Error
+ece = expected_calibration_error(y_true, y_prob)
+
+# Plot reliability diagram
+reliability_diagram(y_true, y_prob)
+```
+
+### Interval Quality
+```python
+from uq_examples import interval_coverage, interval_width
+
+# Assess prediction intervals
+coverage = interval_coverage(y_true, lower_bounds, upper_bounds)
+width = interval_width(lower_bounds, upper_bounds)
+```
+
+## File Structure
+
+```
+uncertainty-quantification/
+├── uncertainty_quantification_guide.md  # Comprehensive theory and methods guide
+├── uq_examples.py                       # Practical implementation examples
+├── uq_monitoring.py                     # Production monitoring system
+├── requirements.txt                     # Python dependencies
+├── README.md                           # This file
+└── outputs/                            # Generated plots and reports
+    ├── regression_uq_results.png
+    ├── classification_uq_reliability.png
+    ├── monitoring_dashboard.png
+    └── risk_aware_decisions.png
+```
+
+## Key Performance Targets
+
+### Calibration Quality
+- **ECE ≤ 2-3%** on in-domain validation data
+- **Reliability diagrams** showing diagonal alignment
+- **Brier score** improvement over baseline
+
+### Coverage Guarantees
+- **Conformal prediction** within ±1-2% of nominal coverage (90-95%)
+- **Adaptive intervals** that adjust to input complexity
+- **Minimal width** while maintaining coverage
+
+### Drift Detection
+- **PSI < 0.1** for stable operation
+- **KL divergence** monitoring for distribution shifts
+- **FPR@95%TPR** substantially below in-domain baseline for OOD detection
+
+### Decision Quality
+- **10-20% improvement** in expected cost vs naive baseline
+- **Reduced tail losses** through VaR/CVaR optimization
+- **Appropriate abstention rates** (5-15% depending on application)
+
+## Business Impact
+
+### Risk Management
+- **Quantified uncertainty** enables proper risk budgeting
+- **Tail risk assessment** for regulatory compliance
+- **Automated abstention** prevents costly errors
+
+### Model Reliability
+- **Calibrated probabilities** improve stakeholder trust
+- **Coverage guarantees** provide statistical assurances
+- **Drift detection** maintains performance over time
+
+### Operational Excellence
+- **Real-time monitoring** prevents silent failures
+- **Automated alerting** enables proactive intervention
+- **Audit trails** support regulatory requirements
+
+## Advanced Features
+
+### Multi-Model Ensembles
+Combine different architectures for improved uncertainty estimation:
+- CNN + Transformer ensembles
+- Gradient boosting + neural network combinations
+- Bayesian model averaging
+
+### Online Learning
+Adapt uncertainty estimates in real-time:
+- Incremental conformal prediction updates
+- Online temperature scaling recalibration
+- Streaming drift detection
+
+### Hierarchical Uncertainty
+Model uncertainty at multiple levels:
+- Feature-level uncertainty propagation
+- Layer-wise uncertainty decomposition
+- Multi-task uncertainty sharing
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## Citation
+
+If you use this implementation in your research, please cite:
+
+```bibtex
+@misc{uncertainty-quantification-2024,
+  title={Uncertainty Quantification for Reliable Risk Estimates},
+  author={Your Name},
+  year={2024},
+  howpublished={\url{https://github.com/your-repo/uncertainty-quantification}}
+}
+```
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- Built on PyTorch for deep learning components
+- Uses scikit-learn for traditional ML utilities
+- Inspired by recent advances in uncertainty quantification research
+- Designed for production deployment and monitoring
+
+## Support
+
+For questions, issues, or contributions:
+- Open an issue on GitHub
+- Check the documentation in `uncertainty_quantification_guide.md`
+- Review the examples in `uq_examples.py`
+- Examine the monitoring system in `uq_monitoring.py`
