@@ -29,7 +29,7 @@ All vulnerable packages have been updated to their latest secure versions. Your 
 
 - `services/requirements.txt` - Updated with secure package versions
 - `SECURITY_UPDATES.md` - Detailed vulnerability documentation
-- `verify_security_updates.py` - Verification script for future use
+- `verify_security_updates.py` - Verification script for future use (located in workspace root)
 
 ## Next Steps
 
@@ -57,7 +57,7 @@ All vulnerable packages have been updated to their latest secure versions. Your 
 
 ## Verification
 
-The verification script confirms all security packages are now at secure versions:
+The verification script (`verify_security_updates.py`) confirms all security packages are now at secure versions:
 - ✅ python-jose: 3.5.0
 - ✅ gunicorn: 23.0.0  
 - ✅ python-multipart: 0.0.20
