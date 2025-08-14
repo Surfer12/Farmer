@@ -509,3 +509,4 @@ class ServiceComparison:
 if __name__ == "__main__":
     analyzer = ServiceComparison()
     analyzer.generate_full_report()
+    analyzer.generate_full_report()
