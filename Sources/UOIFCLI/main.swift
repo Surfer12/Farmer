@@ -46,3 +46,7 @@ print("- Hybrid linearity gives monotone, auditable responses as canonical sourc
 print("- Exponential penalty and capped posterior maintain Psi in [0,1] and prevent overconfidence.")
 print("- Confidence trail marks robustness at each step; promotions are tied to observable artifacts.\n")
 
+// PINN Framework demonstration
+print("=== PINN Framework Integration ===")
+PINNCommand.run()
+
