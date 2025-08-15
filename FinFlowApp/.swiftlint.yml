@@ -1,0 +1,14 @@
+disabled_rules:
+  - trailing_whitespace
+  - line_length
+  - identifier_name
+  - force_try
+  - force_cast
+
+opt_in_rules:
+  - attributes
+  - closure_spacing
+  - empty_count
+
+included:
+  - .
