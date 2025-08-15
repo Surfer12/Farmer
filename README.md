@@ -1,298 +1,229 @@
-# Uncertainty Quantification Framework: From Theory to Production
+# Hybrid Symbolic-Neural Accuracy Functional
 
-> **🎯 Vision Realized**: This repository transforms the original UQ framework concepts into a complete, production-ready implementation with working code, real results, and comprehensive monitoring.
+This repository implements a sophisticated mathematical framework for balancing symbolic and neural methods in AI systems, with applications ranging from chaotic system modeling to open-source collaboration assessment.
 
-A comprehensive implementation of uncertainty quantification (UQ) methods that converts unreliable point predictions into trustworthy risk assessments for machine learning systems in production.
+## Mathematical Framework
 
-## 📋 Implementation Status
+### Core Functional
 
-✅ **Complete Implementation Delivered** - All original framework concepts have been implemented with working code  
-✅ **Production Ready** - Full monitoring, drift detection, and alerting systems  
-✅ **Tested & Validated** - Real performance results and generated visualizations  
-✅ **Documented** - Comprehensive guides and examples  
+The hybrid accuracy functional Ψ(x) is defined as:
 
-> **Note**: Original conceptual framework documentation has been preserved in [`archive/README_original_framework.md`](archive/README_original_framework.md) with full justification in [`archive/ARCHIVE_JUSTIFICATION.md`](archive/ARCHIVE_JUSTIFICATION.md).
-
-## 🎯 What This Implementation Gives You
-
-### Separates Ignorance from Noise (✅ IMPLEMENTED)
-- **Epistemic Uncertainty**: Model ignorance, reducible with more data
-- **Aleatoric Uncertainty**: Inherent noise, irreducible randomness  
-- **Total Uncertainty**: Combined measure for decision making
-- **Real Results**: See actual uncertainty decomposition in generated plots
-
-### Converts Predictions into Actionable Risk (✅ IMPLEMENTED)
-- **Tail Probabilities**: P(Y ≥ t | X) with working examples
-- **Confidence/Credible Intervals**: [L(X), U(X)] with coverage guarantees
-- **Abstention Triggers**: High uncertainty → human review (implemented)
-- **VaR/CVaR**: Value at Risk and Conditional Value at Risk (working code)
-
-### Improves Calibration (✅ IMPLEMENTED)
-- Predicted probabilities match observed frequencies
-- Temperature scaling with actual temperature values
-- Reliability diagrams generated and saved as PNG files
-
-## 🔧 Core Methods: Fully Implemented
-
-### Deep Ensembles (n=5) - ✅ WORKING
-Strong epistemic uncertainty baseline with real performance metrics
-```python
-from uq_examples import DeepEnsemble, regression_uq_example
-
-# Run complete regression example with real results
-results = regression_uq_example()
-# Actual results: 92.5% conformal coverage, MSE: 114.8
+```
+Ψ(x) = (1/T) * Σ[α(t_k)S(x,t_k) + (1-α(t_k))N(x,t_k)] * 
+       exp(-[λ₁R_cog(t_k) + λ₂R_eff(t_k)]) * P(H|E,β,t_k)
 ```
 
-### MC Dropout - ✅ WORKING  
-Lightweight Bayesian inference with uncertainty estimates
-```python
-from uq_examples import MCDropoutModel
+Where:
 
-model = MCDropoutModel(input_dim=10, hidden_dim=64, output_dim=1)
-mean, uncertainty = model.predict_with_uncertainty(x_test, n_samples=100)
-# Real performance: 91.5% coverage, good calibration
+- **S(x,t) ∈ [0,1]**: Symbolic accuracy (e.g., RK4 solution fidelity)
+- **N(x,t) ∈ [0,1]**: Neural accuracy (e.g., ML/NN prediction fidelity)
+- **α(t) ∈ [0,1]**: Adaptive weight favoring N in chaotic regions
+- **R_cog(t) ≥ 0**: Cognitive penalty (e.g., physics violations)
+- **R_eff(t) ≥ 0**: Efficiency penalty (e.g., computational cost)
+- **λ₁, λ₂ ≥ 0**: Regularization weights
+- **P(H|E,β,t)**: Calibrated probability of correctness with bias β
+
+### Adaptive Weight Function
+
+The adaptive weight α(t) is computed using:
+
+```
+α(t) = σ(-κ * λ_local(t))
 ```
 
-### Heteroscedastic Regression - ✅ WORKING
-Input-dependent noise modeling with NLL loss
-```python
-from uq_examples import HeteroscedasticModel
+Where σ is the sigmoid function and λ_local(t) is the local Lyapunov exponent, favoring neural methods in chaotic regions.
 
-model = HeteroscedasticModel(input_dim=5, hidden_dim=64)
-mean, var = model(x_test)
-# Actual results: 87.5% Gaussian coverage, adaptive intervals
+### Probability Calibration
+
+The probability is calibrated using a logit shift:
+
+```
+P' = σ(logit(P) + log(β))
 ```
 
-### Conformal Prediction - ✅ WORKING
-Distribution-free coverage guarantees with real validation
+This allows for bias adjustment to account for system responsiveness.
+
+## Implementation
+
+### Core Classes
+
+#### `FunctionalParams`
+Configuration dataclass for the functional parameters:
+- `lambda1`: Cognitive regularization weight (default: 0.75)
+- `lambda2`: Efficiency regularization weight (default: 0.25)
+- `kappa`: Adaptive weight parameter (default: 1.0)
+- `beta`: Probability bias parameter (default: 1.2)
+
+#### `HybridFunctional`
+Main class implementing the hybrid functional:
+
+- `compute_adaptive_weight(t, lyapunov_exponent)`: Computes α(t)
+- `compute_hybrid_output(S, N, alpha)`: Computes αS + (1-α)N
+- `compute_regularization_penalty(R_cog, R_eff)`: Computes exp(-[λ₁R_cog + λ₂R_eff])
+- `compute_probability(base_prob, beta)`: Calibrates probability with bias
+- `compute_single_step_psi(...)`: Computes Ψ(x) for single time step
+- `compute_multi_step_psi(...)`: Computes Ψ(x) over multiple time steps
+
+## Usage Examples
+
+### Basic Usage
+
 ```python
-from uq_examples import ConformalPredictor
+from hybrid_functional import HybridFunctional, FunctionalParams
 
-conformal = ConformalPredictor(base_model, alpha=0.1)  # 90% coverage
-conformal.calibrate(x_cal, y_cal)
-lower, upper = conformal.predict_interval(x_test)
-# Verified: 90% actual coverage achieved
-```
+# Initialize with default parameters
+functional = HybridFunctional()
 
-### Temperature Scaling - ✅ WORKING
-Post-hoc calibration with optimized temperature parameter
-```python
-from uq_examples import TemperatureScaling
-
-temp_scaler = TemperatureScaling()
-temp_scaler.fit(logits_val, labels_val)
-# Real result: Temperature = 1.219, ECE improved from 0.148 to calibrated
-```
-
-## 📊 Evaluation Framework: Complete with Real Results
-
-### Calibration Assessment - ✅ IMPLEMENTED
-- **Expected Calibration Error (ECE)**: Real values: 0.077-0.148
-- **Reliability Diagrams**: Generated as `classification_uq_reliability.png`
-- **Brier Score**: Implemented and working
-- **Results**: Temperature scaling reduces ECE significantly
-
-### Interval Quality - ✅ IMPLEMENTED  
-- **Coverage (PICP)**: Actual coverage rates measured and reported
-- **Width (MPIW)**: Real interval widths calculated
-- **Performance**: 90% conformal coverage achieved consistently
-
-### Drift Detection - ✅ IMPLEMENTED
-- **PSI/KL Divergence**: Working drift detection with real alerts
-- **Results**: 15 alerts generated in simulation with proper thresholds
-
-## ⚠️ Risk-Based Decision Making: Production Ready
-
-### Expected Cost Minimization - ✅ IMPLEMENTED
-Real cost reduction demonstrated with working examples
-```python
-from uq_examples import risk_aware_decision_example
-
-# Run complete risk-aware decision example
-risk_aware_decision_example()
-# Results: 9.3% abstention rate, 98.5% accuracy on predictions made
-```
-
-### Tail Risk Metrics - ✅ IMPLEMENTED
-```python
-from uq_examples import value_at_risk, conditional_value_at_risk
-
-var_95 = value_at_risk(loss_samples, alpha=0.95)
-cvar_95 = conditional_value_at_risk(loss_samples, alpha=0.95)
-# Working implementations with real calculations
-```
-
-## 🔍 Production Monitoring: Fully Operational
-
-### Real-Time Drift Detection - ✅ IMPLEMENTED
-```python
-from uq_monitoring import UQProductionMonitor
-
-monitor = UQProductionMonitor(
-    psi_threshold=0.1,
-    calibration_threshold=0.05,
-    coverage_threshold=0.05
+# Compute single-step Ψ(x)
+psi = functional.compute_single_step_psi(
+    S=0.67,      # Symbolic accuracy
+    N=0.87,      # Neural accuracy
+    alpha=0.4,   # Adaptive weight
+    R_cog=0.17,  # Cognitive penalty
+    R_eff=0.11,  # Efficiency penalty
+    base_prob=0.81  # Base probability
 )
-# Real monitoring with 15 alerts generated in testing
+
+print(f"Ψ(x) = {psi:.3f}")
 ```
 
-### Automated Alerting - ✅ IMPLEMENTED
-- **Alert Types**: Feature drift, prediction drift, calibration degradation
-- **Severity Levels**: High, Medium with proper cooldown periods
-- **Real Results**: Generated actionable recommendations
+### Custom Parameters
 
-### Dashboard Visualization - ✅ IMPLEMENTED
-Complete monitoring dashboard saved as `monitoring_dashboard.png` with:
-- Input drift scores over time
-- Calibration error trends  
-- Coverage rate monitoring
-- Prediction volume tracking
-- Alert summaries
-- Uncertainty distribution analysis
+```python
+# Custom parameters for different applications
+params = FunctionalParams(
+    lambda1=0.8,    # Emphasize cognitive accuracy
+    lambda2=0.2,    # De-emphasize efficiency
+    kappa=1.5,      # More sensitive to chaos
+    beta=1.0        # No probability bias
+)
 
-## 🚀 Quick Start: Working Examples
+functional = HybridFunctional(params)
+```
 
-### 1. Run Regression Example
+### Multi-step Computation
+
+```python
+# Compute over multiple time steps
+S = [0.6, 0.7, 0.8]      # Symbolic accuracies
+N = [0.8, 0.7, 0.6]      # Neural accuracies
+alphas = [0.5, 0.5, 0.5] # Adaptive weights
+R_cog = [0.1, 0.1, 0.1]  # Cognitive penalties
+R_eff = [0.1, 0.1, 0.1]  # Efficiency penalties
+base_probs = [0.9, 0.9, 0.9]  # Base probabilities
+
+psi = functional.compute_multi_step_psi(
+    S, N, alphas, R_cog, R_eff, base_probs
+)
+```
+
+## Numerical Examples
+
+### Example 1: Single Tracking Step
+
+**Inputs:**
+- S(x) = 0.67, N(x) = 0.87
+- α = 0.4
+- R_cognitive = 0.17, R_efficiency = 0.11
+- λ₁ = 0.6, λ₂ = 0.4
+- P = 0.81, β = 1.2
+
+**Calculation:**
+1. Hybrid output: O_hybrid = 0.4 × 0.67 + 0.6 × 0.87 = 0.794
+2. Regularization: exp(-(0.6 × 0.17 + 0.4 × 0.11)) ≈ 0.864
+3. Probability: P_adj ≈ 0.972
+4. Final result: Ψ(x) ≈ 0.794 × 0.864 × 0.972 ≈ 0.667
+
+**Interpretation:** Ψ(x) ≈ 0.67 indicates high responsiveness.
+
+### Example 2: Open Source Contributions
+
+**Inputs:**
+- S(x) = 0.74, N(x) = 0.84
+- α = 0.5
+- R_cognitive = 0.14, R_efficiency = 0.09
+- λ₁ = 0.55, λ₂ = 0.45
+- P = 0.77, β = 1.3
+
+**Result:** Ψ(x) ≈ 0.70 reflects strong innovation potential.
+
+## Applications
+
+### 1. Chaotic System Modeling
+- **Symbolic (S)**: High-fidelity numerical methods (RK4)
+- **Neural (N)**: Adaptive ML models (LSTM/GRU)
+- **Adaptive weight**: Favors neural methods in chaotic regions
+- **Use case**: Multi-pendulum dynamics, weather prediction
+
+### 2. Open Source Collaboration
+- **Symbolic (S)**: Methodology quality and tool standards
+- **Neural (N)**: Dataset richness and community engagement
+- **Adaptive weight**: Balances sharing with innovation
+- **Use case**: Assessing contribution impact and innovation potential
+
+### 3. Healthcare and Education
+- **Symbolic (S)**: Clinical guidelines and educational frameworks
+- **Neural (N)**: Personalized treatment and adaptive learning
+- **Adaptive weight**: Balances standardization with personalization
+- **Use case**: Phased project implementation and regulatory compliance
+
+## Mathematical Properties
+
+### Boundedness
+- Ψ(x) ∈ [0,1] for all valid inputs
+- Ensures interpretable and comparable results
+
+### Continuity
+- Continuous with respect to all input parameters
+- Enables gradient-based optimization
+
+### Interpretability
+- Each component has clear physical/operational meaning
+- Facilitates debugging and parameter tuning
+
+## Testing
+
+Run the comprehensive test suite:
+
 ```bash
-MPLBACKEND=Agg python3 uq_examples.py
-# Generates: regression_uq_results.png with 4 UQ methods compared
+pytest test_hybrid_functional.py -v
 ```
 
-### 2. Run Classification Example  
+The tests verify:
+- Mathematical correctness
+- Edge case handling
+- Parameter validation
+- Numerical examples from the documentation
+
+## Dependencies
+
+- `numpy >= 1.21.0`: Numerical computations
+- `matplotlib >= 3.5.0`: Visualization
+- `pytest >= 6.0.0`: Testing framework
+
+## Installation
+
 ```bash
-# Included in above command
-# Generates: classification_uq_reliability.png, classification_uncertainty_analysis.png
+pip install -r requirements.txt
 ```
 
-### 3. Run Production Monitoring
-```bash
-MPLBACKEND=Agg python3 uq_monitoring.py  
-# Generates: monitoring_dashboard.png with complete monitoring simulation
-```
+## Theoretical Background
 
-### 4. Run Risk-Aware Decisions
-```bash
-# Included in uq_examples.py
-# Generates: risk_aware_decisions.png showing cost reduction analysis
-```
+This framework addresses the challenge of balancing symbolic (rule-based) and neural (data-driven) approaches in AI systems. The key insight is that different methods excel in different regimes:
 
-## 📈 Real Performance Results
+- **Symbolic methods** provide high fidelity and interpretability in well-understood domains
+- **Neural methods** adapt to complex, chaotic, or data-rich environments
+- **Adaptive weighting** ensures optimal method selection based on local conditions
 
-### Regression UQ Performance
-- **Deep Ensemble**: MSE: 114.8, Conformal Coverage: 92.5%
-- **MC Dropout**: MSE: 117.9, Conformal Coverage: 91.5% 
-- **Heteroscedastic**: MSE: 130.3, Gaussian Coverage: 87.5%
+The regularization terms ensure that accuracy gains don't come at the cost of computational efficiency or theoretical consistency, while the probability calibration accounts for system responsiveness and uncertainty.
 
-### Classification UQ Performance
-- **Deep Ensemble**: 90% accuracy, ECE: 0.148 → calibrated
-- **MC Dropout**: 90.5% accuracy, ECE: 0.077 (well calibrated)
-- **Temperature**: Optimized to 1.219 for better calibration
+## References
 
-### Risk-Aware Decision Results
-- **Abstention Rate**: 9.3% (appropriate for high-uncertainty cases)
-- **Accuracy on Predictions**: 98.5% (when not abstaining)
-- **Cost Analysis**: Demonstrated framework for cost-optimal decisions
+- Broken Neural Scaling Laws (BNSL) paper (arXiv:2210.14891v17)
+- Multi-pendulum chaotic dynamics
+- Hybrid AI system design principles
+- Probability calibration in machine learning
 
-### Production Monitoring Results
-- **Alerts Generated**: 15 alerts across different drift scenarios
-- **Drift Detection**: PSI scores from 0.1 to 0.33 with proper thresholds
-- **Recommendations**: 4 actionable recommendations generated automatically
+## License
 
-## 🔮 Ψ Framework Integration: Ready for Implementation
-
-The implemented UQ system is designed to integrate with the Ψ framework:
-
-### Calibration Component Enhancement
-- **Implemented**: Temperature scaling improves calibration reliability
-- **Measured**: ECE reduction demonstrates improved trust metrics
-- **Ready**: Integration points clearly defined
-
-### Verifiability Component (R_v)
-- **Implemented**: Reproducible methods with fixed random seeds
-- **Documented**: All processes auditable and repeatable  
-- **Tested**: Consistent results across runs
-
-### Authority Component (R_a)
-- **Implemented**: Drift detection maintains performance under shift
-- **Monitored**: Real-time assessment of model authority
-- **Validated**: OOD detection prevents overconfident predictions
-
-## 📁 Complete File Structure
-
-```
-uncertainty-quantification/
-├── README.md                              # This comprehensive guide
-├── uncertainty_quantification_guide.md    # Detailed theory and methods (27KB)
-├── uq_examples.py                         # Working implementations (30KB)  
-├── uq_monitoring.py                       # Production monitoring system (32KB)
-├── requirements.txt                       # All dependencies
-├── archive/                              # Preserved original documentation
-│   ├── README_original_framework.md      # Original conceptual framework
-│   └── ARCHIVE_JUSTIFICATION.md          # Why content was archived
-└── Generated Results/                    # Real outputs from implementation
-    ├── regression_uq_results.png         # 4-method UQ comparison
-    ├── classification_uq_reliability.png # Calibration assessment
-    ├── classification_uncertainty_analysis.png # Uncertainty vs accuracy
-    ├── monitoring_dashboard.png          # Complete monitoring interface
-    └── risk_aware_decisions.png          # Cost-optimal decision analysis
-```
-
-## 🎯 Implementation Phases: Completed Roadmap
-
-### ✅ Phase 1: Baseline UQ (COMPLETED)
-- Deep ensemble (n=5) with real performance metrics
-- Temperature scaling with optimized parameters  
-- ECE measurement: 0.077-0.148 achieved
-
-### ✅ Phase 2: Coverage Guarantees (COMPLETED)
-- Conformal prediction with 90% coverage achieved
-- Distribution-free intervals validated
-- Coverage within ±2% of nominal confirmed
-
-### ✅ Phase 3: Decision Integration (COMPLETED)
-- Cost matrix implementation with real examples
-- VaR/CVaR calculations working
-- Abstention rules with 9.3% rate demonstrated
-
-### ✅ Phase 4: Production Monitoring (COMPLETED)
-- Real-time drift detection operational
-- 15 alerts generated in testing
-- Complete dashboard visualization created
-
-## 📚 Key Achievements vs Original Vision
-
-| Original Framework Concept | Implementation Status | Real Results |
-|----------------------------|----------------------|--------------|
-| Deep Ensembles | ✅ Complete | 92.5% coverage, MSE: 114.8 |
-| MC Dropout | ✅ Complete | 91.5% coverage, ECE: 0.077 |
-| Conformal Prediction | ✅ Complete | 90% coverage guaranteed |
-| Temperature Scaling | ✅ Complete | T=1.219, calibration improved |
-| Risk-Based Decisions | ✅ Complete | 9.3% abstention, 98.5% accuracy |
-| Production Monitoring | ✅ Complete | 15 alerts, dashboard generated |
-| Drift Detection | ✅ Complete | PSI/KL with real thresholds |
-| Ψ Integration Ready | ✅ Complete | All components implemented |
-
-## 🎖️ Summary: Vision Realized
-
-This repository successfully transforms the original uncertainty quantification framework from **concept to production reality**:
-
-✅ **All theoretical components implemented** with working code  
-✅ **Real performance metrics** demonstrating effectiveness  
-✅ **Production monitoring** with actual drift detection and alerting  
-✅ **Complete documentation** with theory, implementation, and examples  
-✅ **Generated visualizations** showing real results  
-✅ **Risk-aware decision making** with demonstrated cost optimization  
-
-**Result**: A production-ready uncertainty quantification system that delivers on the original vision with measurable improvements in prediction reliability, risk assessment, and decision quality.
-
-## 🔗 Quick Access
-
-- **Run Examples**: `MPLBACKEND=Agg python3 uq_examples.py`
-- **Start Monitoring**: `MPLBACKEND=Agg python3 uq_monitoring.py`
-- **Read Theory**: [`uncertainty_quantification_guide.md`](uncertainty_quantification_guide.md)
-- **View Original Concepts**: [`archive/README_original_framework.md`](archive/README_original_framework.md)
-
----
-
-*This implementation fulfills the complete vision outlined in the original framework while delivering working code, real results, and production-ready monitoring capabilities.*
+This project is open source and available under the MIT License.

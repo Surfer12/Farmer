@@ -1,0 +1,10 @@
+# No external dependencies required for hybrid_functional_simple.py
+# Uses only Python standard library: math, typing, dataclasses
+
+# For testing (optional):
+# pytest>=6.0.0
+# pytest-cov>=2.12.0
+
+# For visualization (optional):
+# matplotlib>=3.5.0
+# numpy>=1.21.0
