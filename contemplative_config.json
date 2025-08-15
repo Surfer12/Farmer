@@ -1,0 +1,111 @@
+{
+  "contemplative_ai_config": {
+    "version": "1.0.0",
+    "framework_integration": "integrated_research_conform",
+    
+    "multiplicative_psi_parameters": {
+      "alpha": 0.6,
+      "lambda_1": 0.8,
+      "lambda_2": 0.7,
+      "beta": 1.2,
+      "comment": "Proven parameters from existing framework with K=0.3625 contraction"
+    },
+    
+    "contemplative_parameters": {
+      "arising_threshold": 0.1,
+      "passing_threshold": 0.1,
+      "observer_weight": 0.3,
+      "stage_four_threshold": 0.70,
+      "primitive_threshold": 0.85,
+      "comment": "Stage-four insight detection and classification thresholds"
+    },
+    
+    "visual_grounding": {
+      "frame_difference_threshold": 0.1,
+      "contour_area_minimum": 100,
+      "edge_detection_low": 50,
+      "edge_detection_high": 150,
+      "temporal_window_seconds": 1.0,
+      "comment": "Computer vision parameters for arising/passing detection"
+    },
+    
+    "observer_network": {
+      "validation_window_seconds": 1.0,
+      "minimum_observers": 1,
+      "maximum_observers": 10,
+      "expertise_weight_factor": 0.2,
+      "cultural_adaptation_enabled": true,
+      "comment": "External observer validation system configuration"
+    },
+    
+    "accessibility": {
+      "supported_modalities": ["visual", "auditory", "tactile", "symbolic"],
+      "audio_frequency_range": [200, 600],
+      "haptic_intensity_range": [0, 100],
+      "haptic_duration_range": [100, 500],
+      "text_description_max_length": 200,
+      "comment": "Multi-modal accessibility adaptation settings"
+    },
+    
+    "cultural_contexts": {
+      "theravada": {
+        "emphasis": "dissolution",
+        "validation_style": "gentle",
+        "terminology": "pali"
+      },
+      "zen": {
+        "emphasis": "direct_pointing",
+        "validation_style": "immediate",
+        "terminology": "japanese"
+      },
+      "vipassana": {
+        "emphasis": "noting",
+        "validation_style": "systematic",
+        "terminology": "english"
+      },
+      "secular": {
+        "emphasis": "mindfulness",
+        "validation_style": "scientific",
+        "terminology": "psychological"
+      }
+    },
+    
+    "quality_thresholds": {
+      "primitive_direct": {
+        "min_psi": 0.85,
+        "description": "Direct non-conceptual awareness with high observer validation"
+      },
+      "empirically_grounded": {
+        "min_psi": 0.70,
+        "description": "Solid experiential foundation with good external validation"
+      },
+      "interpretive_contextual": {
+        "min_psi": 0.0,
+        "description": "Developing insight requiring continued practice and observation"
+      }
+    },
+    
+    "export_settings": {
+      "output_format": "jsonl",
+      "include_raw_data": false,
+      "include_accessibility_adaptations": true,
+      "include_observer_feedback": true,
+      "timestamp_format": "iso8601",
+      "precision_digits": 3
+    },
+    
+    "performance": {
+      "max_phenomena_history": 1000,
+      "cleanup_interval_seconds": 300,
+      "batch_processing_size": 10,
+      "parallel_observer_processing": true
+    },
+    
+    "validation": {
+      "bounds_checking_enabled": true,
+      "monotonicity_testing_enabled": true,
+      "cultural_invariance_testing_enabled": true,
+      "mathematical_property_validation": true
+    }
+  }
+}
