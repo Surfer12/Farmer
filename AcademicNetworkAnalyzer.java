@@ -601,6 +601,70 @@ public class AcademicNetworkAnalyzer {
         
         System.out.println("Results exported to " + outputDir);
     }
+
+    // ---------------------------------------------------------------------
+    // Extension methods moved from AcademicNetworkAnalyzerExtensions.java
+    // These expose commonly queried data structures from this class.
+    // ---------------------------------------------------------------------
+    public Researcher getResearcher(String researcherId) {
+        return researcherMap.get(researcherId);
+    }
+
+    public List<Researcher> getResearchers() {
+        return new ArrayList<>(researchers);
+    }
+
+    public List<Community> getCommunities() {
+        return new ArrayList<>(communities);
+    }
+
+    public List<NetworkEdge> getNetworkEdges() {
+        return new ArrayList<>(networkEdges);
+    }
+
+    public double[][] getSimilarityMatrix() {
+        return similarityMatrix;
+    }
+
+    public double calculateResearcherSimilarity(String researcher1, String researcher2) {
+        Researcher r1 = researcherMap.get(researcher1);
+        Researcher r2 = researcherMap.get(researcher2);
+        
+        if (r1 == null || r2 == null) return 0.0;
+        
+        double[] dist1 = r1.getTopicDistribution();
+        double[] dist2 = r2.getTopicDistribution();
+        
+        if (dist1 == null || dist2 == null) return 0.0;
+        
+        return 1.0 - jensenShannonDivergence(dist1, dist2);
+    }
+
+    public List<String> getCommunityMembers(String researcherId) {
+        for (Community community : communities) {
+            if (community.containsMember(researcherId)) {
+                return new ArrayList<>(community.getMembers());
+            }
+        }
+        return new ArrayList<>();
+    }
+
+    public double calculateNetworkDensity() {
+        int n = researchers.size();
+        if (n < 2) return 0.0;
+        
+        int possibleEdges = n * (n - 1) / 2;
+        return (double) networkEdges.size() / possibleEdges;
+    }
+
+    public List<Publication> getResearcherTimeline(String researcherId) {
+        Researcher researcher = researcherMap.get(researcherId);
+        if (researcher == null) return new ArrayList<>();
+        
+        List<Publication> timeline = new ArrayList<>(researcher.getPublications());
+        timeline.sort((a, b) -> a.getId().compareTo(b.getId())); // Assume chronological by ID
+        return timeline;
+    }
     
     // Create sample data for testing
     public void createSampleData() throws IOException {

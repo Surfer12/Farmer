@@ -1,0 +1,117 @@
+[project]
+name = "hybrid-symbolic-neural-framework"
+version = "0.1.0"
+description = "Hybrid Symbolic-Neural Accuracy Functional with Contraction Guarantees"
+authors = [
+    {name = "Ryan David Oates", email = "ryan@example.com"}
+]
+readme = "docs/README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "numpy>=1.20.0",
+    "matplotlib>=3.5.0",
+    "scipy>=1.7.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=6.0",
+    "black>=22.0",
+    "flake8>=4.0",
+    "mypy>=0.900",
+]
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.pixi.project]
+channels = ["conda-forge"]
+platforms = ["osx-64", "osx-arm64", "linux-64", "win-64"]
+
+[tool.pixi.dependencies]
+python = ">=3.8,<3.12"
+numpy = ">=1.20.0"
+matplotlib = ">=3.5.0"
+scipy = ">=1.7.0"
+jupyter = "*"
+ipython = "*"
+
+[tool.pixi.tasks]
+# Core analysis tools
+contraction-minimal = "python core/minimal_contraction_psi.py"
+contraction-full = "python core/contraction_psi_update.py"
+hybrid-minimal = "python core/minimal_hybrid_functional.py"
+hybrid-full = "python core/hybrid_functional.py"
+pinn-burgers = "python core/pinn_burgers.py"
+
+# Academic network analysis (Java)
+academic-basic = "cd academic_network_analysis && ./compile_and_run_basic.sh"
+academic-enhanced = "cd academic_network_analysis && ./compile_and_run_enhanced.sh"
+academic-nature = "cd academic_network_analysis && ./compile_and_run_nature.sh"
+
+# Comprehensive analysis suite
+analyze-all = { depends-on = ["contraction-analysis", "hybrid-analysis"] }
+analyze-with-academic = { depends-on = ["contraction-analysis", "hybrid-analysis", "academic-analysis"] }
+contraction-analysis = { cmd = "python core/minimal_contraction_psi.py", depends-on = ["setup-outputs"] }
+hybrid-analysis = { cmd = "python core/minimal_hybrid_functional.py", depends-on = ["setup-outputs"] }
+academic-analysis = { cmd = "bash -c 'cd academic_network_analysis && ./compile_and_run_basic.sh'", depends-on = ["setup-outputs"] }
+
+# Utility tasks
+setup-outputs = "mkdir -p outputs"
+clean-outputs = "rm -rf outputs/*"
+clean-java = "cd academic_network_analysis && find . -name '*.class' -delete"
+clean-all = { depends-on = ["clean-outputs", "clean-java"] }
+
+# Documentation and validation
+compile-latex = "pdflatex theory/contraction_spectral_theorems.tex"
+validate-theory = { cmd = "python -c \"from core.minimal_contraction_psi import *; demonstrate_parameter_sensitivity()\"", depends-on = ["setup-outputs"] }
+
+# Development tasks
+format = "black core/*.py analysis/*.py tests/*.py"
+lint = "flake8 core/*.py analysis/*.py tests/*.py --max-line-length=100 --ignore=E203,W503"
+test-minimal = "python -m pytest -v tests/test_minimal.py" 
+test-all = "python -m pytest -v tests/"
+
+# Interactive analysis
+jupyter-lab = "jupyter lab"
+ipython-shell = "ipython"
+
+# Benchmarking and performance
+benchmark-contraction = { cmd = "python -c \"import time; import sys; sys.path.append('core'); from minimal_contraction_psi import *; start=time.time(); config=MinimalContractionConfig(); psi=MinimalContractionPsi(config); scenarios=create_test_scenarios(); results=psi.analyze_contraction_properties(scenarios); print(f'Analysis completed in {time.time()-start:.2f}s')\"", depends-on = ["setup-outputs"] }
+
+# Export and reporting
+export-results = { cmd = "python analysis/export_analysis_results.py", depends-on = ["analyze-all"] }
+generate-report = { cmd = "python analysis/generate_comprehensive_report.py", depends-on = ["analyze-all"] }
+
+# Quick demos
+demo-contraction = "python -c \"import sys; sys.path.append('core'); from minimal_contraction_psi import *; config=MinimalContractionConfig(); psi=MinimalContractionPsi(config); scenarios=create_test_scenarios()[:2]; psi.print_detailed_analysis(scenarios)\""
+demo-hybrid = "python -c \"import sys; sys.path.append('core'); from minimal_hybrid_functional import *; functional=MinimalHybridFunctional(); print('Ψ(x) =', functional.compute_psi_single(0.5, 1.0)['psi']); demonstrate_functional_behavior()\""
+
+# Environments with features
+[tool.pixi.environments]
+default = { solve-group = "default" }
+viz = { features = ["visualization"], solve-group = "viz" }
+
+[tool.pixi.feature.visualization.dependencies]
+plotly = "*"
+seaborn = "*"
+
+[tool.pixi.feature.visualization.tasks]
+plot-contraction = "python tools/plot_contraction_analysis.py"
+plot-hybrid = "python tools/plot_hybrid_functional.py"
+interactive-demo = "python tools/interactive_analysis_dashboard.py"
+
+[tool.black]
+line-length = 100
+target-version = ['py38', 'py39', 'py310', 'py311']
+
+[tool.flake8]
+max-line-length = 100
+ignore = ["E203", "W503"]
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true

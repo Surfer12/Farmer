@@ -12,7 +12,8 @@ import java.util.Objects;
  * <p>Implementations should be thread-safe and non-blocking where possible. The
  * returned {@link CompletableFuture} signals completion or failure of the write.
  */
-public interface AuditSink {
+@FunctionalInterface
+public interface AuditSink extends AutoCloseable {
     /**
      * Writes an audit record to the sink asynchronously.
      *
@@ -49,6 +50,7 @@ public interface AuditSink {
         };
     }
 
+    @Override
     default void close() {}
     static AuditSink jdbc(String jdbcUrl, String username, String password) {
         return new JdbcAuditSink(jdbcUrl, username, password);
