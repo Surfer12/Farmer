@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 
-.PHONY: help test-qualia start-http start-https setup-https setup-https-prod clean-certs
+.PHONY: help test-qualia start-http start-https setup-https setup-https-prod clean-certs cfd-run cfd-plot
 
 help:
 	@echo "Available targets:"
@@ -30,5 +30,11 @@ setup-https-prod:
 
 clean-certs:
 	rm -rf certs/
+
+cfd-run:
+	python3 /workspace/cfd_mojo/solver_python.py --nx 300 --ny 150 --u 2.0 --aoa 10.0 --nu 1e-6 --steps 1200 --save_every 300 --out /workspace/cfd_mojo/out --chord 0.28 --thickness 0.06 --camber 0.02 --fin_angle 6.5 | cat
+
+cfd-plot:
+	MPLBACKEND=Agg python3 /workspace/cfd_mojo/plot_results.py --in_dir /workspace/cfd_mojo/out --out_png /workspace/cfd_mojo/pressure_map.png | cat
 
 
