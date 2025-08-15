@@ -43,6 +43,26 @@ printEvaluation(Presets.eval2024(alpha: 0.15))
 // Short reflection
 print("Reflection:")
 print("- Hybrid linearity gives monotone, auditable responses as canonical sources arrive (alpha ↓ ⇒ Psi ↑ when N>S).")
-print("- Exponential penalty and capped posterior maintain Psi in [0,1] and prevent overconfidence.")
-print("- Confidence trail marks robustness at each step; promotions are tied to observable artifacts.\n")
+print("- Exponential penalty and capped posterior maintain Psi in [0,1] and prevent overconfidence.\n")
+
+// User numerical example (S=0.72, N=0.85, alpha=0.5, penalty≈0.878, posterior≈0.96)
+let exampleInputs = PsiInputs(
+  alpha: 0.5,
+  S_symbolic: 0.72,
+  N_external: 0.85,
+  lambdaAuthority: 0.6,
+  lambdaVerifiability: 0.4,
+  riskAuthority: 0.15,
+  riskVerifiability: 0.10,
+  basePosterior: 0.80,
+  betaUplift: 1.2
+)
+let exampleOutcome = PsiModel.computePsi(inputs: exampleInputs)
+print("User Numerical Example:")
+print(String(format: "hybrid=%.3f, penalty=%.3f, posterior=%.3f, Psi=%.3f",
+             exampleOutcome.hybrid, exampleOutcome.penalty, exampleOutcome.posterior, exampleOutcome.psi))
+print("Interpretation: Psi≈0.66 indicates solid model performance.\n")
+
+// PINN demo
+PINNDemo.run()
 
