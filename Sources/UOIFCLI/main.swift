@@ -25,41 +25,44 @@ func printEvaluation(_ evaluation: Evaluation) {
   print()
 }
 
-let args = CommandLine.arguments.dropFirst()
-let shouldTrainPINN = args.contains("--train-pinn")
-let epochsArgIndex = args.firstIndex(of: "--epochs")
-var epochs: Int = 1000
-if let idx = epochsArgIndex {
-  let nextIndex = args.index(after: idx)
-  if nextIndex < args.endIndex, let parsed = Int(args[nextIndex]) { epochs = parsed }
+func printPINNDemo(alpha: Double) {
+  let m = PINNBurgers.runSingleStepDemo(alpha: alpha)
+  print("=== PINN Burgers (single training step) ===")
+  print(String(format: "alpha=%.3f, S(x)=%.3f, N(x)=%.3f", m.alpha, m.S_symbolic, m.N_external))
+  print(String(format: "hybrid=%.3f, penalty=%.3f, posterior=%.3f", m.hybrid, m.penalty, m.posterior))
+  print(String(format: "Psi(x)=%.3f", m.psi))
+  print(String(format: "loss: base=%.5f → new=%.5f", m.baseLoss, m.newLoss))
+  print()
 }
 
 print("UOIF CLI — recompute and reflect\n")
 
-// Print the user single-step example
-printEvaluation(Presets.evalHybridPINNExample())
+let args = CommandLine.arguments
+if args.contains("pinn-demo") {
+  var alpha = 0.5
+  if let a = args.first(where: { $0.hasPrefix("--alpha=") }) {
+    let v = a.split(separator: "=").last.flatMap { Double($0) }
+    if let v = v { alpha = v }
+  }
+  printPINNDemo(alpha: alpha)
+} else {
+  // 2025 results, two alphas
+  printEvaluation(Presets.eval2025Results(alpha: 0.12))
+  printEvaluation(Presets.eval2025Results(alpha: 0.15))
 
-// 2025 results, two alphas
-printEvaluation(Presets.eval2025Results(alpha: 0.12))
-printEvaluation(Presets.eval2025Results(alpha: 0.15))
+  // 2025 problems, range examples
+  printEvaluation(Presets.eval2025Problems(alpha: 0.17, N: 0.89))
+  printEvaluation(Presets.eval2025Problems(alpha: 0.15, N: 0.90))
+  printEvaluation(Presets.eval2025Problems(alpha: 0.20, N: 0.88))
 
-// 2025 problems, range examples
-printEvaluation(Presets.eval2025Problems(alpha: 0.17, N: 0.89))
-printEvaluation(Presets.eval2025Problems(alpha: 0.15, N: 0.90))
-printEvaluation(Presets.eval2025Problems(alpha: 0.20, N: 0.88))
+  // 2024, two alphas
+  printEvaluation(Presets.eval2024(alpha: 0.10))
+  printEvaluation(Presets.eval2024(alpha: 0.15))
 
-// 2024, two alphas
-printEvaluation(Presets.eval2024(alpha: 0.10))
-printEvaluation(Presets.eval2024(alpha: 0.15))
-
-if shouldTrainPINN {
-  print("Running PINN demo training... (epochs=\(epochs))")
-  PINNTrainer.demoTraining(epochs: epochs, samples: 200)
+  // Short reflection
+  print("Reflection:")
+  print("- Hybrid linearity gives monotone, auditable responses as canonical sources arrive (alpha ↓ ⇒ Psi ↑ when N>S).")
+  print("- Exponential penalty and capped posterior maintain Psi in [0,1] and prevent overconfidence.")
+  print("- Confidence trail marks robustness at each step; promotions are tied to observable artifacts.\n")
 }
-
-// Short reflection
-print("Reflection:")
-print("- Hybrid linearity gives monotone, auditable responses as canonical sources arrive (alpha ↓ ⇒ Psi ↑ when N>S).")
-print("- Exponential penalty and capped posterior maintain Psi in [0,1] and prevent overconfidence.")
-print("- Confidence trail marks robustness at each step; promotions are tied to observable artifacts.\n")
 
