@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>This app uses Bluetooth to connect to external pressure sensors.</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Bluetooth is needed to read live pressure data from peripherals.</string>
+	<key>NSHealthShareUsageDescription</key>
+	<string>Health data (HRV) is used to correlate performance with cognitive load.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>Motion data is used to estimate angle of attack and board dynamics.</string>
+</dict>
+</plist>
