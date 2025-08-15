@@ -1,0 +1,49 @@
+{
+  "analysis": {
+    "hierarchical_bayesian": {
+      "bounds_satisfied": true,
+      "mean_psi": 0.3404020434607717,
+      "psi_stability": 0.9731492162627279
+    },
+    "swarm_koopman": {
+      "theorem_satisfied": "False",
+      "expected_confidence": 0.9922194811778544,
+      "expected_error": 0.005000000625,
+      "confidence_error_ratio": 0.9972045071322613
+    },
+    "lstm_convergence": {
+      "theorem_satisfied": "False",
+      "final_error": 0.1414213562373095,
+      "convergence_rate": 0.1,
+      "confidence": 0.8585786437626907
+    },
+    "contemplative_integration": {
+      "final_score": 0.800536012229454,
+      "insight_quality": "empirically_grounded",
+      "score_progression": -0.014986992930066112,
+      "mean_impermanence": 0.05000000624999999
+    },
+    "cognitive_memory": {
+      "mean_distance": 0.00675405722156238,
+      "distance_variance": 0.0006721564224647673
+    },
+    "unified_performance": {
+      "all_theorems_satisfied": "False",
+      "overall_confidence": 0.8837780457233331,
+      "framework_coherence": 0.9197425166047692
+    }
+  },
+  "configuration": {
+    "feature_dim": 8,
+    "step_size": 0.005,
+    "swarm_size": 200,
+    "sequence_length": 100,
+    "lstm_dim": 64,
+    "sigma_0": 1.0,
+    "sigma_1": 1.0,
+    "chaos_parameter": 1.2,
+    "contemplative_weight": 0.3
+  },
+  "state_count": 50,
+  "timestamp": "2025-08-15T11:10:07.325756"
+}
