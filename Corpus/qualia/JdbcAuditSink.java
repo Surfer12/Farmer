@@ -32,6 +32,8 @@ import java.util.concurrent.TimeUnit;
  *   );
  * </pre>
  */
+
+ import Corpus.qualia.AuditSink;
 public final class JdbcAuditSink implements AuditSink {
     private final String jdbcUrl;
     private final String username;
