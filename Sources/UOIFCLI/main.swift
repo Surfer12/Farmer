@@ -3,46 +3,83 @@
 import Foundation
 import UOIFCore
 
-func printEvaluation(_ evaluation: Evaluation) {
-  let outcome = PsiModel.computePsi(inputs: evaluation.inputs)
-  let overallConf = ConfidenceHeuristics.overall(
-    sources: evaluation.confidence.sources,
-    hybrid: evaluation.confidence.hybrid,
-    penalty: evaluation.confidence.penalty,
-    posterior: evaluation.confidence.posterior
-  )
-  print("=== \(evaluation.title) ===")
-  print(String(format: "alpha=%.3f, S=%.2f, N=%.2f", evaluation.inputs.alpha, evaluation.inputs.S_symbolic, evaluation.inputs.N_external))
-  print(String(format: "hybrid=%.4f, penalty=%.4f, posterior=%.4f", outcome.hybrid, outcome.penalty, outcome.posterior))
-  print(String(format: "Psi=%.3f, dPsi/dAlpha=%.4f", outcome.psi, outcome.dPsi_dAlpha))
-  print(String(format: "confidence: sources=%.2f, hybrid=%.2f, penalty=%.2f, posterior=%.2f, overall=%.2f",
-               evaluation.confidence.sources,
-               evaluation.confidence.hybrid,
-               evaluation.confidence.penalty,
-               evaluation.confidence.posterior,
-               overallConf))
-  print("label: \(evaluation.label)")
-  print()
+print("UOIF CLI - Unified Output Interface Framework")
+print("=============================================\n")
+
+// Check command line arguments
+let args = CommandLine.arguments
+if args.count > 1 {
+    switch args[1] {
+    case "pinn":
+        print("Running PINN (Physics-Informed Neural Network) Example...\n")
+        PINNExample.runCompleteExample()
+        
+    case "psi":
+        print("Running Ψ Framework Example...\n")
+        runPsiExample()
+        
+    case "help":
+        printHelp()
+        
+    default:
+        print("Unknown command: \(args[1])")
+        printHelp()
+    }
+} else {
+    print("No command specified. Available commands:")
+    print("  pinn  - Run PINN example with Ψ framework analysis")
+    print("  psi   - Run Ψ framework example")
+    print("  help  - Show this help message")
+    print("\nUse: uoif-cli <command>")
 }
 
-print("UOIF CLI — recompute and reflect\n")
+// MARK: - Ψ Framework Example
+func runPsiExample() {
+    print("=== Ψ Framework Example ===\n")
+    
+    // Example 1: PINN Analysis
+    let pinnInputs = PsiInputs(
+        alpha: 0.5,
+        S_symbolic: 0.72,
+        N_external: 0.85,
+        lambdaAuthority: 0.6,
+        lambdaVerifiability: 0.4,
+        riskAuthority: 0.15,
+        riskVerifiability: 0.10,
+        basePosterior: 0.80,
+        betaUplift: 1.2
+    )
+    
+    let pinnOutcome = PsiModel.computePsi(inputs: pinnInputs)
+    
+    print("PINN Analysis Results:")
+    print("  Hybrid Output: \(String(format: "%.3f", pinnOutcome.hybrid))")
+    print("  Penalty Factor: \(String(format: "%.3f", pinnOutcome.penalty))")
+    print("  Posterior: \(String(format: "%.3f", pinnOutcome.posterior))")
+    print("  Ψ Value: \(String(format: "%.3f", pinnOutcome.psi))")
+    print("  dΨ/dα: \(String(format: "%.3f", pinnOutcome.dPsi_dAlpha))")
+    print()
+    
+    // Example 2: Different α values
+    print("Ψ Values for Different α Values:")
+    for alpha in stride(from: 0.0, through: 1.0, by: 0.2) {
+        var inputs = pinnInputs
+        inputs.alpha = alpha
+        let outcome = PsiModel.computePsi(inputs: inputs)
+        print("  α = \(String(format: "%.1f", alpha)): Ψ = \(String(format: "%.3f", outcome.psi))")
+    }
+    print()
+}
 
-// 2025 results, two alphas
-printEvaluation(Presets.eval2025Results(alpha: 0.12))
-printEvaluation(Presets.eval2025Results(alpha: 0.15))
-
-// 2025 problems, range examples
-printEvaluation(Presets.eval2025Problems(alpha: 0.17, N: 0.89))
-printEvaluation(Presets.eval2025Problems(alpha: 0.15, N: 0.90))
-printEvaluation(Presets.eval2025Problems(alpha: 0.20, N: 0.88))
-
-// 2024, two alphas
-printEvaluation(Presets.eval2024(alpha: 0.10))
-printEvaluation(Presets.eval2024(alpha: 0.15))
-
-// Short reflection
-print("Reflection:")
-print("- Hybrid linearity gives monotone, auditable responses as canonical sources arrive (alpha ↓ ⇒ Psi ↑ when N>S).")
-print("- Exponential penalty and capped posterior maintain Psi in [0,1] and prevent overconfidence.")
-print("- Confidence trail marks robustness at each step; promotions are tied to observable artifacts.\n")
+func printHelp() {
+    print("UOIF CLI Commands:")
+    print("  pinn  - Run Physics-Informed Neural Network example")
+    print("         Includes training, Ψ framework analysis, and visualization")
+    print("  psi   - Run Ψ framework mathematical examples")
+    print("         Demonstrates hybrid output computation and analysis")
+    print("  help  - Show this help message")
+    print("\nExamples:")
+    print("  uoif-cli pinn    # Run complete PINN example")
+    print("  uoif-cli psi     # Run Ψ framework examples")
+}
 
