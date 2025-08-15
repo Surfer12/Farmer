@@ -1,0 +1,215 @@
+---
+description: "Chain-of-thought reasoning and transparency guidelines for AI systems"
+globs: "*.py,*.java,*.swift,*.md,*.tex"
+---
+
+# Chain-of-Thought Reasoning Framework
+
+## Core Principle
+
+**Chain-of-thought and reasoning are equivalent and must both be provided for steerability and transparency.**
+
+## Implementation Requirements
+
+### 1. Complete Reasoning Transparency
+
+When implementing AI-assisted analysis or decision-making:
+
+```python
+def analyze_with_reasoning(problem):
+    """
+    Always show complete reasoning chain for steerability
+    """
+    reasoning_steps = []
+    
+    # Step 1: Problem decomposition
+    reasoning_steps.append("First, I identify the key components...")
+    
+    # Step 2: Method selection  
+    reasoning_steps.append("Next, I choose this approach because...")
+    
+    # Step 3: Analysis execution
+    reasoning_steps.append("Then I apply the method by...")
+    
+    # Step 4: Result interpretation
+    reasoning_steps.append("Finally, I interpret this as...")
+    
+    return {
+        'result': final_answer,
+        'reasoning_chain': reasoning_steps,
+        'confidence': confidence_score,
+        'alternatives_considered': alternative_approaches
+    }
+```
+
+### 2. Koopman Operator Structuring
+
+Use Koopman operator theory to structure reasoning chains:
+- **Observables**: Key decision variables and metrics
+- **Evolution**: How reasoning progresses through logical steps
+- **Linearization**: Transform complex reasoning into tractable components
+- **Spectral Analysis**: Identify dominant reasoning modes and timescales
+
+### 3. Ψ(x) Integration
+
+Apply the Ψ(x) confidence framework to reasoning chains:
+
+```python
+def compute_reasoning_confidence(reasoning_chain):
+    """
+    Apply Ψ(x) framework to reasoning transparency
+    """
+    # Source strength (S): Internal logical coherence
+    S = evaluate_logical_coherence(reasoning_chain)
+    
+    # Non-source strength (N): External validation
+    N = evaluate_external_evidence(reasoning_chain)
+    
+    # Authority risk (Ra): Reasoning source reliability
+    Ra = assess_authority_risk(reasoning_chain.source)
+    
+    # Verifiability risk (Rv): Step reproducibility
+    Rv = assess_verifiability_risk(reasoning_chain.steps)
+    
+    # Compute confidence
+    alpha = adaptive_weight(S, N)
+    penalty = exp(-(lambda1 * Ra + lambda2 * Rv))
+    psi = min(beta * (alpha * S + (1-alpha) * N) * penalty, 1.0)
+    
+    return psi
+```
+
+### 4. Documentation Standards
+
+#### For Technical Analysis
+```markdown
+## Reasoning Chain
+
+**Step 1: Problem Identification**
+I recognize this as a [problem type] because [specific indicators].
+
+**Step 2: Method Selection**  
+I choose [method] over [alternatives] because [comparative advantages].
+
+**Step 3: Implementation**
+I apply the method by [detailed steps with mathematical justification].
+
+**Step 4: Validation**
+I verify the result through [validation methods] yielding [confidence metrics].
+
+**Conclusion**: [Result] with confidence Ψ = [score]
+```
+
+#### For Code Implementation
+```python
+class ReasoningTransparentSystem:
+    """
+    System that maintains complete reasoning transparency
+    """
+    
+    def __init__(self):
+        self.reasoning_log = []
+        self.confidence_tracker = PsiConfidenceTracker()
+    
+    def make_decision(self, inputs):
+        """
+        Make decision with full reasoning chain
+        """
+        # Log reasoning at each step
+        self.log_reasoning("Analyzing inputs", inputs)
+        analysis = self.analyze_inputs(inputs)
+        
+        self.log_reasoning("Selecting approach", analysis)
+        approach = self.select_approach(analysis)
+        
+        self.log_reasoning("Executing decision", approach)
+        decision = self.execute_decision(approach)
+        
+        # Compute confidence
+        confidence = self.confidence_tracker.compute_psi(
+            self.reasoning_log
+        )
+        
+        return {
+            'decision': decision,
+            'reasoning_chain': self.reasoning_log,
+            'confidence': confidence
+        }
+```
+
+## Anti-Patterns to Avoid
+
+### ❌ Hidden Reasoning
+```python
+# BAD: Black box decision making
+def analyze(data):
+    return complex_internal_calculation(data)  # No visibility
+```
+
+### ❌ Incomplete Chain-of-Thought
+```python
+# BAD: Partial reasoning exposure
+def analyze(data):
+    # Some reasoning shown...
+    step1 = obvious_step(data)
+    # But complex parts hidden
+    result = mysterious_calculation(step1)  
+    return result
+```
+
+### ✅ Complete Transparency
+```python
+# GOOD: Full reasoning chain
+def analyze(data):
+    reasoning = []
+    
+    reasoning.append("Step 1: Data validation...")
+    validated_data = validate_data(data)
+    
+    reasoning.append("Step 2: Method selection because...")
+    method = select_method(validated_data, reasoning)
+    
+    reasoning.append("Step 3: Calculation steps...")
+    result = apply_method(method, validated_data, reasoning)
+    
+    reasoning.append("Step 4: Result interpretation...")
+    interpretation = interpret_result(result, reasoning)
+    
+    return {
+        'result': interpretation,
+        'reasoning': reasoning,
+        'confidence': compute_confidence(reasoning)
+    }
+```
+
+## Integration with Existing Systems
+
+### HB Models
+Chain-of-thought reasoning applies to:
+- Prior selection rationale
+- Likelihood specification justification  
+- Posterior interpretation steps
+- Model comparison decisions
+
+### MCDA Systems
+Reasoning transparency for:
+- Criteria weight assignment
+- Alternative evaluation methods
+- Aggregation function selection
+- Sensitivity analysis interpretation
+
+### Immersive Visualization
+Chain-of-thought for:
+- Visualization design choices
+- Mathematical mapping decisions
+- User interaction interpretations
+- Adaptive complexity adjustments
+
+## Quality Metrics
+
+Track reasoning quality through:
+- **Completeness**: All decision steps documented
+- **Coherence**: Logical flow between steps
+- **Reproducibility**: Others can follow the reasoning
+- **Confidence**: Ψ(x) scores for reasoning chains
+- **Steerability**: Users can intervene at any step
