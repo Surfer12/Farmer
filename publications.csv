@@ -1,0 +1,25 @@
+pub_id,title,abstract,author_id
+1,Machine Learning Advances,Deep neural networks for classification,author1
+2,Neural Network Optimization,Gradient descent improvements,author1
+3,Computer Vision Applications,Image recognition using CNNs,author1
+4,Natural Language Processing,Transformer architectures,author1
+5,Reinforcement Learning,Q-learning algorithms,author1
+6,Data Mining Techniques,Association rule mining,author1
+7,Quantum Computing Theory,Quantum algorithms for optimization,author2
+8,Quantum Error Correction,Stabilizer codes,author2
+9,Quantum Machine Learning,Variational quantum circuits,author2
+10,Quantum Cryptography,Key distribution protocols,author2
+11,Quantum Simulation,Many-body systems,author2
+12,Quantum Information,Entanglement measures,author2
+13,Bioinformatics Algorithms,Sequence alignment methods,author3
+14,Genomic Data Analysis,SNP detection algorithms,author3
+15,Protein Structure Prediction,Folding simulation methods,author3
+16,Systems Biology,Network analysis approaches,author3
+17,Computational Biology,Phylogenetic reconstruction,author3
+18,Medical Informatics,Electronic health records,author3
+19,Distributed Systems,Consensus algorithms,author4
+20,Cloud Computing,Resource allocation strategies,author4
+21,Blockchain Technology,Smart contract verification,author4
+22,Network Security,Intrusion detection systems,author4
+23,Parallel Computing,Load balancing techniques,author4
+24,Edge Computing,Latency optimization,author4
