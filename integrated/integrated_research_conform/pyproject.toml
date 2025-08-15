@@ -1,11 +1,11 @@
 [project]
-name = "hybrid-symbolic-neural-framework"
-version = "0.1.0"
-description = "Hybrid Symbolic-Neural Accuracy Functional with Contraction Guarantees"
+name = "integrated-research-conform-framework"
+version = "1.0.0"
+description = "Integrated Research Conform: Hybrid Symbolic-Neural Accuracy Functional with Contraction Guarantees"
 authors = [
     {name = "Ryan David Oates", email = "ryan@example.com"}
 ]
-readme = "docs/README.md"
+readme = "README.md"
 requires-python = ">=3.8"
 dependencies = [
     "numpy>=1.20.0",
@@ -46,16 +46,20 @@ hybrid-full = "python core/hybrid_functional.py"
 pinn-burgers = "python core/pinn_burgers.py"
 
 # Academic network analysis (Java)
-academic-basic = "cd academic_network_analysis && ./compile_and_run_basic.sh"
-academic-enhanced = "cd academic_network_analysis && ./compile_and_run_enhanced.sh"
-academic-nature = "cd academic_network_analysis && ./compile_and_run_nature.sh"
+academic-basic = "cd academic_network_analysis && javac *.java && java AcademicNetworkAnalyzer"
+academic-enhanced = "cd academic_network_analysis && javac *.java && java EnhancedResearchMatcher"
+academic-nature = "cd academic_network_analysis && javac *.java && java NatureAnalysisDemo"
+academic-fractal = "cd academic_network_analysis && javac *.java && java FractalNatureTest"
+academic-swarm = "cd academic_network_analysis && javac *.java && java SwarmKoopmanNatureTest"
 
 # Comprehensive analysis suite
 analyze-all = { depends-on = ["contraction-analysis", "hybrid-analysis"] }
 analyze-with-academic = { depends-on = ["contraction-analysis", "hybrid-analysis", "academic-analysis"] }
+analyze-complete = { depends-on = ["contraction-analysis", "hybrid-analysis", "academic-basic", "academic-enhanced", "academic-nature"] }
+
 contraction-analysis = { cmd = "python core/minimal_contraction_psi.py", depends-on = ["setup-outputs"] }
 hybrid-analysis = { cmd = "python core/minimal_hybrid_functional.py", depends-on = ["setup-outputs"] }
-academic-analysis = { cmd = "bash -c 'cd academic_network_analysis && ./compile_and_run_basic.sh'", depends-on = ["setup-outputs"] }
+academic-analysis = { cmd = "cd academic_network_analysis && javac *.java && java AcademicNetworkAnalyzer", depends-on = ["setup-outputs"] }
 
 # Utility tasks
 setup-outputs = "mkdir -p outputs"
@@ -65,7 +69,7 @@ clean-all = { depends-on = ["clean-outputs", "clean-java"] }
 
 # Documentation and validation
 compile-latex = "pdflatex theory/contraction_spectral_theorems.tex"
-validate-theory = { cmd = "python -c \"from core.minimal_contraction_psi import *; demonstrate_parameter_sensitivity()\"", depends-on = ["setup-outputs"] }
+validate-theory = { cmd = "python -c \"import sys; sys.path.append('core'); from minimal_contraction_psi import *; demonstrate_parameter_sensitivity()\"", depends-on = ["setup-outputs"] }
 
 # Development tasks
 format = "black core/*.py analysis/*.py tests/*.py"
@@ -83,10 +87,17 @@ benchmark-contraction = { cmd = "python -c \"import time; import sys; sys.path.a
 # Export and reporting
 export-results = { cmd = "python analysis/export_analysis_results.py", depends-on = ["analyze-all"] }
 generate-report = { cmd = "python analysis/generate_comprehensive_report.py", depends-on = ["analyze-all"] }
+generate-complete-report = { cmd = "python analysis/generate_comprehensive_report.py", depends-on = ["analyze-complete"] }
 
 # Quick demos
 demo-contraction = "python -c \"import sys; sys.path.append('core'); from minimal_contraction_psi import *; config=MinimalContractionConfig(); psi=MinimalContractionPsi(config); scenarios=create_test_scenarios()[:2]; psi.print_detailed_analysis(scenarios)\""
 demo-hybrid = "python -c \"import sys; sys.path.append('core'); from minimal_hybrid_functional import *; functional=MinimalHybridFunctional(); print('Ψ(x) =', functional.compute_psi_single(0.5, 1.0)['psi']); demonstrate_functional_behavior()\""
+demo-academic = "cd academic_network_analysis && javac BasicNatureTest.java && java BasicNatureTest"
+
+# Integrated Research Conform specific tasks
+conform-validate = { depends-on = ["validate-theory", "test-minimal", "academic-basic"] }
+conform-analyze = { depends-on = ["analyze-complete", "generate-complete-report"] }
+conform-demo = { depends-on = ["demo-contraction", "demo-hybrid", "demo-academic"] }
 
 # Environments with features
 [tool.pixi.environments]
