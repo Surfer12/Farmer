@@ -36,6 +36,7 @@ matplotlib = ">=3.5.0"
 scipy = ">=1.7.0"
 jupyter = "*"
 ipython = "*"
+maven = ">=3.9.11,<4"
 
 [tool.pixi.tasks]
 # Core analysis tools
@@ -51,20 +52,21 @@ academic-enhanced = "cd academic_network_analysis && ./compile_and_run_enhanced.
 academic-nature = "cd academic_network_analysis && ./compile_and_run_nature.sh"
 
 # Comprehensive analysis suite
-analyze-all = { depends_on = ["contraction-analysis", "hybrid-analysis", "academic-analysis"] }
-contraction-analysis = { cmd = "python minimal_contraction_psi.py > outputs/contraction_analysis.txt 2>&1", depends_on = ["setup-outputs"] }
-hybrid-analysis = { cmd = "python minimal_hybrid_functional.py > outputs/hybrid_analysis.txt 2>&1", depends_on = ["setup-outputs"] }
-academic-analysis = { cmd = "cd academic_network_analysis && ./compile_and_run_basic.sh > ../outputs/academic_analysis.txt 2>&1", depends_on = ["setup-outputs"] }
+analyze-all = { depends-on = ["contraction-analysis", "hybrid-analysis"] }
+analyze-with-academic = { depends-on = ["contraction-analysis", "hybrid-analysis", "academic-analysis"] }
+contraction-analysis = { cmd = "python minimal_contraction_psi.py", depends-on = ["setup-outputs"] }
+hybrid-analysis = { cmd = "python minimal_hybrid_functional.py", depends-on = ["setup-outputs"] }
+academic-analysis = { cmd = "bash -c 'cd academic_network_analysis && ./compile_and_run_basic.sh'", depends-on = ["setup-outputs"] }
 
 # Utility tasks
 setup-outputs = "mkdir -p outputs"
 clean-outputs = "rm -rf outputs/*"
 clean-java = "cd academic_network_analysis && find . -name '*.class' -delete"
-clean-all = { depends_on = ["clean-outputs", "clean-java"] }
+clean-all = { depends-on = ["clean-outputs", "clean-java"] }
 
 # Documentation and validation
 compile-latex = "pdflatex contraction_spectral_theorems.tex"
-validate-theory = { cmd = "python -c 'from minimal_contraction_psi import *; demonstrate_parameter_sensitivity()'", depends_on = ["setup-outputs"] }
+validate-theory = { cmd = "python -c \"from minimal_contraction_psi import *; demonstrate_parameter_sensitivity()\"", depends-on = ["setup-outputs"] }
 
 # Development tasks
 format = "black *.py"
@@ -77,32 +79,29 @@ jupyter-lab = "jupyter lab"
 ipython-shell = "ipython"
 
 # Benchmarking and performance
-benchmark-contraction = { cmd = "python -c 'import time; from minimal_contraction_psi import *; start=time.time(); config=MinimalContractionConfig(); psi=MinimalContractionPsi(config); scenarios=create_test_scenarios(); results=psi.analyze_contraction_properties(scenarios); print(f\"Analysis completed in {time.time()-start:.2f}s\")'", depends_on = ["setup-outputs"] }
+benchmark-contraction = { cmd = "python -c \"import time; from minimal_contraction_psi import *; start=time.time(); config=MinimalContractionConfig(); psi=MinimalContractionPsi(config); scenarios=create_test_scenarios(); results=psi.analyze_contraction_properties(scenarios); print(f'Analysis completed in {time.time()-start:.2f}s')\"", depends-on = ["setup-outputs"] }
 
 # Export and reporting
-export-results = { cmd = "python export_analysis_results.py", depends_on = ["analyze-all"] }
-generate-report = { cmd = "python generate_comprehensive_report.py", depends_on = ["analyze-all"] }
+export-results = { cmd = "python export_analysis_results.py", depends-on = ["analyze-all"] }
+generate-report = { cmd = "python generate_comprehensive_report.py", depends-on = ["analyze-all"] }
 
 # Quick demos
 demo-contraction = "python -c 'from minimal_contraction_psi import *; config=MinimalContractionConfig(); psi=MinimalContractionPsi(config); scenarios=create_test_scenarios()[:2]; psi.print_detailed_analysis(scenarios)'"
-demo-hybrid = "python -c 'from minimal_hybrid_functional import *; functional=MinimalHybridFunctional(); print(\"Ψ(x) =\", functional.compute_psi_single(0.5, 1.0)[\"psi\"]); functional.demonstrate_collaboration_scenarios()'"
+demo-hybrid = "python -c 'from minimal_hybrid_functional import *; functional=MinimalHybridFunctional(); print(\"Ψ(x) =\", functional.compute_psi_single(0.5, 1.0)[\"psi\"]); demonstrate_functional_behavior()'"
+
+# Environments with features
+[tool.pixi.environments]
+default = { solve-group = "default" }
+viz = { features = ["visualization"], solve-group = "viz" }
 
 [tool.pixi.feature.visualization.dependencies]
 plotly = "*"
 seaborn = "*"
-bokeh = "*"
 
 [tool.pixi.feature.visualization.tasks]
 plot-contraction = "python plot_contraction_analysis.py"
 plot-hybrid = "python plot_hybrid_functional.py"
 interactive-demo = "python interactive_analysis_dashboard.py"
-
-[tool.pixi.feature.gpu.dependencies]
-cupy = { version = "*", channel = "conda-forge" }
-numba = "*"
-
-[tool.pixi.feature.gpu.tasks]
-gpu-benchmark = "python gpu_accelerated_analysis.py"
 
 [tool.black]
 line-length = 100

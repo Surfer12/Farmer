@@ -48,4 +48,9 @@ public interface AuditSink {
             return future;
         };
     }
+
+    default void close() {}
+    static AuditSink jdbc(String jdbcUrl, String username, String password) {
+        return new JdbcAuditSink(jdbcUrl, username, password);
+    }
 }

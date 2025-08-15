@@ -10,6 +10,7 @@ import java.util.Set;
 /**
  * Ready-made voting rule stacks for common agent policies.
  */
+@SuppressWarnings("unused")
 public final class AgentPresets {
     private AgentPresets() {}
 

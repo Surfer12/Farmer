@@ -61,6 +61,9 @@ public final class Core {
         AuditRecord rec = new AuditRecordImpl("rec-" + System.currentTimeMillis(), new Date());
         sink.write(rec, AuditOptions.builder().dryRun(false).build()).join();
         System.out.println("file: wrote record to " + dir.getAbsolutePath());
+        System.out.println("file: closing sink");
+        sink.close();
+        System.out.println("file: closed sink");
     }
 
     private static void runJdbc() {
