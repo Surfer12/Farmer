@@ -39,6 +39,7 @@ public final class JdbcAuditSink implements AuditSink {
     private final String tableName;
     private final boolean createTableIfMissing;
     private final ExecutorService executor;
+    private final ExceptionLogger exceptionLogger;
 
     private volatile Connection connection;
 
@@ -49,7 +50,7 @@ public final class JdbcAuditSink implements AuditSink {
      * @param password DB password (nullable if URL supplies it)
      */
     public JdbcAuditSink(String jdbcUrl, String username, String password) {
-        this(jdbcUrl, username, password, "audit_records", true, 1024);
+        this(jdbcUrl, username, password, "audit_records", true, 1024, null);
     }
 
     /**
@@ -67,12 +68,23 @@ public final class JdbcAuditSink implements AuditSink {
                          String tableName,
                          boolean createTableIfMissing,
                          int maxQueue) {
+        this(jdbcUrl, username, password, tableName, createTableIfMissing, maxQueue, null);
+    }
+
+    public JdbcAuditSink(String jdbcUrl,
+                         String username,
+                         String password,
+                         String tableName,
+                         boolean createTableIfMissing,
+                         int maxQueue,
+                         ExceptionLogger exceptionLogger) {
         this.jdbcUrl = Objects.requireNonNull(jdbcUrl, "jdbcUrl");
         this.username = username;
         this.password = password;
         this.tableName = Objects.requireNonNullElse(tableName, "audit_records");
         this.createTableIfMissing = createTableIfMissing;
         this.executor = newBoundedExecutor(maxQueue);
+        this.exceptionLogger = exceptionLogger != null ? exceptionLogger : LoggingFactory.createLogger();
     }
 
     private static ExecutorService newBoundedExecutor(int maxQueue) {
@@ -98,6 +110,10 @@ public final class JdbcAuditSink implements AuditSink {
                 ensureConnection();
                 insertRecord(rec, effectiveOpts);
             } catch (SQLException e) {
+                // Log the failure if a logger is available
+                if (exceptionLogger != null) {
+                    exceptionLogger.log("JDBC write failed", e);
+                }
                 throw new RuntimeException("JDBC write failed", e);
             }
         }, executor);
@@ -116,6 +132,9 @@ public final class JdbcAuditSink implements AuditSink {
                 }
             }
         } catch (SQLException e) {
+            if (exceptionLogger != null) {
+                exceptionLogger.log("JDBC connection failed", e);
+            }
             closeQuietly();
             throw e;
         }
@@ -179,6 +198,9 @@ public final class JdbcAuditSink implements AuditSink {
         } catch (InterruptedException ignored) {
             Thread.currentThread().interrupt();
         } finally {
+            if (exceptionLogger != null) {
+                exceptionLogger.log("JdbcAuditSink closing", null);
+            }
             closeQuietly();
         }
     }

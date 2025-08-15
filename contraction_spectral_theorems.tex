@@ -1,0 +1,97 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+
+\title{Contraction Lemma for Invariant Manifolds and the Spectral Theorem}
+\author{}
+\date{}
+
+\theoremstyle{plain}
+\newtheorem{lemma}{Lemma}
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+
+\newcommand{\norm}[1]{\left\lVert #1 \right\rVert}
+
+\begin{document}
+\maketitle
+
+\section{Lemma 2: Contraction Property}
+Let $(\mathcal{X},\norm{\cdot})$ be a Banach space and let $S_\beta \subset \mathcal{X}$ be a closed subset endowed with the (possibly weighted) norm
+\[
+\norm{\gamma}_{\beta} \coloneqq \sup_{n \ge 0} \beta^{n}\,\norm{\gamma_n},\qquad \beta \in (0,1].
+\]
+Consider an operator $T:S_\beta \to S_\beta$ arising from a graph transform with components $h_{cs}$ and $h_{u}$, each Lipschitz with constants $\operatorname{Lip}(h_{cs})$ and $\operatorname{Lip}(h_u)$ bounded by a small parameter $L>0$.
+
+\begin{lemma}[Contraction property]
+There exists $L_0>0$ such that if $0<L\le L_0$, then $T$ is a contraction on $S_\beta$:
+\[
+\norm{T(\gamma)-T(\gamma')}_{\beta} \le K\,\norm{\gamma-\gamma'}_{\beta},\qquad K \in (0,1),
+\]
+with $K$ depending on $\operatorname{Lip}(h_{cs})$, $\operatorname{Lip}(h_u)$, the weighting $\beta$, and bounds of the linear part of the dynamics.
+\end{lemma}
+
+\begin{proof}
+Let $\gamma,\gamma' \in S_\beta$. By the definition of $T$ (graph transform in adapted coordinates),
+\[
+\norm{T(\gamma)-T(\gamma')}_{\beta}
+\le \max\!\big\{\operatorname{Lip}(h_{cs}),\,\operatorname{Lip}(h_u)\big\}\cdot C(\beta)\,\norm{\gamma-\gamma'}_{\beta},
+\]
+where $C(\beta)$ aggregates the effects of the linear part and the weighting. Since $\operatorname{Lip}(h_{cs}),\operatorname{Lip}(h_u)\le L$, pick $L_0$ so that $\max\{\operatorname{Lip}(h_{cs}),\operatorname{Lip}(h_u)\}\,C(\beta)\le K<1$. Then $T$ is a contraction with constant $K$.
+
+By the Uniform Contraction Principle (Banach fixed-point theorem), $T$ admits a unique fixed point $\gamma^\ast\in S_\beta$ for each admissible base point $x_0$, with $y_0=\phi^u(x_0)$ fixed, yielding the invariant manifold as the graph of $\gamma^\ast$. The center-unstable and local center manifolds are obtained analogously by reversing time or localizing the construction.
+\end{proof}
+
+\section{Spectral Theorem for Bounded Self-Adjoint Operators}
+Let $H$ be a complex Hilbert space and $T:H\to H$ a bounded self-adjoint operator.
+
+\begin{theorem}[Spectral Theorem]
+There exists a projection-valued spectral family $\{E_\lambda\}_{\lambda\in\mathbb{R}}$ with support in $[m,M]$, where
+\[
+m \coloneqq \inf_{\norm{x}=1}\langle Tx,x\rangle,\qquad M \coloneqq \sup_{\norm{x}=1}\langle Tx,x\rangle,
+\]
+such that:
+\begin{itemize}
+\item $E_\lambda \le E_\mu$ for $\lambda<\mu$, $E_\lambda E_\mu=E_\mu E_\lambda=E_\lambda$ for $\lambda<\mu$,
+\item $\lim_{\lambda\to -\infty}E_\lambda=0$, $\lim_{\lambda\to +\infty}E_\lambda=I$ (strong limits),
+\item right-continuity: $\lim_{\mu\downarrow\lambda} E_\mu = E_\lambda$,
+\item $E_\lambda=0$ for $\lambda<m$ and $E_\lambda=I$ for $\lambda\ge M$,
+\end{itemize}
+and
+\[
+T \;=\; \int_{[m,M]} \lambda \, dE_\lambda
+\]
+in the sense that for all $x,y\in H$,
+\[
+\langle Tx,y\rangle \;=\; \int_{[m,M]} \lambda \, d\langle E_\lambda x, y\rangle.
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Define, for each $\lambda\in\mathbb{R}$, $T_\lambda \coloneqq T-\lambda I$ and the positive operator $B_\lambda \coloneqq |T_\lambda| \coloneqq (T_\lambda^2)^{1/2}$. The positive and negative parts of $T_\lambda$ are
+\[
+T_\lambda^{+} \coloneqq \tfrac12\big(B_\lambda + T_\lambda\big),\qquad
+T_\lambda^{-} \coloneqq \tfrac12\big(B_\lambda - T_\lambda\big),
+\]
+with $T_\lambda = T_\lambda^{+} - T_\lambda^{-}$, $T_\lambda^{\pm}\ge 0$, and $T_\lambda^{+}T_\lambda^{-}=0$.
+Set
+\[
+E_\lambda \coloneqq \text{projection onto } N(T_\lambda^{+}) \;=\; \mathbf{1}_{(-\infty,0]}(T_\lambda),
+\]
+the spectral projection associated with $(-\infty,0]$ for $T_\lambda$. Standard properties of functional calculus and order of self-adjoint operators yield:
+\begin{itemize}
+\item Monotonicity: if $\lambda<\mu$, then $T_\mu = T_\lambda - (\mu-\lambda)I \le T_\lambda$, which implies $E_\lambda \le E_\mu$.
+\item Projection and commutativity: each $E_\lambda$ is an orthogonal projection; $E_\lambda E_\mu=E_\lambda$ for $\lambda<\mu$.
+\item Right-continuity follows from continuity of the spectral measure.
+\item Bounds on support: $E_\lambda=0$ for $\lambda<m$ and $E_\lambda=I$ for $\lambda\ge M$ by definition of the numerical range bounds.
+\end{itemize}
+For $x\in H$, the scalar measure $\mu_x(\cdot)\coloneqq \langle E_{(\cdot)}x,x\rangle$ is non-decreasing, bounded, and right-continuous. By the Riemann--Stieltjes theory (or the spectral integral), one has
+\[
+\langle Tx,x\rangle = \int_{[m,M]} \lambda \, d\mu_x(\lambda) \;=\; \int_{[m,M]} \lambda \, d\langle E_\lambda x, x\rangle.
+\]
+Polarization extends this identity to $\langle Tx,y\rangle$ for arbitrary $x,y\in H$, yielding $T=\int \lambda\, dE_\lambda$.
+\end{proof}
+
+\end{document}
