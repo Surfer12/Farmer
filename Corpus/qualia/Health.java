@@ -1,4 +1,3 @@
-package qualia;
 
 /**
  * Minimal health checks for sinks and samplers.

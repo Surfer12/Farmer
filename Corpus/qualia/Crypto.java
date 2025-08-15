@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
-package qualia;
+
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
