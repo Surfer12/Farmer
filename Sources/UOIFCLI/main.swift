@@ -40,6 +40,32 @@ printEvaluation(Presets.eval2025Problems(alpha: 0.20, N: 0.88))
 printEvaluation(Presets.eval2024(alpha: 0.10))
 printEvaluation(Presets.eval2024(alpha: 0.15))
 
+// Numeric Ψ(x) example from brief
+print("Example — hybrid Ψ(x) calc:")
+let S_example = 0.72
+let N_example = 0.85
+let alpha_example = 0.5
+let O_hybrid = PsiModel.computeHybrid(alpha: alpha_example, S: S_example, N: N_example) // 0.785
+let penalty_example = PsiModel.computePenalty(
+  lambdaAuthority: 0.6,
+  lambdaVerifiability: 0.4,
+  riskAuthority: 0.15,
+  riskVerifiability: 0.10
+) // exp(-P_total) ~ 0.878
+let posterior_example = PsiModel.computePosteriorCapped(basePosterior: 0.80, beta: 1.2) // ~0.96
+let psi_example = O_hybrid * penalty_example * posterior_example // ~0.662
+print(String(format: "O=%.3f, pen=%.3f, P*=%.3f ⇒ Ψ=%.3f", O_hybrid, penalty_example, posterior_example, psi_example))
+print()
+
+// Tiny PINN demo: single training step for 1D inviscid Burgers
+print("PINN — 1D inviscid Burgers (single step demo):")
+let demo = PINNDemo.singleStepDemo(hidden: [8, 8], samplePoints: 10, seed: 123)
+print(String(format: "loss before=%.6f, after=%.6f", demo.lossBefore, demo.lossAfter))
+for (x, t, u) in demo.sampleU {
+  print(String(format: "u(x=%.2f,t=%.2f)=%.4f", x, t, u))
+}
+print()
+
 // Short reflection
 print("Reflection:")
 print("- Hybrid linearity gives monotone, auditable responses as canonical sources arrive (alpha ↓ ⇒ Psi ↑ when N>S).")
