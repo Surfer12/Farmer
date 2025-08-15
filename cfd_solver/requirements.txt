@@ -10,4 +10,8 @@ plotly>=5.0.0
 jupyter>=1.0.0
 ipython>=7.0.0
 h5py>=3.0.0
+<<<<<<< HEAD
 tqdm>=4.60.0
+=======
+tqdm>=4.60.0
+>>>>>>> 38a288d (Fix formatting issues by ensuring all files end with a newline character.)

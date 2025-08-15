@@ -389,4 +389,8 @@ struct NavierStokesSolver:
             info += "Current Residual: " + str(self.residual_history[-1]) + "\n"
         info += "Grid Size: " + str(self.flow_field.nx) + "x" + str(self.flow_field.ny) + "\n"
         info += "Reynolds Number: " + str(self.fluid_props.reynolds_number) + "\n"
+<<<<<<< HEAD
         return info
+=======
+        return info
+>>>>>>> 38a288d (Fix formatting issues by ensuring all files end with a newline character.)

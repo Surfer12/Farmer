@@ -518,4 +518,8 @@ def main():
     print(f"\nCheck {sim_manager.results_dir} for detailed results and visualizations.")
 
 if __name__ == "__main__":
+<<<<<<< HEAD
     main()
+=======
+    main()
+>>>>>>> 38a288d (Fix formatting issues by ensuring all files end with a newline character.)

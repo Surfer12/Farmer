@@ -35,5 +35,34 @@ public enum PsiModel {
     let dPsi_dAlpha = (inputs.S_symbolic - inputs.N_external) * penalty * posterior
     return PsiOutcome(hybrid: hybrid, penalty: penalty, posterior: posterior, psi: psi, dPsi_dAlpha: dPsi_dAlpha)
   }
+<<<<<<< Current (Your changes)
+=======
+
+  // Convenience: map user-friendly terms to inputs
+  public static func computePsi(
+    alpha: Double,
+    S: Double,
+    N: Double,
+    R_cognitive: Double,
+    R_efficiency: Double,
+    lambda1: Double,
+    lambda2: Double,
+    basePosterior: Double,
+    beta: Double
+  ) -> PsiOutcome {
+    let inputs = PsiInputs(
+      alpha: alpha,
+      S_symbolic: S,
+      N_external: N,
+      lambdaAuthority: lambda1,
+      lambdaVerifiability: lambda2,
+      riskAuthority: R_cognitive,
+      riskVerifiability: R_efficiency,
+      basePosterior: basePosterior,
+      betaUplift: beta
+    )
+    return computePsi(inputs: inputs)
+  }
+>>>>>>> Incoming (Background Agent changes)
 }
 

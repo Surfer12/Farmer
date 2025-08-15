@@ -135,4 +135,8 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 - Futures Fins for fin specifications and performance data
 - Modular AI for Mojo language development
+<<<<<<< HEAD
 - CFD research community for numerical methods
+=======
+- CFD research community for numerical methods
+>>>>>>> 38a288d (Fix formatting issues by ensuring all files end with a newline character.)

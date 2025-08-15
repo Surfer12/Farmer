@@ -239,4 +239,8 @@ struct MeshGenerator:
                 coordinates[i, j, 0] = Float32(i) * dx  # x-coordinate
                 coordinates[i, j, 1] = Float32(j) * dy - self.domain_height * 0.5  # y-coordinate
         
+<<<<<<< HEAD
         return coordinates
+=======
+        return coordinates
+>>>>>>> 38a288d (Fix formatting issues by ensuring all files end with a newline character.)

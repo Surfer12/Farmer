@@ -256,4 +256,8 @@ The implementation balances computational efficiency with physical accuracy, mak
    - Modify fin geometry in `src/mesh/fin_geometry.mojo`
    - Add new visualization in `visualization/flow_visualizer.py`
 
+<<<<<<< HEAD
 The complete implementation is ready for use and further development!
+=======
+The complete implementation is ready for use and further development!
+>>>>>>> 38a288d (Fix formatting issues by ensuring all files end with a newline character.)

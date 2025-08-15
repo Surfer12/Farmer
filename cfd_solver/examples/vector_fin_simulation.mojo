@@ -282,4 +282,8 @@ fn find_closest_angle_index(angles: List[Float32], target: Float32) -> Int:
             min_diff = diff
             closest_index = i
     
+<<<<<<< HEAD
     return closest_index
+=======
+    return closest_index
+>>>>>>> 38a288d (Fix formatting issues by ensuring all files end with a newline character.)

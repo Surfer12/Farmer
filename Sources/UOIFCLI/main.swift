@@ -25,7 +25,19 @@ func printEvaluation(_ evaluation: Evaluation) {
   print()
 }
 
+let args = CommandLine.arguments.dropFirst()
+let shouldTrainPINN = args.contains("--train-pinn")
+let epochsArgIndex = args.firstIndex(of: "--epochs")
+var epochs: Int = 1000
+if let idx = epochsArgIndex {
+  let nextIndex = args.index(after: idx)
+  if nextIndex < args.endIndex, let parsed = Int(args[nextIndex]) { epochs = parsed }
+}
+
 print("UOIF CLI — recompute and reflect\n")
+
+// Print the user single-step example
+printEvaluation(Presets.evalHybridPINNExample())
 
 // 2025 results, two alphas
 printEvaluation(Presets.eval2025Results(alpha: 0.12))
@@ -39,6 +51,11 @@ printEvaluation(Presets.eval2025Problems(alpha: 0.20, N: 0.88))
 // 2024, two alphas
 printEvaluation(Presets.eval2024(alpha: 0.10))
 printEvaluation(Presets.eval2024(alpha: 0.15))
+
+if shouldTrainPINN {
+  print("Running PINN demo training... (epochs=\(epochs))")
+  PINNTrainer.demoTraining(epochs: epochs, samples: 200)
+}
 
 // Short reflection
 print("Reflection:")

@@ -470,4 +470,8 @@ if __name__ == "__main__":
     print("- plot_lift_drag_analysis()")
     print("- create_interactive_pressure_plot()")
     print("- plot_convergence_history()")
+<<<<<<< HEAD
     print("- create_fin_geometry_plot()")
+=======
+    print("- create_fin_geometry_plot()")
+>>>>>>> 38a288d (Fix formatting issues by ensuring all files end with a newline character.)

@@ -176,4 +176,8 @@ struct FlowField:
 alias FLUID_CELL: Int = 0
 alias WALL_CELL: Int = 1
 alias INLET_CELL: Int = 2
+<<<<<<< HEAD
 alias OUTLET_CELL: Int = 3
+=======
+alias OUTLET_CELL: Int = 3
+>>>>>>> 38a288d (Fix formatting issues by ensuring all files end with a newline character.)

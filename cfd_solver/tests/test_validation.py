@@ -525,4 +525,8 @@ if __name__ == "__main__":
     # Create visualization
     create_test_visualization(validator)
     
+<<<<<<< HEAD
     print("\nValidation complete! Check 'validation_report.txt' and 'validation_results.png'")
+=======
+    print("\nValidation complete! Check 'validation_report.txt' and 'validation_results.png'")
+>>>>>>> 38a288d (Fix formatting issues by ensuring all files end with a newline character.)
