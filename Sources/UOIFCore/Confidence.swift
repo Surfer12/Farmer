@@ -87,5 +87,39 @@ public enum Presets {
     let label = Label.primitiveEmpiricallyGrounded.rawValue
     return Evaluation(title: "2024 P1/P2/P4", inputs: inputs, confidence: conf, label: label)
   }
+
+  // User numeric example: S=0.72, N=0.85, alpha=0.5; R_cognitive=0.15, R_efficiency=0.10; lambda1=0.6, lambda2=0.4; basePosterior=0.80, beta=1.2
+  public static func evalHybridPINNExample() -> Evaluation {
+    let S_user = 0.72
+    let N_user = 0.85
+    let alpha: Double = 0.5
+    let lambda1_user: Double = 0.6
+    let lambda2_user: Double = 0.4
+    let R_cognitive: Double = 0.15
+    let R_efficiency: Double = 0.10
+    let basePosterior: Double = 0.80
+    let beta: Double = 1.2
+
+    let inputs = PsiInputs(
+      alpha: alpha,
+      S_symbolic: S_user,
+      N_external: N_user,
+      lambdaAuthority: lambda1_user,
+      lambdaVerifiability: lambda2_user,
+      riskAuthority: R_cognitive,
+      riskVerifiability: R_efficiency,
+      basePosterior: basePosterior,
+      betaUplift: beta
+    )
+    let out = PsiModel.computePsi(inputs: inputs)
+    let conf = ConfidenceBundle(
+      sources: 0.90,
+      hybrid: out.hybrid,
+      penalty: out.penalty,
+      posterior: out.posterior,
+      psiOverall: 0.0
+    )
+    return Evaluation(title: "Hybrid PINN Example (single step)", inputs: inputs, confidence: conf, label: Label.empiricallyGrounded.rawValue)
+  }
 }
 
