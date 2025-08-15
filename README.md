@@ -1,298 +1,326 @@
-# Uncertainty Quantification Framework: From Theory to Production
+# Fin CFD Visualizer
 
-> **🎯 Vision Realized**: This repository transforms the original UQ framework concepts into a complete, production-ready implementation with working code, real results, and comprehensive monitoring.
+A comprehensive iOS/macOS app for 3D visualization of CFD (Computational Fluid Dynamics) results for Vector 3/2 Blackstix+ fins, integrating hydrodynamic performance with cognitive load metrics to optimize flow state for surfers.
 
-A comprehensive implementation of uncertainty quantification (UQ) methods that converts unreliable point predictions into trustworthy risk assessments for machine learning systems in production.
+## Features
 
-## 📋 Implementation Status
+### 🌊 3D CFD Visualization
+- Real-time 3D rendering of fin geometry using SceneKit
+- Pressure field visualization with color-mapped intensity
+- Flow streamline visualization showing fluid dynamics
+- Vector 3/2 foil profile with accurate geometry (15.00 sq.in. side fins, 14.50 sq.in. center fin)
+- Dynamic updates based on angle of attack (0°–20° AoA)
 
-✅ **Complete Implementation Delivered** - All original framework concepts have been implemented with working code  
-✅ **Production Ready** - Full monitoring, drift detection, and alerting systems  
-✅ **Tested & Validated** - Real performance results and generated visualizations  
-✅ **Documented** - Comprehensive guides and examples  
+### 🧠 Cognitive Integration
+- Heart Rate Variability (HRV) monitoring via HealthKit
+- Real-time flow state detection and analysis
+- Cognitive load assessment and stress level monitoring
+- Performance correlation between fin efficiency and mental state
+- Personalized recommendations for optimal performance
 
-> **Note**: Original conceptual framework documentation has been preserved in [`archive/README_original_framework.md`](archive/README_original_framework.md) with full justification in [`archive/ARCHIVE_JUSTIFICATION.md`](archive/ARCHIVE_JUSTIFICATION.md).
+### 📱 Sensor Integration
+- IMU data processing for board orientation and movement
+- Bluetooth pressure sensor connectivity
+- Real-time maneuver detection (turns, bottom turns, aerials)
+- Sensor calibration and filtering algorithms
 
-## 🎯 What This Implementation Gives You
+### 🤖 Machine Learning
+- Core ML integration for CFD predictions
+- Neural surrogate models trained on CFD data
+- Analytical backup models using fluid dynamics principles
+- Boundary layer analysis and turbulence modeling (k-ω SST approximation)
 
-### Separates Ignorance from Noise (✅ IMPLEMENTED)
-- **Epistemic Uncertainty**: Model ignorance, reducible with more data
-- **Aleatoric Uncertainty**: Inherent noise, irreducible randomness  
-- **Total Uncertainty**: Combined measure for decision making
-- **Real Results**: See actual uncertainty decomposition in generated plots
+## Technical Specifications
 
-### Converts Predictions into Actionable Risk (✅ IMPLEMENTED)
-- **Tail Probabilities**: P(Y ≥ t | X) with working examples
-- **Confidence/Credible Intervals**: [L(X), U(X)] with coverage guarantees
-- **Abstention Triggers**: High uncertainty → human review (implemented)
-- **VaR/CVaR**: Value at Risk and Conditional Value at Risk (working code)
+### Fin Configuration
+- **Side Fins**: 15.00 sq.in., 6.5° rake angle, Vector 3/2 foil profile
+- **Center Fin**: 14.50 sq.in., symmetric profile
+- **Target Rider Weight**: 125–175 lbs
+- **Reynolds Number Range**: 10⁵–10⁶
 
-### Improves Calibration (✅ IMPLEMENTED)
-- Predicted probabilities match observed frequencies
-- Temperature scaling with actual temperature values
-- Reliability diagrams generated and saved as PNG files
+### Performance Metrics
+- Lift and drag force calculations
+- Lift-to-drag ratio optimization
+- Pressure differential mapping (up to 30%)
+- Flow separation detection
+- Stall angle estimation
 
-## 🔧 Core Methods: Fully Implemented
+### Cognitive Metrics
+- HRV analysis for flow state detection
+- Stress level quantification
+- Cognitive load assessment
+- Performance-mindset correlation
+- Real-time feedback and recommendations
 
-### Deep Ensembles (n=5) - ✅ WORKING
-Strong epistemic uncertainty baseline with real performance metrics
-```python
-from uq_examples import DeepEnsemble, regression_uq_example
+## Requirements
 
-# Run complete regression example with real results
-results = regression_uq_example()
-# Actual results: 92.5% conformal coverage, MSE: 114.8
+### iOS/macOS
+- iOS 17.0+ or macOS 14.0+
+- Xcode 15.0+
+- Swift 5.9+
+
+### Device Capabilities
+- Gyroscope and accelerometer
+- Bluetooth LE support
+- HealthKit compatibility (optional)
+- Metal-compatible GPU for 3D rendering
+
+### Permissions
+- Motion sensors access
+- HealthKit data access
+- Bluetooth peripheral access
+- Background processing (for sensor monitoring)
+
+## Installation
+
+### Xcode Project Setup
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/fin-cfd-visualizer.git
+   cd fin-cfd-visualizer
+   ```
+
+2. **Open in Xcode**
+   ```bash
+   open FinCFDVisualizer.xcodeproj
+   ```
+
+3. **Configure Bundle Identifier**
+   - Update the bundle identifier in project settings
+   - Configure signing certificates
+
+4. **Add Core ML Model**
+   - Place your trained `FinCFDModel.mlmodel` in the project
+   - Ensure it's added to the target
+
+### Dependencies
+
+The app uses native iOS frameworks:
+- **SwiftUI**: Modern UI framework
+- **SceneKit**: 3D graphics and visualization
+- **Core ML**: Machine learning inference
+- **HealthKit**: Health data integration
+- **Core Motion**: Motion sensor access
+- **Core Bluetooth**: Sensor connectivity
+- **Combine**: Reactive programming
+
+## Usage
+
+### Initial Setup
+
+1. **Launch the app** and grant necessary permissions
+2. **Calibrate sensors** by placing the device on a flat surface
+3. **Connect pressure sensors** via Bluetooth (optional)
+4. **Authorize HealthKit** for cognitive monitoring
+
+### Real-Time Monitoring
+
+1. **Angle of Attack Control**: Use the slider or rely on IMU data
+2. **Reynolds Number**: Adjust based on water conditions
+3. **3D Visualization**: Interact with the 3D model to explore fin geometry
+4. **Performance Metrics**: Monitor lift, drag, and L/D ratio
+5. **Cognitive State**: Track HRV and flow state indicators
+
+### Session Analysis
+
+1. **Start a session** to begin comprehensive tracking
+2. **Monitor real-time feedback** during surfing
+3. **Review session summary** with performance metrics
+4. **Export data** for further analysis
+
+## Architecture
+
+### Core Components
+
+```
+FinCFDVisualizerApp (App Entry Point)
+├── ContentView (Main UI)
+├── FinVisualizer (3D SceneKit Rendering)
+├── FinPredictor (Core ML & CFD Analysis)
+├── SensorManager (IMU & Bluetooth)
+├── CognitiveTracker (HealthKit & Flow State)
+└── FinViewModel (Combine Data Pipeline)
 ```
 
-### MC Dropout - ✅ WORKING  
-Lightweight Bayesian inference with uncertainty estimates
-```python
-from uq_examples import MCDropoutModel
+### Data Flow
 
-model = MCDropoutModel(input_dim=10, hidden_dim=64, output_dim=1)
-mean, uncertainty = model.predict_with_uncertainty(x_test, n_samples=100)
-# Real performance: 91.5% coverage, good calibration
-```
+1. **Sensor Input** → Raw IMU and pressure data
+2. **Processing** → Filtering and calibration
+3. **ML Inference** → CFD predictions via Core ML
+4. **Visualization** → 3D rendering updates
+5. **Cognitive Analysis** → HRV processing and flow state detection
+6. **Correlation** → Performance-mindset integration
+7. **Feedback** → Real-time recommendations
 
-### Heteroscedastic Regression - ✅ WORKING
-Input-dependent noise modeling with NLL loss
-```python
-from uq_examples import HeteroscedasticModel
+## Core ML Model
 
-model = HeteroscedasticModel(input_dim=5, hidden_dim=64)
-mean, var = model(x_test)
-# Actual results: 87.5% Gaussian coverage, adaptive intervals
-```
+### Input Format
+- Angle of Attack (0-20°)
+- Rake Angle (6.5° for Vector 3/2)
+- Reynolds Number (1e5-1e6)
+- Velocity (m/s)
+- Fin Area (sq.in.)
 
-### Conformal Prediction - ✅ WORKING
-Distribution-free coverage guarantees with real validation
-```python
-from uq_examples import ConformalPredictor
+### Output Format
+- Lift Force (N)
+- Drag Force (N)
+- Lift Coefficient
+- Drag Coefficient
+- Pressure Distribution (300-point grid)
+- Velocity Field (300-point grid)
 
-conformal = ConformalPredictor(base_model, alpha=0.1)  # 90% coverage
-conformal.calibrate(x_cal, y_cal)
-lower, upper = conformal.predict_interval(x_test)
-# Verified: 90% actual coverage achieved
-```
+### Training Data
+The model should be trained on CFD simulation data covering:
+- Various angles of attack (0-20°)
+- Reynolds number range (1e5-2e6)
+- Different fin geometries
+- Boundary layer transitions
+- Flow separation conditions
 
-### Temperature Scaling - ✅ WORKING
-Post-hoc calibration with optimized temperature parameter
-```python
-from uq_examples import TemperatureScaling
+## Cognitive Integration
 
-temp_scaler = TemperatureScaling()
-temp_scaler.fit(logits_val, labels_val)
-# Real result: Temperature = 1.219, ECE improved from 0.148 to calibrated
-```
+### Flow State Detection
+Based on research in sports psychology and HRV analysis:
 
-## 📊 Evaluation Framework: Complete with Real Results
+- **Flow State**: HRV > 110% baseline, low cognitive load, positive trend
+- **Focused State**: HRV > 90% baseline, moderate cognitive load
+- **Stressed State**: High cognitive load (>60%), elevated stress markers
+- **Fatigued State**: HRV < 70% baseline, declining trend
 
-### Calibration Assessment - ✅ IMPLEMENTED
-- **Expected Calibration Error (ECE)**: Real values: 0.077-0.148
-- **Reliability Diagrams**: Generated as `classification_uq_reliability.png`
-- **Brier Score**: Implemented and working
-- **Results**: Temperature scaling reduces ECE significantly
+### Performance Correlation
+The app correlates fin performance with cognitive state:
+- Optimal zone: High cognitive score + high performance score
+- Recommendations based on correlation analysis
+- Personalized feedback for improvement
 
-### Interval Quality - ✅ IMPLEMENTED  
-- **Coverage (PICP)**: Actual coverage rates measured and reported
-- **Width (MPIW)**: Real interval widths calculated
-- **Performance**: 90% conformal coverage achieved consistently
+## Customization
 
-### Drift Detection - ✅ IMPLEMENTED
-- **PSI/KL Divergence**: Working drift detection with real alerts
-- **Results**: 15 alerts generated in simulation with proper thresholds
-
-## ⚠️ Risk-Based Decision Making: Production Ready
-
-### Expected Cost Minimization - ✅ IMPLEMENTED
-Real cost reduction demonstrated with working examples
-```python
-from uq_examples import risk_aware_decision_example
-
-# Run complete risk-aware decision example
-risk_aware_decision_example()
-# Results: 9.3% abstention rate, 98.5% accuracy on predictions made
-```
-
-### Tail Risk Metrics - ✅ IMPLEMENTED
-```python
-from uq_examples import value_at_risk, conditional_value_at_risk
-
-var_95 = value_at_risk(loss_samples, alpha=0.95)
-cvar_95 = conditional_value_at_risk(loss_samples, alpha=0.95)
-# Working implementations with real calculations
-```
-
-## 🔍 Production Monitoring: Fully Operational
-
-### Real-Time Drift Detection - ✅ IMPLEMENTED
-```python
-from uq_monitoring import UQProductionMonitor
-
-monitor = UQProductionMonitor(
-    psi_threshold=0.1,
-    calibration_threshold=0.05,
-    coverage_threshold=0.05
+### Fin Configurations
+Modify `FinConfiguration` in `FinViewModel.swift`:
+```swift
+private let finConfiguration = FinConfiguration(
+    sideFinArea: 15.00,      // sq.in.
+    centerFinArea: 14.50,    // sq.in.
+    rakeAngle: 6.5,          // degrees
+    foilType: .vector32
 )
-# Real monitoring with 15 alerts generated in testing
 ```
 
-### Automated Alerting - ✅ IMPLEMENTED
-- **Alert Types**: Feature drift, prediction drift, calibration degradation
-- **Severity Levels**: High, Medium with proper cooldown periods
-- **Real Results**: Generated actionable recommendations
+### Cognitive Parameters
+Adjust baseline values in `CognitiveAnalyzer`:
+```swift
+private var baselineHRV: Double = 45.0 // ms
+private var baselineHR: Double = 70.0  // bpm
+```
 
-### Dashboard Visualization - ✅ IMPLEMENTED
-Complete monitoring dashboard saved as `monitoring_dashboard.png` with:
-- Input drift scores over time
-- Calibration error trends  
-- Coverage rate monitoring
-- Prediction volume tracking
-- Alert summaries
-- Uncertainty distribution analysis
+### Visualization Settings
+Customize 3D rendering in `FinVisualizer.swift`:
+- Fin geometry parameters
+- Pressure field resolution
+- Streamline density
+- Color mappings
 
-## 🚀 Quick Start: Working Examples
+## Testing
 
-### 1. Run Regression Example
+### Unit Tests
 ```bash
-MPLBACKEND=Agg python3 uq_examples.py
-# Generates: regression_uq_results.png with 4 UQ methods compared
+# Run unit tests
+xcodebuild test -scheme FinCFDVisualizer -destination 'platform=iOS Simulator,name=iPhone 15'
 ```
 
-### 2. Run Classification Example  
-```bash
-# Included in above command
-# Generates: classification_uq_reliability.png, classification_uncertainty_analysis.png
-```
+### Integration Testing
+- Test sensor integration with device
+- Validate Core ML model predictions
+- Verify HealthKit data access
+- Test Bluetooth connectivity
 
-### 3. Run Production Monitoring
-```bash
-MPLBACKEND=Agg python3 uq_monitoring.py  
-# Generates: monitoring_dashboard.png with complete monitoring simulation
-```
+### Performance Testing
+- 3D rendering performance
+- Real-time data processing
+- Memory usage optimization
+- Battery life impact
 
-### 4. Run Risk-Aware Decisions
-```bash
-# Included in uq_examples.py
-# Generates: risk_aware_decisions.png showing cost reduction analysis
-```
+## Troubleshooting
 
-## 📈 Real Performance Results
+### Common Issues
 
-### Regression UQ Performance
-- **Deep Ensemble**: MSE: 114.8, Conformal Coverage: 92.5%
-- **MC Dropout**: MSE: 117.9, Conformal Coverage: 91.5% 
-- **Heteroscedastic**: MSE: 130.3, Gaussian Coverage: 87.5%
+1. **Core ML Model Not Found**
+   - Ensure `FinCFDModel.mlmodel` is in the project bundle
+   - Check model compilation settings
 
-### Classification UQ Performance
-- **Deep Ensemble**: 90% accuracy, ECE: 0.148 → calibrated
-- **MC Dropout**: 90.5% accuracy, ECE: 0.077 (well calibrated)
-- **Temperature**: Optimized to 1.219 for better calibration
+2. **HealthKit Authorization Failed**
+   - Verify Info.plist permissions
+   - Check device HealthKit availability
 
-### Risk-Aware Decision Results
-- **Abstention Rate**: 9.3% (appropriate for high-uncertainty cases)
-- **Accuracy on Predictions**: 98.5% (when not abstaining)
-- **Cost Analysis**: Demonstrated framework for cost-optimal decisions
+3. **Sensor Data Not Updating**
+   - Calibrate sensors on flat surface
+   - Check motion permission settings
 
-### Production Monitoring Results
-- **Alerts Generated**: 15 alerts across different drift scenarios
-- **Drift Detection**: PSI scores from 0.1 to 0.33 with proper thresholds
-- **Recommendations**: 4 actionable recommendations generated automatically
+4. **Bluetooth Connection Issues**
+   - Verify peripheral compatibility
+   - Check Bluetooth permissions
 
-## 🔮 Ψ Framework Integration: Ready for Implementation
+### Performance Optimization
 
-The implemented UQ system is designed to integrate with the Ψ framework:
+1. **3D Rendering**
+   - Reduce polygon count for complex geometries
+   - Optimize texture sizes
+   - Use Level of Detail (LOD) techniques
 
-### Calibration Component Enhancement
-- **Implemented**: Temperature scaling improves calibration reliability
-- **Measured**: ECE reduction demonstrates improved trust metrics
-- **Ready**: Integration points clearly defined
+2. **Data Processing**
+   - Implement data decimation for high-frequency sensors
+   - Use background queues for heavy computations
+   - Cache frequently accessed calculations
 
-### Verifiability Component (R_v)
-- **Implemented**: Reproducible methods with fixed random seeds
-- **Documented**: All processes auditable and repeatable  
-- **Tested**: Consistent results across runs
+## Contributing
 
-### Authority Component (R_a)
-- **Implemented**: Drift detection maintains performance under shift
-- **Monitored**: Real-time assessment of model authority
-- **Validated**: OOD detection prevents overconfident predictions
+### Development Setup
+1. Fork the repository
+2. Create a feature branch
+3. Follow Swift style guidelines
+4. Add unit tests for new features
+5. Submit a pull request
 
-## 📁 Complete File Structure
+### Code Style
+- Follow Apple's Swift API Design Guidelines
+- Use meaningful variable names
+- Document public interfaces
+- Maintain consistent indentation
 
-```
-uncertainty-quantification/
-├── README.md                              # This comprehensive guide
-├── uncertainty_quantification_guide.md    # Detailed theory and methods (27KB)
-├── uq_examples.py                         # Working implementations (30KB)  
-├── uq_monitoring.py                       # Production monitoring system (32KB)
-├── requirements.txt                       # All dependencies
-├── archive/                              # Preserved original documentation
-│   ├── README_original_framework.md      # Original conceptual framework
-│   └── ARCHIVE_JUSTIFICATION.md          # Why content was archived
-└── Generated Results/                    # Real outputs from implementation
-    ├── regression_uq_results.png         # 4-method UQ comparison
-    ├── classification_uq_reliability.png # Calibration assessment
-    ├── classification_uncertainty_analysis.png # Uncertainty vs accuracy
-    ├── monitoring_dashboard.png          # Complete monitoring interface
-    └── risk_aware_decisions.png          # Cost-optimal decision analysis
-```
+## License
 
-## 🎯 Implementation Phases: Completed Roadmap
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-### ✅ Phase 1: Baseline UQ (COMPLETED)
-- Deep ensemble (n=5) with real performance metrics
-- Temperature scaling with optimized parameters  
-- ECE measurement: 0.077-0.148 achieved
+## Acknowledgments
 
-### ✅ Phase 2: Coverage Guarantees (COMPLETED)
-- Conformal prediction with 90% coverage achieved
-- Distribution-free intervals validated
-- Coverage within ±2% of nominal confirmed
+- CFD modeling based on fluid dynamics principles
+- Cognitive flow state research from sports psychology
+- Vector 3/2 fin geometry specifications
+- k-ω SST turbulence modeling approaches
 
-### ✅ Phase 3: Decision Integration (COMPLETED)
-- Cost matrix implementation with real examples
-- VaR/CVaR calculations working
-- Abstention rules with 9.3% rate demonstrated
+## Future Enhancements
 
-### ✅ Phase 4: Production Monitoring (COMPLETED)
-- Real-time drift detection operational
-- 15 alerts generated in testing
-- Complete dashboard visualization created
+### Planned Features
+- **ARKit Integration**: Augmented reality fin visualization
+- **CloudKit Sync**: Cross-device session synchronization
+- **Advanced Analytics**: Machine learning performance insights
+- **Social Features**: Session sharing and comparison
+- **Wearable Integration**: Apple Watch support
 
-## 📚 Key Achievements vs Original Vision
+### Research Areas
+- Advanced turbulence modeling
+- Personalized cognitive baselines
+- Environmental condition integration
+- Multi-fin configuration analysis
 
-| Original Framework Concept | Implementation Status | Real Results |
-|----------------------------|----------------------|--------------|
-| Deep Ensembles | ✅ Complete | 92.5% coverage, MSE: 114.8 |
-| MC Dropout | ✅ Complete | 91.5% coverage, ECE: 0.077 |
-| Conformal Prediction | ✅ Complete | 90% coverage guaranteed |
-| Temperature Scaling | ✅ Complete | T=1.219, calibration improved |
-| Risk-Based Decisions | ✅ Complete | 9.3% abstention, 98.5% accuracy |
-| Production Monitoring | ✅ Complete | 15 alerts, dashboard generated |
-| Drift Detection | ✅ Complete | PSI/KL with real thresholds |
-| Ψ Integration Ready | ✅ Complete | All components implemented |
+## Contact
 
-## 🎖️ Summary: Vision Realized
-
-This repository successfully transforms the original uncertainty quantification framework from **concept to production reality**:
-
-✅ **All theoretical components implemented** with working code  
-✅ **Real performance metrics** demonstrating effectiveness  
-✅ **Production monitoring** with actual drift detection and alerting  
-✅ **Complete documentation** with theory, implementation, and examples  
-✅ **Generated visualizations** showing real results  
-✅ **Risk-aware decision making** with demonstrated cost optimization  
-
-**Result**: A production-ready uncertainty quantification system that delivers on the original vision with measurable improvements in prediction reliability, risk assessment, and decision quality.
-
-## 🔗 Quick Access
-
-- **Run Examples**: `MPLBACKEND=Agg python3 uq_examples.py`
-- **Start Monitoring**: `MPLBACKEND=Agg python3 uq_monitoring.py`
-- **Read Theory**: [`uncertainty_quantification_guide.md`](uncertainty_quantification_guide.md)
-- **View Original Concepts**: [`archive/README_original_framework.md`](archive/README_original_framework.md)
+For questions, issues, or contributions:
+- Create an issue on GitHub
+- Contact the development team
+- Join our community discussions
 
 ---
 
-*This implementation fulfills the complete vision outlined in the original framework while delivering working code, real results, and production-ready monitoring capabilities.*
+**Note**: This app is designed for educational and research purposes. Always prioritize safety when surfing and use professional guidance for equipment selection.
