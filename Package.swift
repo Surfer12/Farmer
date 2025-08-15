@@ -1,9 +1,8 @@
-// SPDX-License-Identifier: GPL-3.0-only
-// SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
-// swift-tools-version: 6.0
+// swift-tools-version: 5.9
 import PackageDescription
 
 let package = Package(
+<<<<<<< Current (Your changes)
   name: "UOIF",
   platforms: [.macOS(.v13)],
   products: [
@@ -15,5 +14,20 @@ let package = Package(
     .executableTarget(name: "UOIFCLI", dependencies: ["UOIFCore"]),
     .testTarget(name: "UOIFCoreTests", dependencies: ["UOIFCore"])
   ]
+=======
+	name: "PINN",
+	platforms: [
+		.macOS(.v13)
+	],
+	products: [
+		.executable(name: "PINN", targets: ["PINN"])
+	],
+	targets: [
+		.executableTarget(
+			name: "PINN",
+			path: "Sources/PINN"
+		)
+	]
+>>>>>>> Incoming (Background Agent changes)
 )
 
