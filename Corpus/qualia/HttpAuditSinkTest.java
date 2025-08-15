@@ -6,6 +6,9 @@ import java.net.URI;
 import java.time.Duration;
 import java.util.Date;
 
+// Import custom exception classes from the same package
+// Note: NetworkException is defined in QualiaException.java
+
 /**
  * Minimal test to exercise HTTP 5xx retries path. Uses localhost port unlikely to be open.
  */

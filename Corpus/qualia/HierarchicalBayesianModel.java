@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
-;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +26,7 @@ import java.util.concurrent.atomic.DoubleAdder;
  * <p>Thread-safety: stateless aside from immutable {@link ModelPriors}; safe for
  * concurrent use.
  */
+@SuppressWarnings("unused")
 public final class HierarchicalBayesianModel implements PsiModel {
     private final ModelPriors priors;
     private final int parallelThreshold;
@@ -71,7 +72,7 @@ public final class HierarchicalBayesianModel implements PsiModel {
         Objects.requireNonNull(claim, "claim must not be null");
         Objects.requireNonNull(params, "params must not be null");
 
-        double O = params.alpha() * params.s() + (1.0 - params.alpha()) * params.n();
+        double O = params.alpha() * params.S() + (1.0 - params.alpha()) * params.N();
         double penaltyExponent = -(
                 priors.lambda1() * claim.riskAuthenticity() +
                 priors.lambda2() * claim.riskVirality()
@@ -212,7 +213,7 @@ public final class HierarchicalBayesianModel implements PsiModel {
     }
 
     double totalLogLikelihoodPrepared(Prepared prep, ModelParameters params, boolean parallel) {
-        final double O = params.alpha() * params.s() + (1.0 - params.alpha()) * params.n();
+        final double O = params.alpha() * params.S() + (1.0 - params.alpha()) * params.N();
         final double beta = params.beta();
         final double epsilon = 1e-9;
         final int n = prep.size();
@@ -263,8 +264,8 @@ public final class HierarchicalBayesianModel implements PsiModel {
                 Math.exp(z[3])
         );
         double[] dLogPost_dTheta = gradientLogPosteriorPrepared(prep, theta, parallel);
-        double S = theta.s();
-        double N = theta.n();
+        double S = theta.S();
+        double N = theta.N();
         double A = theta.alpha();
         double B = theta.beta();
 
@@ -307,8 +308,8 @@ public final class HierarchicalBayesianModel implements PsiModel {
      * @return log p(params)
      */
     public double logPriors(ModelParameters params) {
-        double lpS = Stats.logBetaPdf(params.s(), priors.s_alpha(), priors.s_beta());
-        double lpN = Stats.logBetaPdf(params.n(), priors.n_alpha(), priors.n_beta());
+        double lpS = Stats.logBetaPdf(params.S(), priors.s_alpha(), priors.s_beta());
+        double lpN = Stats.logBetaPdf(params.N(), priors.n_alpha(), priors.n_beta());
         double lpAlpha = Stats.logBetaPdf(params.alpha(), priors.alpha_alpha(), priors.alpha_beta());
         double lpBeta = Stats.logLogNormalPdf(params.beta(), priors.beta_mu(), priors.beta_sigma());
         return lpS + lpN + lpAlpha + lpBeta;
@@ -424,8 +425,8 @@ public final class HierarchicalBayesianModel implements PsiModel {
                                                      int leapfrogSteps) {
         HmcSampler hmc = new HmcSampler(this, dataset);
         double[] z0 = new double[] {
-                logit(initial.s()),
-                logit(initial.n()),
+                logit(initial.S()),
+                logit(initial.N()),
                 logit(initial.alpha()),
                 Math.log(Math.max(initial.beta(), 1e-12))
         };
@@ -448,8 +449,8 @@ public final class HierarchicalBayesianModel implements PsiModel {
         double dS = 0.0, dN = 0.0, dA = 0.0, dB = 0.0;
 
         // Likelihood gradient
-        double S = params.s();
-        double N = params.n();
+        double S = params.S();
+        double N = params.N();
         double A = params.alpha();
         double B = params.beta();
 
@@ -517,8 +518,8 @@ public final class HierarchicalBayesianModel implements PsiModel {
     private double[] gradientLogPosteriorPreparedInternal(Prepared prep, ModelParameters params, boolean parallel) {
         double dS = 0.0, dN = 0.0, dA = 0.0, dB = 0.0;
 
-        double S = params.s();
-        double N = params.n();
+        double S = params.S();
+        double N = params.N();
         double A = params.alpha();
         double B = params.beta();
 
@@ -600,8 +601,8 @@ public final class HierarchicalBayesianModel implements PsiModel {
         int thin = Math.max(1, sampleCount / Math.max(1, Math.min(100, sampleCount)));
         int kept = 0;
         for (int iter = 0; kept < sampleCount; ) {
-            double propS = clamp01(current.s() + stepS * (rng.nextDouble() * 2 - 1));
-            double propN = clamp01(current.n() + stepN * (rng.nextDouble() * 2 - 1));
+            double propS = clamp01(current.S() + stepS * (rng.nextDouble() * 2 - 1));
+            double propN = clamp01(current.N() + stepN * (rng.nextDouble() * 2 - 1));
             double propAlpha = clamp01(current.alpha() + stepAlpha * (rng.nextDouble() * 2 - 1));
             double propBeta = Math.max(1e-6, current.beta() * Math.exp(stepBeta * (rng.nextDouble() * 2 - 1)));
 
