@@ -1,0 +1,28 @@
+---
+inclusion: manual
+---
+# Ψ Model & MCDA Invariants
+
+- Core structure
+  - Evidence blend: O(α) = α·S + (1−α)·N (transparent, monotone).
+  - Penalty: pen = exp(−[λ1·R_a + λ2·R_v]) (bounded in (0,1]).
+  - Uplift β and policy: prefer dual-channel — raw belief R = β·O·pen (uncapped), gate decisions on bounded Ψ (hard cap or soft-cap).
+
+- Invariants
+  - Gauge freedom: parameter renames or trivial reparameterizations must not change behavior.
+  - Threshold transfer: if β → β′, rescale thresholds to preserve accept/reject decisions in sub-cap regions.
+  - Sensitivity: ∂Ψ/∂α has the sign of (S−N); risks always decrease Ψ; β scales sensitivities without flipping signs.
+
+- MCDA composition
+  - If MCDA aggregator is monotone in Ψ, rankings inherit Ψ’s ordering; avoid non-monotone couplings.
+  - Keep Ψ continuous; discreteness comes from the action set, not Ψ.
+
+- Where to apply
+  - Scoring and gradients: [PsiMcda.java](mdc:Corpus/qualia/PsiMcda.java), [PsiModel.java](mdc:Corpus/qualia/PsiModel.java)
+  - MCDA ops: [Mcda.java](mdc:Corpus/qualia/Mcda.java)
+  - Documentation: [docs/notes/how_i_decide_step_by_step.md](mdc:docs/notes/how_i_decide_step_by_step.md), [docs/notes/mcda_references.md](mdc:docs/notes/mcda_references.md), [docs/notes/status_ruleset_expansion.md](mdc:docs/notes/status_ruleset_expansion.md), [docs/notes/formalization_analysis.md](mdc:docs/notes/formalization_analysis.md), [docs/notes/decision_model_status.md](mdc:docs/notes/decision_model_status.md), [docs/notes/decision_model_status.md](mdc:docs/notes/decision_model_status.md)       
+  - Framework analysis: [docs/notes/formalization_analysis.md](mdc:docs/notes/formalization_analysis.md)
+
+- Tests
+  - Maintain invariance tests and threshold-transfer examples alongside changes.
+

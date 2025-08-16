@@ -1,0 +1,78 @@
+---
+inclusion: fileMatch
+fileMatchPattern: ['*.py', '*.swift', '*.js', '*.ts', '*.md']
+---
+
+# Immersive Visualization Framework
+
+## Core Architecture
+
+The immersive belief space exploration system combines multiple sensory modalities to make abstract mathematical concepts tangible:
+
+### Key Components
+- **Volumetric Rendering**: Posterior probability densities as explorable fog volumes
+- **Haptic Encoding**: Uncertainty as physical resistance through Fisher information
+- **Spatial Audio**: Koopman eigenvalues as harmonic compositions
+- **Gesture Control**: Hand movements as mathematical operations on posteriors
+- **AR Overlays**: Contextual equations and mathematical annotations
+- **Consciousness Embodiment**: Environmental response to cognitive states
+
+### Implementation Guidelines
+
+When developing visualization components:
+
+1. **Mathematical Rigor**: Every sensory mapping must preserve mathematical precision
+   - Resistance force ∝ 1/det(Fisher matrix)
+   - Audio pitch from eigenvalue imaginary parts
+   - Color intensity from probability density
+
+2. **Multi-Modal Integration**: Coordinate all sensory channels
+   ```python
+   class ImmersiveBeliefSystem:
+       def __init__(self):
+           self.visual = VolumetricRenderer()
+           self.haptic = UncertaintyHapticSystem()
+           self.audio = SpectralSonification()
+           self.gesture = BayesianGestureControl()
+   ```
+
+3. **Adaptive Complexity**: Scale mathematical detail to user expertise
+   - Beginners: Physical metaphors, hidden equations
+   - Experts: Full mathematical overlays, research tools
+
+4. **Consciousness Parallels**: Map cognitive states to environmental properties
+   - Focused → sharp lighting, clear audio
+   - Confused → fog, distorted sound
+   - Insightful → connection highlighting, harmonic convergence
+
+5. **Scientific Export**: Bridge immersive experience to publication
+   - Capture "belief photographs" for papers
+   - Record exploration narratives as methods sections
+   - Generate traditional plots with immersive context
+
+## File Organization
+
+### VR/AR Components
+- Core systems → `src/immersive/`
+- Rendering engines → `src/immersive/rendering/`
+- Haptic systems → `src/immersive/haptic/`
+- Audio synthesis → `src/immersive/audio/`
+- Gesture recognition → `src/immersive/gesture/`
+
+### Mathematical Bridges
+- Belief space math → `src/math/belief_space/`
+- Koopman operators → `src/math/koopman/`
+- Fisher geometry → `src/math/information_geometry/`
+
+### Export Systems
+- Scientific capture → `src/export/scientific/`
+- Publication tools → `src/export/publication/`
+- Data bridges → `src/export/data/`
+
+## Development Principles
+
+1. **Preserve Rigor**: Never sacrifice mathematical accuracy for user experience
+2. **Enable Discovery**: Support serendipitous exploration of belief spaces  
+3. **Bridge Domains**: Connect formal mathematics to human intuition
+4. **Collaborative**: Support multi-user shared belief exploration
+5. **Adaptive**: Adjust complexity dynamically to user understanding

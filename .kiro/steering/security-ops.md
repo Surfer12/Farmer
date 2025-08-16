@@ -1,0 +1,10 @@
+---
+inclusion: always
+---
+# Security & Operational Hardening
+
+- Default to HTTPS for metrics outside dev. Bind to loopback unless explicitly exposed.
+- Consider Basic Auth or IP allowlist for `/metrics`.
+- Rate-limit/sampling in `ErrorReporter` to avoid log storms.
+- For `FileAuditSink`, define backpressure policy and queue metrics; prefer bounded executors.
+- Validate environment configuration in `ServiceLocator.fromEnvironment()` and emit warnings/metrics on fallback.

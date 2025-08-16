@@ -1,0 +1,16 @@
+---
+inclusion: always
+---
+# UnifiedDetector Triad Gating
+
+- Methods: `step(...)` (Taylor-in-trust-region or RK4 fallback), `triadStep(...)` (RK4 PI + Taylor R4 + geometry bands with gate).
+- JSONL fields: `psi`, `h`, `eps_rk4`, `eps_taylor`, `eps_geom`, `accepted`, optional `agree`.
+- Geometry terms:
+  - `geom_drift`: raw drift sum |value-reference|.
+  - `eps_geom`: violation sum max(0, drift-tol); zero inside tolerance.
+- Curvature estimator: set `curvature_kappa_estimator` to `sinkhorn` (default) or `network_simplex` and emit it alongside κ when logging.
+
+Run examples:
+- `java -cp out-qualia qualia.Core unified triad=true eps=1e-4 epsRk4=1e-5 epsTaylor=1e-5 epsGeom=1e-5 omega=6.28318 jsonl=unified.jsonl`
+- `java -cp out-qualia qualia.Core bifurc kind=logistic rMin=2.8 rMax=3.2 rStep=0.02 horizon=1000 burnin=500 seed=42 out=bifurc-logistic.jsonl`
+

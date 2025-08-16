@@ -1,0 +1,31 @@
+---
+inclusion: always
+---
+
+# Code Style & Safety
+
+- Naming & clarity
+  - Prefer descriptive, full-word names; avoid 1–2 letter variables.
+  - Functions are verbs; variables are nouns.
+  - Keep public APIs explicitly typed.
+
+- Immutability & Java 24
+  - Favor immutable data structures and records; prefer unmodifiable collections.
+  - Prefer `java.util` concurrent-safe collections where needed; avoid shared mutable state.
+
+- Concurrency & safety
+  - Use guard clauses and early returns; handle error/edge cases first.
+  - Avoid deep nesting; keep cyclomatic complexity low.
+  - When in doubt on threading or memory safety, prefer simple, scoped synchronization and document invariants.
+
+- Comments & docs
+  - Comment the “why,” not the obvious “how.” Keep comments short.
+  - Update [internal/NOTATION.md](mdc:internal/NOTATION.md) if you add/rename metrics or JSON keys.
+
+- Testing & CI
+  - Run [scripts/test_qualia.sh](mdc:scripts/test_qualia.sh) before committing engine changes.
+  - Keep CI green via [scripts/ci.sh](mdc:scripts/ci.sh).
+
+- Licensing headers
+  - Add correct SPDX headers per area (see licensing rule). Never use CC0 for code.
+

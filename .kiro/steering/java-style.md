@@ -1,0 +1,14 @@
+---
+inclusion: always
+---
+SPDX-License-Identifier: LicenseRef-Internal-Use-Only
+
+## Java style & safety
+
+- Naming & clarity: descriptive, full words; functions are verbs, variables are nouns.
+- Immutability: prefer records/unmodifiable collections; avoid shared mutable state.
+- Concurrency: guard clauses, early returns, simple synchronization; keep cyclomatic complexity low.
+- Comments: explain "why"; avoid obvious how-comments; keep concise.
+- Testing/CI: run Java build and demos after edits; keep CI green; add unit tests for new public APIs.
+- Licensing headers: include SPDX on all files; code GPL-3.0-only; internal docs LicenseRef-Internal-Use-Only.
+

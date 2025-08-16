@@ -1,0 +1,15 @@
+---
+inclusion: fileMatch
+fileMatchPattern: ['internal/qualia/**', 'Corpus/qualia/**']
+---
+# MCDA Ψ‑monotonicity with scale coherence
+
+When reasoning about MCDA ranking invariance under changes to Ψ (gauge/threshold transfer), ensure:
+
+- Fixed weights and a fixed normalization scheme that is monotone and scale‑coherent in Ψ (uniform min–max/vector normalization). Avoid z‑scores.
+- No data‑dependent reweighting tied to Ψ’s scale after scaling.
+- Sub‑cap only for threshold transfer: if scaling pushes any Ψ to the cap, order invariance may fail.
+- Outranking (ELECTRE/PROMETHEE): co‑scale absolute q/p thresholds with β to preserve decisions.
+
+Tiny example: if Ψ′ = k·Ψ with k>0 for all compared options (sub‑cap), WSM/TOPSIS ranks are invariant (holding other criteria fixed and using standard monotone normalizations).
+

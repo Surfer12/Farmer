@@ -1,0 +1,27 @@
+---
+inclusion: always
+---
+SPDX-License-Identifier: LicenseRef-Internal-Use-Only
+
+## MCDA practical wiring with Ψ
+
+- Flow: Rules → prune feasible set F → compute Ψ(a) (α evidence-only) → MCDA over criteria c(a)=[Ψ, cost, value, time,…].
+- Choose MCDA M monotone in Ψ (e.g., WSM/WPM, TOPSIS with monotone normalization, AHP-derived weights) and select argmax M(c,w).
+- Do not encode stakeholder preference into α; keep weights w separate from evidence.
+
+## Invariance conditions
+- Gauge freedom: renames/defaults that leave Ψ unchanged ⇒ rankings unchanged.
+- Threshold transfer: if β→β′ (sub-cap), use τ′ = τ·(β/β′); keep w unchanged.
+- Sensitivity invariants: if M is strictly increasing in Ψ holding others fixed, ordering by Ψ propagates to final ranking.
+- Caveat: saturation at cap can break scaling invariance; log and review.
+
+## Do/Don’t
+- Do: WSM/WPM, TOPSIS (monotone), AHP weights.
+- Don’t: non-monotone use of Ψ (band/inverted-U) or couplings that make M non-increasing in Ψ.
+
+## Minimal checks
+- Monotonicity test on Ψ with others fixed.
+- Threshold-transfer A/B: β→β′ with τ′ mapping keeps accept set/ranks (sub-cap).
+- Saturation audit: count items at cap; investigate rank changes.
+
+References: [internal/qualia/TODO.md](mdc:internal/qualia/TODO.md)

@@ -1,0 +1,23 @@
+---
+inclusion: always
+---
+SPDX-License-Identifier: LicenseRef-Internal-Use-Only
+
+## Triad gating (RK4 / Taylor / Geometry)
+
+- Goal: Accept only when ε_RK4 + ε_Taylor + ε_geom ≤ ε_total; otherwise defer/reject.
+- RK4: adaptive with PI controller and step-doubling hygiene; log h_stats and error bands.
+- Taylor: 4th-order with remainder bound |R4| and trust-region switch.
+- Geometry: Ricci/Ollivier proxies; report curvature stats and band checks.
+
+## Keys and notation
+- See [internal/NOTATION.md](mdc:internal/NOTATION.md) for canonical keys: `eps_rk4`, `eps_taylor`, `eps_geom`, `psi`, etc.
+- Canonical dynamics sweeps and metrics in [internal/qualia/TODO.md](mdc:internal/qualia/TODO.md) and
+  implementation hooks in [Corpus/qualia/BifurcationSweep.java](mdc:Corpus/qualia/BifurcationSweep.java).
+
+## Runs
+- Logistic sweep:
+  ```bash
+  java -cp out-qualia qualia.Core bifurc kind=logistic rMin=2.8 rMax=3.2 rStep=0.02 horizon=1000 burnin=500 seed=42 out=bifurc-logistic.jsonl | cat
+  ```
+

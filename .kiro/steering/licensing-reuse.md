@@ -1,0 +1,26 @@
+---
+inclusion: always
+---
+SPDX-License-Identifier: LicenseRef-Internal-Use-Only
+
+## Licensing & REUSE Policy
+
+- Defaults
+  - Source code: GPL-3.0-only.
+  - Internal docs/assets: `LicenseRef-Internal-Use-Only`.
+  - CC0 may be used only for designated non-code areas if explicitly scoped and annotated.
+
+- License texts & config
+  - GPLv3: [LICENSES/GPL-3.0-only.txt](mdc:LICENSES/GPL-3.0-only.txt)
+  - Internal-use: [LICENSES/LicenseRef-Internal-Use-Only.txt](mdc:LICENSES/LicenseRef-Internal-Use-Only.txt)
+  - REUSE config: [REUSE.toml](mdc:REUSE.toml)
+  - Notices: [NOTICE](mdc:NOTICE), [COPYRIGHT](mdc:COPYRIGHT)
+  - Explainer: [internal/psi-licensing.tex](mdc:internal/psi-licensing.tex)
+
+- SPDX headers
+  - Code: `// SPDX-License-Identifier: GPL-3.0-only`
+  - Internal docs: `SPDX-License-Identifier: LicenseRef-Internal-Use-Only`
+
+- Guidance
+  - Do not license source code under CC0.
+  - Keep SPDX headers present; update license notices on new files.

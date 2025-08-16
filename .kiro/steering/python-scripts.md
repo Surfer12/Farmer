@@ -1,0 +1,43 @@
+---
+inclusion: manual
+---
+# Python Development Guidelines
+
+## Script Organization
+
+### Python Utilities
+- [scripts/python/](mdc:scripts/python/) - Python utility scripts
+- [hybrid_uq/](mdc:hybrid_uq/) - Uncertainty quantification module
+
+### Key Scripts
+- [scripts/python/test_uq_simple.py](mdc:scripts/python/test_uq_simple.py) - Simple UQ tests
+- [scripts/python/uncertainty_quantification.py](mdc:scripts/python/uncertainty_quantification.py) - Main UQ implementation
+- [scripts/python/uq_quickstart_example.py](mdc:scripts/python/uq_quickstart_example.py) - Quick start example
+
+## Python Style Guidelines
+
+### Code Style
+- Follow PEP 8 for formatting and naming conventions
+- Use type hints for function parameters and return values
+- Keep functions focused and single-purpose
+- Use descriptive variable and function names
+
+### Documentation
+- Include docstrings for all public functions and classes
+- Use clear, concise comments for complex logic
+- Document dependencies in [requirements.txt](mdc:requirements.txt)
+
+### Error Handling
+- Use specific exception types rather than bare except clauses
+- Provide meaningful error messages
+- Handle edge cases gracefully
+
+### Testing
+- Write unit tests for utility functions
+- Use pytest for testing framework
+- Include example usage in docstrings
+
+## Dependencies
+- Maintain [requirements.txt](mdc:requirements.txt) with pinned versions
+- Use virtual environments for development
+- Document any special installation requirements

@@ -1,0 +1,100 @@
+---
+inclusion: always
+---
+SPDX-License-Identifier: LicenseRef-Internal-Use-Only
+
+--- Project Structure ---
+# Farmer Project Structure Guide
+
+## Directory Organization
+
+The Farmer project follows a clean, purpose-driven directory structure:
+
+### Core Directories
+- `tex/` - LaTeX documents and style files
+  - `tex/styles/` - LaTeX style files (.sty)
+- `refs/` - Bibliography and reference files (.bib)
+- `docs/` - Documentation and notes
+  - `docs/notes/` - General notes and analysis
+  - `docs/research_logs/` - Cursor chat logs and research documentation
+- `scripts/` - Utility scripts
+  - `scripts/python/` - Python utilities and examples
+  - `scripts/sh/` - Shell scripts and build helpers
+- `data/` - Data files and logs
+  - `data/logs/` - JSONL and other log files
+- `config/` - Configuration files and workspace settings
+- `internal/` - Internal project files and status updates
+  - `internal/StatusUpdate/` - Status tracking and updates
+  - `internal/StatusUpdate/legacy_logs/` - Historical status files
+
+### Swift/iOS Structure
+- `Farmer/` - iOS app source code
+- `FarmerTests/` - Unit tests
+- `FarmerUITests/` - UI tests
+- `Sources/` - Swift package sources
+  - `Sources/UOIFCLI/` - Command line interface
+  - `Sources/UOIFCore/` - Core framework code
+- `Tests/` - Swift package tests
+
+### Build and Configuration
+- [Makefile](mdc:Makefile) - Build automation
+- [Package.swift](mdc:Package.swift) - Swift package configuration
+- [requirements.txt](mdc:requirements.txt) - Python dependencies
+- [REUSE.toml](mdc:REUSE.toml) - License compliance configuration
+
+- Java (Ψ core): [Corpus/qualia](mdc:Corpus/qualia)
+  - CLI entry: [Corpus/qualia/Core.java](mdc:Corpus/qualia/Core.java)
+  - Model: [Corpus/qualia/HierarchicalBayesianModel.java](mdc:Corpus/qualia/HierarchicalBayesianModel.java)
+  - HMC: [Corpus/qualia/HmcSampler.java](mdc:Corpus/qualia/HmcSampler.java), [Corpus/qualia/HmcMultiChainRunner.java](mdc:Corpus/qualia/HmcMultiChainRunner.java)
+  - Bifurcation sweeps: [Corpus/qualia/BifurcationSweep.java](mdc:Corpus/qualia/BifurcationSweep.java)
+
+- Swift (UOIF):
+  - CLI: [Sources/UOIFCLI/main.swift](mdc:Sources/UOIFCLI/main.swift)
+  - Core: [Sources/UOIFCore](mdc:Sources/UOIFCore)
+  - Tests: [Tests/UOIFCoreTests](mdc:Tests/UOIFCoreTests)
+- iOS app (Farmer):
+  - App entry: [Farmer/FarmerApp.swift](mdc:Farmer/FarmerApp.swift)
+  - Views: [Farmer/ContentView.swift](mdc:Farmer/ContentView.swift)
+## File Organization Principles
+- Status & Notation:
+  - Status log: [internal/StatusUpdate/status.jsonl](mdc:internal/StatusUpdate/status.jsonl)
+  - Template: [internal/StatusUpdate/STATUS_UPDATE_TEMPLATE.md](mdc:internal/StatusUpdate/STATUS_UPDATE_TEMPLATE.md)
+  - Schema: [internal/StatusUpdate/status.schema.json](mdc:internal/StatusUpdate/status.schema.json)
+  - Notation: [internal/NOTATION.md](mdc:internal/NOTATION.md)
+  - TODO roadmap: [internal/qualia/TODO.md](mdc:internal/qualia/TODO.md)
+- **File Naming Conventions**:
+  - Use lowercase with underscores for multi-word filenames
+  - Remove special characters and leading punctuation (###, quotes, apostrophes)
+  - Convert spaces to underscores
+  - Use descriptive names that indicate file purpose
+  - Add appropriate extensions (.md for markdown, .tex for LaTeX, etc.)
+  - Normalize legacy files: "### How I decide" → "how_i_decide_step_by_step.md"   
+- **Separation of Concerns**: Each directory serves a specific purpose
+- **Legacy Migration**: Old scattered files moved to appropriate directories
+- **Reference Integrity**: Update all file references when moving files
+- **Clean Root**: Keep project root clean with only essential build/config files
+- **Key Files**:
+  - [README.md](mdc:README.md) - Main project documentation
+  - [docs/architecture.md](mdc:docs/architecture.md) - Architecture overview
+  - [LICENSE](mdc:LICENSE) - Project license
+  - [SECURITY.md](mdc:SECURITY.md) - Security policy
+  - [CONTRIBUTING.md](mdc:CONTRIBUTING.md) - Contribution guidelines
+  - [NOTICE](mdc:NOTICE) - Project notices
+  - [COPYRIGHT](mdc:COPYRIGHT) - Project copyrights
+  - [REUSE.toml](mdc:REUSE.toml) - License compliance configuration
+  - [requirements.txt](mdc:requirements.txt) - Python dependencies
+  - [Makefile](mdc:Makefile) - Build automation
+  - [internal/](mdc:internal/) - Internal project files and status updates
+  - [internal/StatusUpdate/](mdc:internal/StatusUpdate/) - Status tracking and updates
+  - [internal/StatusUpdate/legacy_logs/](mdc:internal/StatusUpdate/legacy_logs/) - Historical status files
+  - [internal/NOTATION.md](mdc:internal/NOTATION.md) - Notation reference
+  - [internal/qualia/TODO.md](mdc:internal/qualia/TODO.md) - TODO roadmap
+  - [internal/qualia/](mdc:internal/qualia/) - Internal project files and status updates
+  - [internal/qualia/](mdc:internal/qualia/) - Internal project files and status updates
+  - Syntax file guide - doesn't really matter follow your own feels. vibes. It's the vibe. The vibe you know. That's the best way to explain it.
+    - Use lowercase with underscores for multi-word filenames
+    - Remove special characters and leading punctuation (###, quotes, apostrophes)
+    - Convert spaces to underscores
+    - Use descriptive names that indicate file purpose
+    - Add appropriate extensions (.md for markdown, .tex for LaTeX, etc.)
+    - Normalize legacy files: "### How I decide" → "how_i_decide_step_by_step.md"

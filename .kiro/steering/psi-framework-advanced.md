@@ -1,0 +1,300 @@
+---
+inclusion: fileMatch
+fileMatchPattern: ['*.java', '*.py', '*.swift', '*.tex', '*.md']
+---
+
+# Advanced Ψ(x) Framework Applications
+
+## Meta-Cognitive Framework
+
+### Self-Referential Analysis
+
+The Ψ(x) framework can be applied to itself for meta-cognitive reflection:
+
+```java
+public class MetaCognitiveAnalysis {
+    
+    /**
+     * Apply Ψ(x) framework to its own analysis
+     * Result: Ψ(Ψ) ≈ 0.92 (high but not absolute confidence)
+     */
+    public double analyzeFrameworkSelf() {
+        // Sources: Mathematical rigor
+        double S = 0.9;  
+        
+        // Non-sources: Philosophical coherence  
+        double N = 0.85;
+        
+        // Authority risk: Self-referential paradoxes
+        double Ra = 0.1;
+        
+        // Verifiability risk: Meta-framework validation
+        double Rv = 0.15;
+        
+        // Meta-framework validation uplift
+        double beta = 1.2;
+        
+        // Adaptive weighting for meta-analysis
+        double alpha = 0.8;
+        
+        return computePsi(S, N, Ra, Rv, alpha, beta);
+    }
+}
+```
+
+### Hidden Assumptions Identification
+
+The framework embeds several unstated assumptions that must be acknowledged:
+
+1. **Linearity of Evidence Combination**: Weighted sum vs. other aggregation methods
+2. **Independence of Risk Factors**: Ra and Rv treated separately  
+3. **Stationarity of Uplift Factors**: β remains constant across applications
+4. **Commensurability of Sources**: All evidence reducible to scalar values
+
+### Framework Functions
+
+Ψ(x) serves multiple roles simultaneously:
+- **Tool**: Practical confidence quantification
+- **Mirror**: Cognitive process reflection  
+- **Teacher**: Formal system limits revelation
+- **Practice**: Meta-cognitive awareness cultivation
+
+## Advanced Mathematical Properties
+
+### Threshold Transfer with Consciousness Parallels
+
+```python
+def threshold_transfer_with_consciousness(original_beta, new_beta, threshold, consciousness_state):
+    """
+    Threshold transfer accounting for consciousness coherence
+    """
+    # Standard threshold transfer
+    new_threshold = threshold * (new_beta / original_beta)
+    
+    # Consciousness modulation
+    coherence = consciousness_state['coherence']
+    stability = consciousness_state['stability']
+    
+    # Adjust for cognitive state
+    cognitive_adjustment = 1.0 + 0.1 * (coherence - 0.5) * stability
+    
+    return new_threshold * cognitive_adjustment
+```
+
+### Sensitivity Invariants with Dynamical Systems
+
+The framework's sensitivity properties remain stable under parameter transformations:
+
+```python
+def verify_sensitivity_invariance(psi_function, parameter_perturbation):
+    """
+    Verify that sensitivity directions remain unchanged
+    """
+    # Original gradients
+    grad_original = compute_gradient(psi_function)
+    
+    # Perturbed gradients  
+    perturbed_function = apply_perturbation(psi_function, parameter_perturbation)
+    grad_perturbed = compute_gradient(perturbed_function)
+    
+    # Check sign preservation
+    sign_preservation = np.sign(grad_original) == np.sign(grad_perturbed)
+    
+    # Check zero preservation
+    zero_preservation = (grad_original == 0) == (grad_perturbed == 0)
+    
+    return {
+        'signs_preserved': np.all(sign_preservation),
+        'zeros_preserved': np.all(zero_preservation),
+        'invariance_score': np.mean(sign_preservation & zero_preservation)
+    }
+```
+
+## Consciousness Integration Patterns
+
+### Environmental Response to Cognitive States
+
+```swift
+struct ConsciousnessEnvironmentMapper {
+    
+    func mapCognitiveStateToEnvironment(_ state: CognitiveState) -> EnvironmentConfig {
+        switch state.primaryMode {
+        case .focused:
+            return EnvironmentConfig(
+                lighting: .spotlight(intensity: 2.0, color: .white),
+                fog: .none,
+                audio: .clear(reverb: 0.1),
+                haptic: .firm
+            )
+            
+        case .exploratory:
+            return EnvironmentConfig(
+                lighting: .ambient(color: .spectrum),
+                fog: .light,
+                audio: .spatial(reverb: 0.3),
+                haptic: .responsive
+            )
+            
+        case .confused:
+            return EnvironmentConfig(
+                lighting: .chaotic(colorShift: true),
+                fog: .heavy(swirls: true),
+                audio: .echoed(delays: [0.1, 0.23, 0.37]),
+                haptic: .unstable
+            )
+            
+        case .insightful:
+            return EnvironmentConfig(
+                lighting: .neuralNetwork(showConnections: true),
+                fog: .revealing,
+                audio: .harmonicConvergence(frequency: 432),
+                haptic: .eurekaPulse
+            )
+        }
+    }
+}
+```
+
+### Belief-Consciousness Feedback Loop
+
+```python
+class BeliefConsciousnessFeedback:
+    """
+    Bidirectional coupling between belief evolution and consciousness states
+    """
+    
+    def __init__(self):
+        self.belief_tracker = BeliefEvolutionTracker()
+        self.consciousness_monitor = ConsciousnessStateMonitor()
+        
+    def update_coupled_system(self, dt):
+        """
+        Co-evolve belief and consciousness states
+        """
+        # Current states
+        belief_state = self.belief_tracker.get_current_state()
+        consciousness_state = self.consciousness_monitor.get_current_state()
+        
+        # Belief influences consciousness
+        consciousness_update = self.belief_to_consciousness_influence(
+            belief_state, consciousness_state
+        )
+        
+        # Consciousness influences belief evolution
+        belief_update = self.consciousness_to_belief_influence(
+            consciousness_state, belief_state
+        )
+        
+        # Coupled evolution
+        new_consciousness = consciousness_state + dt * consciousness_update
+        new_belief = belief_state + dt * belief_update
+        
+        # Apply constraints
+        new_consciousness = self.constrain_consciousness(new_consciousness)
+        new_belief = self.constrain_belief(new_belief)
+        
+        # Update trackers
+        self.consciousness_monitor.update(new_consciousness)
+        self.belief_tracker.update(new_belief)
+        
+        return {
+            'belief_state': new_belief,
+            'consciousness_state': new_consciousness,
+            'coupling_strength': self.compute_coupling_strength(
+                belief_state, consciousness_state
+            )
+        }
+```
+
+## Implementation Guidelines
+
+### Code Structure
+
+```
+src/psi/
+├── core/
+│   ├── PsiModel.java           # Core Ψ(x) implementation
+│   ├── ThresholdTransfer.java  # Threshold transfer logic
+│   └── SensitivityAnalysis.java # Invariance verification
+├── meta/
+│   ├── MetaCognitive.java      # Self-referential analysis
+│   ├── HiddenAssumptions.java  # Assumption tracking
+│   └── FrameworkReflection.java # Meta-framework analysis
+├── consciousness/
+│   ├── ConsciousnessMapper.swift    # Cognitive state mapping
+│   ├── EnvironmentResponse.swift    # Environmental coupling
+│   └── FeedbackLoop.swift          # Belief-consciousness coupling
+└── validation/
+    ├── IMOProblemTests.java    # Validation on IMO problems
+    ├── ConfidenceCalibration.java # Confidence score validation
+    └── CrossValidation.java    # Multi-domain validation
+```
+
+### Testing Meta-Cognitive Properties
+
+```java
+@Test
+public void testSelfReferentialConsistency() {
+    PsiModel framework = new PsiModel();
+    
+    // Apply framework to itself
+    double selfConfidence = framework.analyzeFrameworkSelf();
+    
+    // Should be high but not perfect (around 0.92)
+    assertTrue("Self-confidence should be high", selfConfidence > 0.85);
+    assertTrue("Self-confidence should not be perfect", selfConfidence < 0.98);
+    
+    // Verify meta-cognitive properties
+    MetaCognitiveAnalysis meta = new MetaCognitiveAnalysis(framework);
+    assertTrue("Should identify hidden assumptions", 
+               meta.getHiddenAssumptions().size() >= 4);
+    assertTrue("Should recognize provisional nature",
+               meta.isProvisional());
+}
+```
+
+### Documentation Standards
+
+When documenting Ψ(x) applications:
+
+```markdown
+## Ψ(x) Analysis
+
+### Framework Application
+- **Domain**: [Specific application area]
+- **Sources (S)**: [Internal evidence description] 
+- **Non-sources (N)**: [External evidence description]
+- **Authority Risk (Ra)**: [Risk assessment rationale]
+- **Verifiability Risk (Rv)**: [Verifiability assessment]
+- **Uplift Factor (β)**: [Uplift justification]
+- **Allocation (α)**: [Weight determination method]
+
+### Meta-Cognitive Reflection
+- **Hidden Assumptions**: [List identified assumptions]
+- **Framework Limitations**: [Acknowledge what cannot be captured]
+- **Consciousness Parallels**: [Map to cognitive processes]
+- **Self-Referential Score**: Ψ(Ψ) = [score] 
+
+### Confidence Assessment
+- **Primary Confidence**: Ψ = [score]
+- **Confidence in Confidence**: Ψ(Ψ) = [meta-score]
+- **Threshold Sensitivity**: [Threshold transfer analysis]
+- **Invariance Verification**: [Sensitivity invariant check]
+```
+
+## Research Directions
+
+### Quantum Extensions
+- Superposition states in belief spaces
+- Entanglement between correlated beliefs
+- Measurement effects on consciousness states
+
+### Collective Intelligence
+- Multi-agent Ψ(x) coordination
+- Distributed belief synchronization
+- Emergent collective consciousness
+
+### Neural Implementation
+- Reservoir computing for Koopman operators
+- Spiking neural networks for belief evolution
+- Neuromorphic consciousness embodiment

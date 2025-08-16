@@ -1,0 +1,26 @@
+---
+inclusion: always
+---
+SPDX-License-Identifier: LicenseRef-Internal-Use-Only
+
+## HMC runner and outputs
+
+- Entry points
+  - CLI: [Corpus/qualia/Core.java](mdc:Corpus/qualia/Core.java) (`hmc`, `hmc_adapt`)
+  - Sampler: [Corpus/qualia/HmcSampler.java](mdc:Corpus/qualia/HmcSampler.java)
+  - Multi-chain: [Corpus/qualia/HmcMultiChainRunner.java](mdc:Corpus/qualia/HmcMultiChainRunner.java)
+
+- Adaptation
+  - Dual-averaging step size to target acceptance (~0.65–0.80).
+  - Diagonal mass matrix from z-space sample variance.
+  - Divergence checks via energy error / non-finite H.
+
+- Outputs & metrics
+  - JSON/JSONL: per-chain draws with acceptance, divergences, tuned ε and mass diag.
+  - Metrics server (optional): set `METRICS_ENABLE=1`.
+
+- Recommended run
+  ```bash
+  java -cp out-qualia qualia.Core hmc_adapt chains=2 warmup=500 iters=1000 thin=2 seed=42 out=hmc.jsonl | cat
+  ```
+

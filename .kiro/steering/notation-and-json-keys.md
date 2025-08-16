@@ -1,0 +1,15 @@
+---
+inclusion: always
+---
+# Notation and JSON/metrics key conventions
+
+Reference doc: [internal/NOTATION.md](mdc:internal/NOTATION.md)
+
+- eps_geom: invariant violation (post-tolerance), not raw drift; JSON key `eps_geom`.
+- geom_drift: raw absolute drift sum; JSON key `geom_drift`.
+- eps_rk4, eps_taylor: RK4 step-doubling error and Taylor remainder proxy at accepted h.
+- psi: bounded confidence in [0,1]. If emitting uncapped belief, name it `belief_raw`.
+- HMC keys: `step_size`, `mass_diag`, `leapfrog_steps`, `acceptance_rate`, `divergence_count`, `tuned_step_size`, `rhat`, `ess_bulk`, `ess_tail`.
+
+Emit these keys in UnifiedDetector triad JSONL and HMC summaries to maintain consistency.
+

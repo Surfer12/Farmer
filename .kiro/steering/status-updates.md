@@ -1,0 +1,15 @@
+---
+inclusion: always
+---
+SPDX-License-Identifier: LicenseRef-Internal-Use-Only
+
+## Status updates (JSONL)
+
+- Append one JSON object per line to [internal/StatusUpdate/status.jsonl](mdc:internal/StatusUpdate/status.jsonl).
+- Use the template in [internal/StatusUpdate/STATUS_UPDATE_TEMPLATE.md](mdc:internal/StatusUpdate/STATUS_UPDATE_TEMPLATE.md) and conform to [internal/StatusUpdate/status.schema.json](mdc:internal/StatusUpdate/status.schema.json).
+- Quick review:
+  ```bash
+  tail -n 5 internal/StatusUpdate/status.jsonl | jq -rc '.ts+" | "+.component+" | "+.status+" | "+.summary'
+  ```
+- Keep `classification` set to “Confidential — Internal Use Only”.
+
