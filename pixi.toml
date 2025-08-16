@@ -1,0 +1,148 @@
+[project]
+name = "farmer-hybrid-symbolic-neural-framework"
+version = "1.0.0"
+description = "Farmer: Hybrid Symbolic-Neural Accuracy Functional with Contraction Guarantees"
+authors = ["Ryan David Oates <ryan@jumpingquailsolutions.com>"]
+readme = "README.md"
+
+license = "GPL-3.0-only"
+channels = ["conda-forge"]
+platforms = ["osx-64", "osx-arm64", "linux-64", "win-64"]
+
+[dependencies]
+python = ">=3.8,<3.12"
+numpy = ">=1.20.0"
+matplotlib = ">=3.5.0"
+scipy = ">=1.7.0"
+jupyter = "*"
+ipython = "*"
+pytest = ">=6.0"
+black = ">=22.0"
+flake8 = ">=4.0"
+scikit-learn = ">=1.0.0"
+pandas = ">=1.3.0"
+tqdm = ">=4.62.0"
+joblib = ">=1.1.0"
+plotly = ">=5.3.0"
+seaborn = ">=0.11.0"
+ipywidgets = ">=7.6.0"
+pytest-cov = ">=3.0.0"
+pytorch = ">=1.9.0"
+torchvision = ">=0.10.0"
+
+[tasks]
+# Core analysis tools
+contraction-minimal = "python integrated/minimal_contraction_psi.py"
+contraction-full = "python integrated/contraction_psi_update.py"
+hybrid-minimal = "python integrated/minimal_hybrid_functional.py"
+hybrid-full = "python integrated/hybrid_functional.py"
+pinn-burgers = "python integrated/pinn_burgers.py"
+
+# Academic network analysis (Java) - from integrated_research_conform directory
+academic-basic = "cd integrated/integrated_research_conform && javac --enable-preview --release 21 AcademicNetworkAnalyzer.java && java --enable-preview AcademicNetworkAnalyzer"
+academic-enhanced = "cd integrated/integrated_research_conform && javac --enable-preview --release 21 EnhancedResearchMatcher.java && java --enable-preview EnhancedResearchMatcher"
+academic-nature = "cd integrated/integrated_research_conform && javac --enable-preview --release 21 NatureAnalysisDemo.java && java --enable-preview NatureAnalysisDemo"
+academic-fractal = "cd integrated/integrated_research_conform && javac --enable-preview --release 21 FractalNatureTest.java && java --enable-preview FractalNatureTest"
+academic-swarm = "cd integrated/integrated_research_conform && javac --enable-preview --release 21 SwarmKoopmanNatureTest.java && java --enable-preview SwarmKoopmanNatureTest"
+
+# Comprehensive analysis suite
+analyze-all = { depends-on = ["contraction-analysis", "hybrid-analysis"] }
+analyze-with-academic = { depends-on = ["contraction-analysis", "hybrid-analysis", "academic-analysis"] }
+analyze-complete = { depends-on = ["contraction-analysis", "hybrid-analysis", "academic-basic", "academic-enhanced", "academic-nature"] }
+
+contraction-analysis = { cmd = "python integrated/minimal_contraction_psi.py > outputs/contraction_analysis.txt", depends-on = ["setup-outputs"] }
+hybrid-analysis = { cmd = "python integrated/minimal_hybrid_functional.py > outputs/hybrid_analysis.txt", depends-on = ["setup-outputs"] }
+academic-analysis = { cmd = "cd integrated/integrated_research_conform && javac --enable-preview --release 21 AcademicNetworkAnalyzer.java && java --enable-preview AcademicNetworkAnalyzer > ../../outputs/academic_analysis.txt", depends-on = ["setup-outputs"] }
+
+# Utility tasks
+setup-outputs = "mkdir -p outputs"
+clean-outputs = "rm -rf outputs/*"
+clean-java = "cd integrated/integrated_research_conform && find . -name '*.class' -delete"
+clean-all = { depends-on = ["clean-outputs", "clean-java"] }
+
+# Documentation and validation
+compile-latex = "pdflatex tex/contraction_spectral_theorems.tex"
+validate-theory = { cmd = "python -c \"import sys; sys.path.append('integrated'); from minimal_contraction_psi import *; demonstrate_parameter_sensitivity()\"", depends-on = ["setup-outputs"] }
+
+# Development tasks
+format = "black integrated/*.py"
+lint = "flake8 integrated/*.py --max-line-length=100 --ignore=E203,W503"
+test-minimal = "python -m pytest -v integrated/test_minimal.py"
+test-all = "python -m pytest -v integrated/"
+
+# Interactive analysis
+jupyter-lab = "jupyter lab"
+ipython-shell = "ipython"
+
+# Benchmarking and performance
+benchmark-contraction = { cmd = "python -c \"import time; import sys; sys.path.append('integrated'); from minimal_contraction_psi import *; start=time.time(); config=MinimalContractionConfig(); psi=MinimalContractionPsi(config); scenarios=create_test_scenarios(); results=psi.analyze_contraction_properties(scenarios); print(f'Analysis completed in {time.time()-start:.2f}s')\"", depends-on = ["setup-outputs"] }
+
+# Export and reporting
+export-results = { cmd = "python integrated/export_analysis_results.py", depends-on = ["analyze-all"] }
+generate-report = { cmd = "python integrated/generate_comprehensive_report.py", depends-on = ["analyze-all"] }
+generate-complete-report = { cmd = "python integrated/generate_comprehensive_report.py", depends-on = ["analyze-complete"] }
+
+# Quick demos
+demo-contraction = "python -c \"import sys; sys.path.append('integrated'); from minimal_contraction_psi import *; config=MinimalContractionConfig(); psi=MinimalContractionPsi(config); scenarios=create_test_scenarios()[:2]; psi.print_detailed_analysis(scenarios)\""
+demo-hybrid = "python -c \"import sys; sys.path.append('integrated'); from minimal_hybrid_functional import *; functional=MinimalHybridFunctional(); print('Ψ(x) =', functional.compute_psi_single(0.5, 1.0)['psi']); demonstrate_functional_behavior()\""
+demo-academic = "cd integrated/integrated_research_conform && cp academic_network_analysis/nature_articles.csv . && cp academic_network_analysis/publications.csv . && javac --enable-preview --release 21 NatureAnalysisDemo.java && java --enable-preview NatureAnalysisDemo"
+
+# Unified framework and contemplative analysis
+contemplative-demo = "python integrated/demo_contemplative_temporal_gradients.py"
+contemplative-integration = "python integrated/test_contemplative_integration.py"
+unified-framework = "python integrated/unified_theoretical_framework.py"
+cognitive-memory = "python integrated/cognitive_memory_metric_integration.py"
+visual-grounding = "python integrated/contemplative_visual_grounding.py"
+
+# Swarm and Koopman analysis
+swarm-koopman = "python integrated/swarm_koopman_cognitive_integration.py"
+swarm-extension = "python integrated/swarm_koopman_extension.py"
+ks-validation = "python integrated/ks_validation_framework.py"
+hybrid-ks = "python integrated/hybrid_ks_integration.py"
+
+# Uncertainty quantification
+uq-examples = "python integrated/uq_examples.py"
+uq-monitoring = "python integrated/uq_monitoring.py"
+
+# Visualization and analysis
+visualize = "python integrated/visualize_unified_framework.py"
+simple-analysis = "python integrated/simple_analysis.py"
+topic-modeling = "python integrated/topic_modeling.py"
+
+# Integrated Research Conform specific tasks
+conform-validate = { depends-on = ["validate-theory", "test-minimal", "academic-basic"] }
+conform-analyze = { depends-on = ["analyze-complete", "generate-complete-report"] }
+conform-demo = { depends-on = ["demo-contraction", "demo-hybrid", "demo-academic"] }
+
+# Comprehensive framework demo
+framework-demo = { depends-on = ["demo-contraction", "demo-hybrid", "contemplative-demo", "swarm-koopman", "uq-examples"] }
+
+# Environments with features
+[environments]
+viz = { features = ["visualization"] }
+
+[feature.visualization.dependencies]
+plotly = "*"
+seaborn = "*"
+bokeh = "*"
+
+[feature.visualization.tasks]
+plot-contraction = "python integrated/visualize_unified_framework.py --mode=contraction"
+plot-hybrid = "python integrated/visualize_unified_framework.py --mode=hybrid"
+interactive-demo = "python integrated/visualize_unified_framework.py --mode=interactive"
+
+
+
+[tool.black]
+line-length = 100
+target-version = ['py38', 'py39', 'py310', 'py311']
+
+[tool.flake8]
+max-line-length = 100
+ignore = ["E203", "W503"]
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true

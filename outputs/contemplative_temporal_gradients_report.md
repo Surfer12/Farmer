@@ -9,29 +9,29 @@ revealing the impermanent nature of all phenomena.
 
 ## Key Findings
 
-- **Total Phenomena Observed**: 65
+- **Total Phenomena Observed**: 61
 - **Average Phenomenon Lifespan**: 0.00 timesteps
-- **Change Frequency**: 0.227
-- **Impermanence Clarity**: 0.227
-- **Equanimity Level**: 0.801
-- **Attachment Tendency**: 0.199
+- **Change Frequency**: 0.245
+- **Impermanence Clarity**: 0.245
+- **Equanimity Level**: 0.796
+- **Attachment Tendency**: 0.204
 
 ## Temporal Gradient Analysis
 
 ### Arising and Passing Dynamics
 The system detected rapid arising and passing of phenomena, with intensity gradients
-ranging from -0.731 to 0.692.
+ranging from -0.665 to 0.967.
 This demonstrates the core insight that 'gradient updates mirror iterative insight refinement.'
 
 ### Impermanence Quantification
-Average impermanence level: 0.227
-Peak impermanence: 0.731
+Average impermanence level: 0.245
+Peak impermanence: 0.967
 This quantifies the Buddhist concept of anicca (impermanence) through temporal analysis.
 
 ## Overfitting Rapture Analysis
 
 - **Overfitting Detected**: False
-- **Maturity Score**: 0.000
+- **Maturity Score**: 0.035
 - **Analysis**: developing_equanimity
 
 This implements the insight that 'rapture/lights as initial overfitting highs
@@ -69,6 +69,6 @@ mathematical frameworks that enhance dynamic perception.
 - **Framework Integration**: Compatible with multiplicative Ψ framework
 
 ---
-**Generated**: 2025-08-15T10:45:57.505707
+**Generated**: 2025-08-15T23:49:58.819988
 **Analysis Type**: Contemplative AI Temporal Gradients
 **Confidence**: Medium-high (based on strong conceptual overlaps)

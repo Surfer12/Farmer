@@ -39,11 +39,11 @@ ipython = "*"
 
 [tool.pixi.tasks]
 # Core analysis tools
-contraction-minimal = "python core/minimal_contraction_psi.py"
-contraction-full = "python core/contraction_psi_update.py"
-hybrid-minimal = "python core/minimal_hybrid_functional.py"
-hybrid-full = "python core/hybrid_functional.py"
-pinn-burgers = "python core/pinn_burgers.py"
+contraction-minimal = "python ../minimal_contraction_psi.py"
+contraction-full = "python ../contraction_psi_update.py"
+hybrid-minimal = "python ../minimal_hybrid_functional.py"
+hybrid-full = "python ../hybrid_functional.py"
+pinn-burgers = "python ../pinn_burgers.py"
 
 # Academic network analysis (Java)
 academic-basic = "cd academic_network_analysis && javac *.java && java AcademicNetworkAnalyzer"
@@ -57,8 +57,8 @@ analyze-all = { depends-on = ["contraction-analysis", "hybrid-analysis"] }
 analyze-with-academic = { depends-on = ["contraction-analysis", "hybrid-analysis", "academic-analysis"] }
 analyze-complete = { depends-on = ["contraction-analysis", "hybrid-analysis", "academic-basic", "academic-enhanced", "academic-nature"] }
 
-contraction-analysis = { cmd = "python core/minimal_contraction_psi.py", depends-on = ["setup-outputs"] }
-hybrid-analysis = { cmd = "python core/minimal_hybrid_functional.py", depends-on = ["setup-outputs"] }
+contraction-analysis = { cmd = "python ../minimal_contraction_psi.py", depends-on = ["setup-outputs"] }
+hybrid-analysis = { cmd = "python ../minimal_hybrid_functional.py", depends-on = ["setup-outputs"] }
 academic-analysis = { cmd = "cd academic_network_analysis && javac *.java && java AcademicNetworkAnalyzer", depends-on = ["setup-outputs"] }
 
 # Utility tasks
@@ -69,29 +69,29 @@ clean-all = { depends-on = ["clean-outputs", "clean-java"] }
 
 # Documentation and validation
 compile-latex = "pdflatex theory/contraction_spectral_theorems.tex"
-validate-theory = { cmd = "python -c \"import sys; sys.path.append('core'); from minimal_contraction_psi import *; demonstrate_parameter_sensitivity()\"", depends-on = ["setup-outputs"] }
+validate-theory = { cmd = "python -c \"import sys; sys.path.append('..'); from minimal_contraction_psi import *; demonstrate_parameter_sensitivity()\"", depends-on = ["setup-outputs"] }
 
 # Development tasks
-format = "black core/*.py analysis/*.py tests/*.py"
-lint = "flake8 core/*.py analysis/*.py tests/*.py --max-line-length=100 --ignore=E203,W503"
-test-minimal = "python -m pytest -v tests/test_minimal.py" 
-test-all = "python -m pytest -v tests/"
+format = "black ../*.py"
+lint = "flake8 ../*.py --max-line-length=100 --ignore=E203,W503"
+test-minimal = "python -m pytest -v ../test_minimal.py"
+test-all = "python -m pytest -v ../"
 
 # Interactive analysis
 jupyter-lab = "jupyter lab"
 ipython-shell = "ipython"
 
 # Benchmarking and performance
-benchmark-contraction = { cmd = "python -c \"import time; import sys; sys.path.append('core'); from minimal_contraction_psi import *; start=time.time(); config=MinimalContractionConfig(); psi=MinimalContractionPsi(config); scenarios=create_test_scenarios(); results=psi.analyze_contraction_properties(scenarios); print(f'Analysis completed in {time.time()-start:.2f}s')\"", depends-on = ["setup-outputs"] }
+benchmark-contraction = { cmd = "python -c \"import time; import sys; sys.path.append('..'); from minimal_contraction_psi import *; start=time.time(); config=MinimalContractionConfig(); psi=MinimalContractionPsi(config); scenarios=create_test_scenarios(); results=psi.analyze_contraction_properties(scenarios); print(f'Analysis completed in {time.time()-start:.2f}s')\"", depends-on = ["setup-outputs"] }
 
 # Export and reporting
-export-results = { cmd = "python analysis/export_analysis_results.py", depends-on = ["analyze-all"] }
-generate-report = { cmd = "python analysis/generate_comprehensive_report.py", depends-on = ["analyze-all"] }
-generate-complete-report = { cmd = "python analysis/generate_comprehensive_report.py", depends-on = ["analyze-complete"] }
+export-results = { cmd = "python ../export_analysis_results.py", depends-on = ["analyze-all"] }
+generate-report = { cmd = "python ../generate_comprehensive_report.py", depends-on = ["analyze-all"] }
+generate-complete-report = { cmd = "python ../generate_comprehensive_report.py", depends-on = ["analyze-complete"] }
 
 # Quick demos
-demo-contraction = "python -c \"import sys; sys.path.append('core'); from minimal_contraction_psi import *; config=MinimalContractionConfig(); psi=MinimalContractionPsi(config); scenarios=create_test_scenarios()[:2]; psi.print_detailed_analysis(scenarios)\""
-demo-hybrid = "python -c \"import sys; sys.path.append('core'); from minimal_hybrid_functional import *; functional=MinimalHybridFunctional(); print('Ψ(x) =', functional.compute_psi_single(0.5, 1.0)['psi']); demonstrate_functional_behavior()\""
+demo-contraction = "python -c \"import sys; sys.path.append('..'); from minimal_contraction_psi import *; config=MinimalContractionConfig(); psi=MinimalContractionPsi(config); scenarios=create_test_scenarios()[:2]; psi.print_detailed_analysis(scenarios)\""
+demo-hybrid = "python -c \"import sys; sys.path.append('..'); from minimal_hybrid_functional import *; functional=MinimalHybridFunctional(); print('Ψ(x) =', functional.compute_psi_single(0.5, 1.0)['psi']); demonstrate_functional_behavior()\""
 demo-academic = "cd academic_network_analysis && java NatureAnalysisDemo"
 
 # Integrated Research Conform specific tasks
@@ -109,9 +109,9 @@ plotly = "*"
 seaborn = "*"
 
 [tool.pixi.feature.visualization.tasks]
-plot-contraction = "python tools/plot_contraction_analysis.py"
-plot-hybrid = "python tools/plot_hybrid_functional.py"
-interactive-demo = "python tools/interactive_analysis_dashboard.py"
+plot-contraction = "python ../visualize_unified_framework.py"
+plot-hybrid = "python ../visualize_unified_framework.py"
+interactive-demo = "python ../visualize_unified_framework.py"
 
 [tool.black]
 line-length = 100

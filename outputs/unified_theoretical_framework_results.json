@@ -2,14 +2,14 @@
   "analysis": {
     "hierarchical_bayesian": {
       "bounds_satisfied": true,
-      "mean_psi": 0.03656210783978441,
-      "psi_stability": 0.9962831995992143
+      "mean_psi": 0.1406545705041269,
+      "psi_stability": 0.9834882344453748
     },
     "swarm_koopman": {
       "theorem_satisfied": "False",
-      "expected_confidence": 0.9865362204977792,
+      "expected_confidence": 0.9886106878376648,
       "expected_error": 0.005000000625,
-      "confidence_error_ratio": 0.99149269309022
+      "confidence_error_ratio": 0.9935775827950432
     },
     "lstm_convergence": {
       "theorem_satisfied": "False",
@@ -18,19 +18,19 @@
       "confidence": 0.8585786437626907
     },
     "contemplative_integration": {
-      "final_score": 0.6879216308611067,
-      "insight_quality": "interpretive_contextual",
-      "score_progression": 0.0009906781899430284,
+      "final_score": 0.7247580192535343,
+      "insight_quality": "empirically_grounded",
+      "score_progression": -0.00448972056367436,
       "mean_impermanence": 0.05000000624999999
     },
     "cognitive_memory": {
-      "mean_distance": 0.007030806792556,
-      "distance_variance": 0.0008065212374165771
+      "mean_distance": 0.007151674335402714,
+      "distance_variance": 0.0007501924985916195
     },
     "unified_performance": {
       "all_theorems_satisfied": "False",
-      "overall_confidence": 0.8443454983738589,
-      "framework_coherence": 0.877676371574651
+      "overall_confidence": 0.8573157836179632,
+      "framework_coherence": 0.8922788977914089
     }
   },
   "configuration": {
@@ -45,5 +45,5 @@
     "contemplative_weight": 0.3
   },
   "state_count": 50,
-  "timestamp": "2025-08-15T11:14:07.810043"
+  "timestamp": "2025-08-15T23:52:53.017077"
 }

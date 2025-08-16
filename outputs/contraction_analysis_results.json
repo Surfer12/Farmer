@@ -1,0 +1,236 @@
+{
+  "timestamp": "2025-08-15T23:49:16.664715",
+  "configuration": {
+    "kappa": 0.15,
+    "g_max": 0.8,
+    "L_C": 0.0,
+    "omega": 1.0,
+    "modality_weights": [
+      0.2,
+      0.15
+    ],
+    "modality_lipschitz": [
+      0.2,
+      0.15
+    ]
+  },
+  "theoretical_analysis": {
+    "K_theory": 0.3625,
+    "is_contractive": true,
+    "message": "CONTRACTIVE: K = 0.3625, margin = 0.6375"
+  },
+  "numerical_estimates": [
+    {
+      "scenario_id": 0,
+      "L_hat": 0.2936320948162935,
+      "K_hat": 0.2936320948162935,
+      "scenario": {
+        "alpha": 0.5,
+        "S": 0.7,
+        "N": 0.8,
+        "R_cog": 0.1,
+        "R_eff": 0.1
+      }
+    },
+    {
+      "scenario_id": 1,
+      "L_hat": 0.0,
+      "K_hat": 0.0,
+      "scenario": {
+        "alpha": 0.2,
+        "S": 0.6,
+        "N": 0.9,
+        "R_cog": 0.05,
+        "R_eff": 0.08
+      }
+    },
+    {
+      "scenario_id": 2,
+      "L_hat": 0.23824086442501602,
+      "K_hat": 0.23824086442501602,
+      "scenario": {
+        "alpha": 0.8,
+        "S": 0.85,
+        "N": 0.7,
+        "R_cog": 0.15,
+        "R_eff": 0.12
+      }
+    },
+    {
+      "scenario_id": 3,
+      "L_hat": 0.3433888227171251,
+      "K_hat": 0.3433888227171251,
+      "scenario": {
+        "alpha": 0.3,
+        "S": 0.5,
+        "N": 0.6,
+        "R_cog": 0.2,
+        "R_eff": 0.18
+      }
+    }
+  ],
+  "convergence_analysis": [
+    {
+      "scenario_id": 0,
+      "final_value": 1,
+      "convergence_rate": 0.0,
+      "theoretical_rate": 1.0147308046874075
+    },
+    {
+      "scenario_id": 1,
+      "final_value": 1,
+      "convergence_rate": 0.0,
+      "theoretical_rate": 1.0147308046874075
+    },
+    {
+      "scenario_id": 2,
+      "final_value": 1,
+      "convergence_rate": 0.0,
+      "theoretical_rate": 1.0147308046874075
+    },
+    {
+      "scenario_id": 3,
+      "final_value": 0.841810756945927,
+      "convergence_rate": 1.192861268950611,
+      "theoretical_rate": 1.0147308046874075
+    }
+  ],
+  "sample_sequences": {
+    "scenario_1": {
+      "parameters": {
+        "alpha": 0.5,
+        "S": 0.7,
+        "N": 0.8,
+        "R_cog": 0.1,
+        "R_eff": 0.1
+      },
+      "sequence": [
+        0.3,
+        0.952035954442053,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "final_value": 1,
+      "convergence_steps": 2
+    },
+    "scenario_2": {
+      "parameters": {
+        "alpha": 0.2,
+        "S": 0.6,
+        "N": 0.9,
+        "R_cog": 0.05,
+        "R_eff": 0.08
+      },
+      "sequence": [
+        0.3,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "final_value": 1,
+      "convergence_steps": 1
+    },
+    "scenario_3": {
+      "parameters": {
+        "alpha": 0.8,
+        "S": 0.85,
+        "N": 0.7,
+        "R_cog": 0.15,
+        "R_eff": 0.12
+      },
+      "sequence": [
+        0.3,
+        0.9852659361309477,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "final_value": 1,
+      "convergence_steps": 2
+    },
+    "scenario_4": {
+      "parameters": {
+        "alpha": 0.3,
+        "S": 0.5,
+        "N": 0.6,
+        "R_cog": 0.2,
+        "R_eff": 0.18
+      },
+      "sequence": [
+        0.3,
+        0.6880234434701332,
+        0.7912426854427971,
+        0.8249685471086223,
+        0.8364028607654247,
+        0.8401882672848993,
+        0.8413234373012538,
+        0.8416643406945106,
+        0.8417667615022392,
+        0.8417975367146063,
+        0.8418067843509137,
+        0.8418095632033068,
+        0.8418103982326451,
+        0.8418106491544755,
+        0.8418107245551614,
+        0.8418107472126716,
+        0.8418107540211346,
+        0.8418107560670421,
+        0.8418107566818267,
+        0.8418107568665661,
+        0.8418107569220795
+      ],
+      "final_value": 0.8418107569220795,
+      "convergence_steps": 6
+    }
+  }
+}
