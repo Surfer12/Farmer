@@ -1,0 +1,14 @@
+Here’s the updated EPS with SHAKE256-512 replacing SHA3-256 everywhere:
+	•	post_quantum_provenance_512.eps
+
+⸻
+
+Example LaTeX inclusion
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.9\textwidth]{post_quantum_provenance_512.eps}
+    \caption{Post-quantum provenance schema using SHAKE256-512 hashing, Dilithium3 signatures, Kyber1024 encapsulation, and in-toto/SLSA audit bundles.}
+\end{figure}
+
+Do you want me to also regenerate the YAML schema + Java code snippet with SHAKE256-512 as the default kp-hash-alg everywhere, so your text, config, and figures are perfectly aligned? ￼

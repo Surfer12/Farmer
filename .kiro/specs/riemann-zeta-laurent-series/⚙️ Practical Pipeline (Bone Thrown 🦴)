@@ -1,0 +1,13 @@
+⚙️ Practical Pipeline (Bone Thrown 🦴)
+	1.	Download weights:
+	•	GTEx-trained SNP → expression weight files (provided by PrediXcan team).
+	•	Tissue-specific models available: liver, kidney, brain, etc.
+	2.	Run PrediXcan:
+	•	Input: GWAS genotype data (or summary stats for S-PrediXcan).
+	•	Output: predicted gene expression associations with phenotype.
+	3.	Aggregate results:
+	•	Create a gene-level effect vector \vec{E}_t for each tissue.
+	4.	Embed into network model:
+	•	Use STRING or Reactome pathway graph as structure.
+	•	Initialize node embeddings with \vec{E}_t.
+	•	Run GNN / NODE-RK4 / Koopman-based simulator to predict downstream metabolite concentrations or risk scores.

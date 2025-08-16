@@ -1,0 +1,52 @@
+import java.nio.file.*;
+import java.security.*;
+import java.util.Base64;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.pqc.jcajce.provider.BouncyCastlePQCProvider;
+import org.bouncycastle.pqc.jcajce.spec.DilithiumParameterSpec;
+
+public class PqSign {
+  static {
+    Security.addProvider(new BouncyCastleProvider());
+    Security.addProvider(new BouncyCastlePQCProvider());
+  }
+
+  public static void main(String[] args) throws Exception {
+    // 1) Load manifest bytes (e.g., YAML above)
+    byte[] manifest = Files.readAllBytes(Path.of("manifest.yaml"));
+
+    // 2) Hash artifacts with SHA3-256 (post-quantum friendly)
+    MessageDigest sha3 = MessageDigest.getInstance("SHA3-256", "BC");
+    byte[] manifestHash = sha3.digest(manifest);
+    System.out.println("manifest_hash_hex=" + bytesToHex(manifestHash));
+
+    // 3) Generate Dilithium3 keypair (signing)
+    KeyPairGenerator kpg = KeyPairGenerator.getInstance("DILITHIUM", "BCPQC");
+    kpg.initialize(DilithiumParameterSpec.dilithium3, new SecureRandom());
+    KeyPair kp = kpg.generateKeyPair();
+
+    // 4) Sign the manifest
+    Signature sig = Signature.getInstance("DILITHIUM", "BCPQC");
+    sig.initSign(kp.getPrivate(), new SecureRandom());
+    sig.update(manifest);
+    byte[] signature = sig.sign();
+
+    // 5) Verify (sanity check)
+    Signature verify = Signature.getInstance("DILITHIUM", "BCPQC");
+    verify.initVerify(kp.getPublic());
+    verify.update(manifest);
+    boolean ok = verify.verify(signature);
+    System.out.println("verify=" + ok);
+
+    // 6) Emit kp-* fields (base64)
+    System.out.println("kp-sig-alg=dilithium3");
+    System.out.println("kp-sig-pub=" + Base64.getEncoder().encodeToString(kp.getPublic().getEncoded()));
+    System.out.println("kp-sig=" + Base64.getEncoder().encodeToString(signature));
+  }
+
+  private static String bytesToHex(byte[] b) {
+    StringBuilder sb = new StringBuilder();
+    for (byte x : b) sb.append(String.format("%02x", x));
+    return sb.toString();
+  }
+}

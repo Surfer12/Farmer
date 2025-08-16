@@ -1,0 +1,31 @@
+run_id: 2025-08-16T00:00:00Z
+inputs:
+  gwas_summary: doi:xx.xxxx/xxxx  # checksum: abc123
+  eqtl_model: GTEx_vX.Y           # weights_sha256: deadbeef
+  tissues: [Liver, Kidney]
+  pathways_db: STRING_v11.5       # conf_min: 0.7
+code:
+  commit_sha: a1b2c3d
+  container_digest: sha256:beef
+  seed: 1337
+steps:
+  iXcan_SiXcan:
+    alpha: 0.70; S: 0.90; N: 0.60; Ra: 0.10; Rv: 0.10; beta: 1.00
+    Psi: 0.56
+  association:
+    alpha: 0.50; S: 0.80; N: 0.70; Ra: 0.20; Rv: 0.20; beta: 0.90
+    Psi: 0.37
+  network_embedding:
+    alpha: 0.60; ... # per-slide formulas
+  dynamics:
+    alpha: 0.40; ...
+  psi_layer:
+    lambdas: {lambda1: 0.8, lambda2: 0.6}
+    Psi_final: 0.42
+outputs:
+  artifacts:
+    curves_pdf_sha256: cafe7654
+    model_card_md_sha256: 1234abcd
+compliance:
+  reproducibility_script: rerun.sh  # sha256: 9f9f9f9f
+  validation_report: val_v1.pdf     # sha256: 88888888

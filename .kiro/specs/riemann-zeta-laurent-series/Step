@@ -1,0 +1,30 @@
+Step
+Source class
+Key weights
+Example inputs
+Confidence calc
+A. iXcan/SiXcan
+Canonical (GTEx model ver. X.Y)
+w_{g i,t}
+tissue=Liver; hash=abc123
+\alpha=0.7, S=0.9, N=0.6, R_a=0.1, R_v=0.1, \beta=1.0 \Rightarrow \Psi_A
+B. Assoc. Y\leftarrow\hat{E}
+Expert (internal stats)
+\beta_{g,t}
+covars OK; FDR q=0.05
+\alpha=0.5, S=0.8, N=0.7, R_a=0.2, R_v=0.2, \beta=0.9 \Rightarrow \Psi_B
+C. Network embed
+Canonical+Expert
+edges e_{g,u}
+STRING v11.5; conf≥0.7
+\alpha=0.6, \dots \Rightarrow \Psi_C
+D. Dynamics
+Neural (GNN/NODE/Koop)
+\theta
+val AUROC=0.87
+\alpha=0.4,\dots \Rightarrow \Psi_D
+E. Ψ layer
+Hybrid
+\lambda_1,\lambda_2
+audit pass ✅
+Final \Psi (reported & logged)

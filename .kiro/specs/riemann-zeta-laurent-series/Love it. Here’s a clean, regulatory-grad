@@ -1,0 +1,210 @@
+Love it. Here’s a clean, regulatory-grade package: a kp-* YAML schema with SHAKE256-512 as the default kp-hash-alg, plus Java snippets using Bouncy Castle to (1) hash with SHAKE256-512, (2) sign with Dilithium3, and (3) optionally wrap secrets with Kyber1024. This aligns your text, config, and figures 1:1.
+
+⸻
+
+YAML — kp-* Provenance Schema (SHAKE256-512 everywhere)
+
+run_id: 2025-08-16T00:00:00Z
+
+crypto:
+  kp-hash-alg: SHAKE256-512      # 512-bit XOF tag from SHAKE256
+  kp-sig-alg: dilithium3         # post-quantum signature
+  kp-kem-alg: kyber1024          # optional KEM for seed/secret encapsulation
+  kp-rng: DRBG(SHA3)             # deterministic, PQ-friendly RNG
+
+inputs:
+  gwas_summary:
+    doi: 10.xxxx/xxxxx
+    hash_alg: SHAKE256-512
+    hash: h:2f8a...              # 64-byte hex tag (512-bit)
+  eqtl_model:
+    name: GTEx_vX.Y
+    weights_hash_alg: SHAKE256-512
+    weights_hash: h:9ac1...
+    weights_kp-sig:
+      alg: dilithium3
+      pub: base64:MIIB...
+      sig: base64:MEUC...
+  tissues: [Liver, Kidney]
+  pathways_db:
+    name: STRING_v11.5
+    conf_min: 0.7
+    hash_alg: SHAKE256-512
+    hash: h:77dd...
+
+code:
+  repo_url: https://example/repo
+  slsa_attestation:
+    format: in-toto@v1
+    kp-sig:
+      alg: dilithium3
+      pub: base64:MIIB...
+      sig: base64:MGQCM...
+  container:
+    image_ref: registry.example/app:prod
+    provenance: slsa-v1.json
+    image_hash_alg: SHAKE256-512
+    image_hash: h:1f2a...
+    kp-sig: { alg: dilithium3, pub: base64:..., sig: base64:... }
+
+secrets:
+  seed_wrapped:
+    kem_alg: kyber1024
+    kem_ciphertext: base64:AAAB...
+    kem_recipient_pub: base64:BBBC...
+
+steps:
+  iXcan_SiXcan:
+    tissue: Liver
+    model_ver: GTEx_vX.Y
+    alpha: 0.70; S: 0.90; N: 0.60; Ra: 0.10; Rv: 0.10; beta: 1.00
+    Psi: 0.56
+    kp-sig: { alg: dilithium3, sig: base64:... }
+  association:
+    beta_hash_alg: SHAKE256-512
+    beta_hash: h:5cfe...
+    alpha: 0.50; S: 0.80; N: 0.70; Ra: 0.20; Rv: 0.20; beta: 0.90
+    Psi: 0.37
+  network_embedding:
+    graph_hash_alg: SHAKE256-512
+    graph_hash: h:ab88...
+    alpha: 0.60; Psi: 0.41
+  dynamics:
+    sim: NODE-RK4
+    odeset_hash_alg: SHAKE256-512
+    odeset_hash: h:f00d...
+    val_metrics: { AUROC: 0.87 }
+    alpha: 0.40; Psi: 0.39
+  psi_layer:
+    lambdas: { lambda1: 0.8, lambda2: 0.6 }
+    posterior_cap: true
+    Psi_final: 0.42
+
+outputs:
+  artifacts:
+    curves_pdf_hash_alg: SHAKE256-512
+    curves_pdf_hash: h:cafe7654...
+    model_card_md_hash_alg: SHAKE256-512
+    model_card_md_hash: h:1234abcd...
+  bundle_signature:
+    kp-sig: { alg: dilithium3, pub: base64:..., sig: base64:... }
+
+
+⸻
+
+Java — PQ Hash/Sign/KEM (Bouncy Castle)
+
+Deps (one option):
+	•	org.bouncycastle:bcprov-jdk18on
+	•	org.bouncycastle:bcpqc-jdk18on
+	•	(optional) org.bouncycastle:bcpkix-jdk18on
+Add the PQC provider at runtime.
+
+1) SHAKE256-512 hashing (64-byte tag)
+
+import org.bouncycastle.crypto.digests.SHAKEDigest;
+import java.nio.file.*;
+import java.util.HexFormat;
+
+public class Shake256_512 {
+  public static byte[] shake256_512(byte[] data) {
+    SHAKEDigest shake = new SHAKEDigest(256); // SHAKE256 capacity
+    shake.update(data, 0, data.length);
+    byte[] out = new byte[64];                // 512-bit XOF output
+    shake.doFinal(out, 0, out.length);
+    return out;
+  }
+
+  public static void main(String[] args) throws Exception {
+    byte[] manifest = Files.readAllBytes(Path.of("manifest.yaml"));
+    byte[] tag = shake256_512(manifest);
+    System.out.println("kp-hash-alg=SHAKE256-512");
+    System.out.println("hash_hex=" + HexFormat.of().formatHex(tag));
+  }
+}
+
+2) Dilithium3 signature over full manifest
+
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.pqc.jcajce.provider.BouncyCastlePQCProvider;
+import org.bouncycastle.pqc.jcajce.spec.DilithiumParameterSpec;
+
+import java.nio.file.*;
+import java.security.*;
+import java.util.Base64;
+
+public class DilithiumSign {
+  static {
+    Security.addProvider(new BouncyCastleProvider());
+    Security.addProvider(new BouncyCastlePQCProvider());
+  }
+
+  public static void main(String[] args) throws Exception {
+    byte[] manifest = Files.readAllBytes(Path.of("manifest.yaml"));
+
+    KeyPairGenerator kpg = KeyPairGenerator.getInstance("DILITHIUM", "BCPQC");
+    kpg.initialize(DilithiumParameterSpec.dilithium3, new SecureRandom());
+    KeyPair kp = kpg.generateKeyPair();
+
+    Signature sig = Signature.getInstance("DILITHIUM", "BCPQC");
+    sig.initSign(kp.getPrivate(), new SecureRandom());
+    sig.update(manifest);
+    byte[] signature = sig.sign();
+
+    Signature ver = Signature.getInstance("DILITHIUM", "BCPQC");
+    ver.initVerify(kp.getPublic());
+    ver.update(manifest);
+    System.out.println("verify=" + ver.verify(signature));
+
+    System.out.println("kp-sig-alg=dilithium3");
+    System.out.println("kp-sig-pub=" + Base64.getEncoder().encodeToString(kp.getPublic().getEncoded()));
+    System.out.println("kp-sig=" + Base64.getEncoder().encodeToString(signature));
+  }
+}
+
+3) (Optional) Kyber1024 KEM for seed/secret encapsulation
+
+import org.bouncycastle.pqc.jcajce.KEMGenerator;
+import org.bouncycastle.pqc.jcajce.KEMExtractor;
+import org.bouncycastle.pqc.jcajce.spec.KyberParameterSpec;
+import org.bouncycastle.pqc.jcajce.interfaces.KEMEncapsulatedSecret;
+import org.bouncycastle.pqc.jcajce.spec.KEMExtractSpec;
+import org.bouncycastle.pqc.jcajce.spec.KEMGenerateSpec;
+
+import java.security.*;
+import java.util.Base64;
+
+public class KyberWrap {
+  static {
+    Security.addProvider(new BouncyCastlePQCProvider());
+  }
+
+  public static void main(String[] args) throws Exception {
+    // Recipient keypair
+    KeyPairGenerator kpg = KeyPairGenerator.getInstance("KYBER", "BCPQC");
+    kpg.initialize(KyberParameterSpec.kyber1024, new SecureRandom());
+    KeyPair recipient = kpg.generateKeyPair();
+
+    // Sender encapsulates
+    KEMGenerator kemGen = new KEMGenerator(new SecureRandom());
+    KEMEncapsulatedSecret enc = kemGen.generateEncapsulated(recipient.getPublic(), 32); // 32-byte secret
+
+    // Recipient decapsulates
+    KEMExtractor kemExt = new KEMExtractor(recipient.getPrivate());
+    byte[] secret = kemExt.extractSecret(enc.getEncapsulation(), 32);
+
+    System.out.println("kp-kem-alg=kyber1024");
+    System.out.println("kem_ciphertext=" + Base64.getEncoder().encodeToString(enc.getEncapsulation()));
+    System.out.println("shared_secret_hex=" + javax.xml.bind.DatatypeConverter.printHexBinary(secret));
+  }
+}
+
+
+⸻
+
+Drop-ins for your LaTeX & repo
+	•	In paper: state “All provenance hashes use SHAKE256-512 (512-bit output), signatures use Dilithium3, secrets are encapsulated with Kyber1024.”
+	•	In configs: kp-hash-alg: SHAKE256-512 across inputs, code, steps, outputs.
+	•	In figures: you already have post_quantum_provenance_512.eps labeled with SHAKE256-512.
+
+If you want, I can also spit out a ready-to-run rerun.sh that rehashes artifacts with SHAKE256-512, re-signs the manifest with Dilithium3, and prints the kp-* bundle for filing.

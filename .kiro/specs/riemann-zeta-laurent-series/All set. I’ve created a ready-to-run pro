@@ -1,0 +1,21 @@
+All set. I’ve created a ready-to-run provenance rebuild with SHAKE256-512 as the default everywhere, aligned to your figures and text.
+	•	Download rerun.sh
+	•	Download provenance.config
+	•	Download manifest.yaml
+
+What it does
+	•	Rehashes listed artifacts with SHAKE256-512 (uses OpenSSL 3 if available; falls back to Python’s hashlib.shake_256).
+	•	Builds manifest.lock.yaml by appending a YAML block of kp-hash-alg: SHAKE256-512 entries (one per artifact).
+	•	Attempts Dilithium3 signing of the locked manifest if you have Java + Bouncy Castle PQC jars on the classpath; otherwise cleanly skips.
+
+Quick start
+
+chmod +x rerun.sh
+./rerun.sh -c provenance.config -m manifest.yaml -o provenance_out
+
+Outputs:
+	•	provenance_out/hashes.txt — file → 512-bit hex tags
+	•	provenance_out/manifest.lock.yaml — manifest + kp-hash entries
+	•	provenance_out/bundle.sig.txt — Dilithium3 pubkey + signature (if PQC jars available)
+
+If you want, I can also add a Makefile and a Dockerfile (OpenSSL 3 + Java 17 + BC PQC) to make the pipeline fully hermetic for CI/CD.

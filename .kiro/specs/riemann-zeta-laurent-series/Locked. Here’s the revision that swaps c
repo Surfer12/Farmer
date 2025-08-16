@@ -1,0 +1,182 @@
+Locked. Here’s the revision that swaps commit SHAs / container digests / random seeds for a kp- post-quantum, Java-based provenance stack* — suitable for FDA/EMA-grade auditability.
+
+⸻
+
+🔐 New Slide — Crypto & Provenance (Post-Quantum, Java)
+
+Goal: Make every decision traceable and future-proof against quantum attacks.
+
+Stack (kp- schema):*
+	•	kp-sig-alg: dilithium3 (post-quantum signature)
+	•	kp-sig-pub / kp-sig: Base64 public key + signature over the full manifest
+	•	kp-kem-alg (optional): kyber1024 (for wrapping run seeds / secrets)
+	•	kp-hash-alg: SHA3-256 (artifact hashing; optional SHAKE256 XOF for longer tags)
+	•	kp-rng: DRBG(SHA3) seeded; seed itself encapsulated via Kyber (no raw seed leakage)
+	•	kp-attestation: in-toto/SLSA provenance, signed with Dilithium
+
+Why this matters: Replaces brittle “commit SHA + container digest + random seed” with PQ-secure attestations you can defend in regulatory reviews.
+
+⸻
+
+🧾 Revised Slide — Regulatory: Auditability & Reproducibility (FDA/EMA)
+	•	Traceable decisions: variant → (iXcan/SiXcan) w_{g i,t} → Ē_{g,t} → β_{g,t} → network edges → simulator → prediction
+	•	Provenance artifacts (PQ-signed):
+	•	Manifest + model card → Dilithium signature (kp-sig)
+	•	Artifact hashes → SHA3-256 (kp-hash-alg)
+	•	Run seed & secrets → Kyber-encapsulated (kp-kem) — never stored in the clear
+	•	Container & code provenance → SLSA/in-toto statements, PQ-signed
+	•	Repro pack: one-shot rerun.sh + expected hashes + signature bundle
+	•	Positioning: Supports FDA/EMA filings by delivering auditable, reproducible, PQ-secure artifacts (no claim of regulatory approval).
+
+⸻
+
+⚙️ Appendix B — PQ Audit Log Schema (kp-*), replacing SHAs/digests/seeds
+
+run_id: 2025-08-16T00:00:00Z
+
+inputs:
+  gwas_summary:
+    doi: 10.xxxx/xxxxx
+    kp-hash-alg: SHA3-256
+    hash: h:4b26... # hex
+  eqtl_model:
+    name: GTEx_vX.Y
+    weights_hash: h:9ac1...
+    weights_kp-sig:
+      alg: dilithium3
+      pub: base64:MIIB...
+      sig: base64:MEQC...
+  tissues: [Liver, Kidney]
+  pathways_db:
+    name: STRING_v11.5
+    conf_min: 0.7
+    hash: h:77dd...
+
+code:
+  repo_url: https://example/repo
+  slsa_attestation:
+    format: in-toto
+    kp-sig:
+      alg: dilithium3
+      pub: base64:MIIB...
+      sig: base64:MEUCIQ...
+  container:
+    image_ref: registry.example/app@sha3-256:1f2a...
+    provenance: slsa-v1.json
+    kp-sig: { alg: dilithium3, pub: base64:..., sig: base64:... }
+
+crypto:
+  kp-hash-alg: SHA3-256
+  kp-sig-alg: dilithium3
+  kp-kem-alg: kyber1024
+  kp-rng:
+    type: DRBG(SHA3)
+    seed_wrapped:
+      kem_ciphertext: base64:AAAB...
+      kem_pub: base64:BBBC...
+
+steps:
+  iXcan_SiXcan:
+    tissue: Liver
+    model_ver: GTEx_vX.Y
+    alpha: 0.70; S: 0.90; N: 0.60; Ra: 0.10; Rv: 0.10; beta: 1.00
+    Psi: 0.56
+    kp-sig: { alg: dilithium3, sig: base64:... }
+  association:
+    beta_gt_list_hash: h:5cfe...
+    alpha: 0.50; S: 0.80; N: 0.70; Ra: 0.20; Rv: 0.20; beta: 0.90
+    Psi: 0.37
+    kp-sig: { alg: dilithium3, sig: base64:... }
+  network_embedding:
+    graph_hash: h:ab88...
+    alpha: 0.60; ...
+    Psi: 0.41
+  dynamics:
+    sim: NODE-RK4
+    odeset_hash: h:f00d...
+    val_metrics: { AUROC: 0.87 }
+    alpha: 0.40; ...
+    Psi: 0.39
+  psi_layer:
+    lambdas: { lambda1: 0.8, lambda2: 0.6 }
+    posterior_cap: enabled
+    Psi_final: 0.42
+
+outputs:
+  artifacts:
+    curves_pdf_hash: h:cafe7654
+    model_card_md_hash: h:1234abcd
+  bundle_signature:
+    kp-sig: { alg: dilithium3, pub: base64:..., sig: base64:... }
+
+
+⸻
+
+💻 Appendix C — Java (BCPQC) reference: PQ-sign your manifest
+
+Uses Bouncy Castle PQC provider. Adjust imports to your version.
+Signs a manifest (bytes) with Dilithium, hashes artifacts with SHA3-256.
+
+import java.nio.file.*;
+import java.security.*;
+import java.util.Base64;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.pqc.jcajce.provider.BouncyCastlePQCProvider;
+import org.bouncycastle.pqc.jcajce.spec.DilithiumParameterSpec;
+
+public class PqSign {
+  static {
+    Security.addProvider(new BouncyCastleProvider());
+    Security.addProvider(new BouncyCastlePQCProvider());
+  }
+
+  public static void main(String[] args) throws Exception {
+    // 1) Load manifest bytes (e.g., YAML above)
+    byte[] manifest = Files.readAllBytes(Path.of("manifest.yaml"));
+
+    // 2) Hash artifacts with SHA3-256 (post-quantum friendly)
+    MessageDigest sha3 = MessageDigest.getInstance("SHA3-256", "BC");
+    byte[] manifestHash = sha3.digest(manifest);
+    System.out.println("manifest_hash_hex=" + bytesToHex(manifestHash));
+
+    // 3) Generate Dilithium3 keypair (signing)
+    KeyPairGenerator kpg = KeyPairGenerator.getInstance("DILITHIUM", "BCPQC");
+    kpg.initialize(DilithiumParameterSpec.dilithium3, new SecureRandom());
+    KeyPair kp = kpg.generateKeyPair();
+
+    // 4) Sign the manifest
+    Signature sig = Signature.getInstance("DILITHIUM", "BCPQC");
+    sig.initSign(kp.getPrivate(), new SecureRandom());
+    sig.update(manifest);
+    byte[] signature = sig.sign();
+
+    // 5) Verify (sanity check)
+    Signature verify = Signature.getInstance("DILITHIUM", "BCPQC");
+    verify.initVerify(kp.getPublic());
+    verify.update(manifest);
+    boolean ok = verify.verify(signature);
+    System.out.println("verify=" + ok);
+
+    // 6) Emit kp-* fields (base64)
+    System.out.println("kp-sig-alg=dilithium3");
+    System.out.println("kp-sig-pub=" + Base64.getEncoder().encodeToString(kp.getPublic().getEncoded()));
+    System.out.println("kp-sig=" + Base64.getEncoder().encodeToString(signature));
+  }
+
+  private static String bytesToHex(byte[] b) {
+    StringBuilder sb = new StringBuilder();
+    for (byte x : b) sb.append(String.format("%02x", x));
+    return sb.toString();
+  }
+}
+
+Optional (secrets/seed wrapping): Generate a random run seed and encapsulate with Kyber. In Bouncy Castle PQC, use the Kyber KEM (KYBER) APIs to produce (ciphertext, sharedSecret) for the recipient’s kp-kem-pub; store the ciphertext in seed_wrapped.kem_ciphertext. (Exact API varies by version.)
+
+⸻
+
+🔁 Where this hooks into your deck
+	•	Slide 13 (Regulatory) → replace “commit SHAs, container digests, random seeds” with kp-sig, kp-hash, kp-kem and PQ-signed attestations.
+	•	Appendix B (Audit Log) → adopt the kp-* YAML schema above.
+	•	Appendix C (Code) → include the Java PQC snippet to demonstrate operational readiness.
+
+Bottom line: you’ve now got post-quantum, Java-native provenance that slots directly into the iXcan/SiXcan → Network → GNN/NODE-RK4/Koopman → Ψ(x) pipeline, with traceable confidence at every step and regulatory-grade attestations.

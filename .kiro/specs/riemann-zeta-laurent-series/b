@@ -1,0 +1,76 @@
+run_id: 2025-08-16T00:00:00Z
+
+inputs:
+  gwas_summary:
+    doi: 10.xxxx/xxxxx
+    kp-hash-alg: SHA3-256
+    hash: h:4b26... # hex
+  eqtl_model:
+    name: GTEx_vX.Y
+    weights_hash: h:9ac1...
+    weights_kp-sig:
+      alg: dilithium3
+      pub: base64:MIIB...
+      sig: base64:MEQC...
+  tissues: [Liver, Kidney]
+  pathways_db:
+    name: STRING_v11.5
+    conf_min: 0.7
+    hash: h:77dd...
+
+code:
+  repo_url: https://example/repo
+  slsa_attestation:
+    format: in-toto
+    kp-sig:
+      alg: dilithium3
+      pub: base64:MIIB...
+      sig: base64:MEUCIQ...
+  container:
+    image_ref: registry.example/app@sha3-256:1f2a...
+    provenance: slsa-v1.json
+    kp-sig: { alg: dilithium3, pub: base64:..., sig: base64:... }
+
+crypto:
+  kp-hash-alg: SHA3-256
+  kp-sig-alg: dilithium3
+  kp-kem-alg: kyber1024
+  kp-rng:
+    type: DRBG(SHA3)
+    seed_wrapped:
+      kem_ciphertext: base64:AAAB...
+      kem_pub: base64:BBBC...
+
+steps:
+  iXcan_SiXcan:
+    tissue: Liver
+    model_ver: GTEx_vX.Y
+    alpha: 0.70; S: 0.90; N: 0.60; Ra: 0.10; Rv: 0.10; beta: 1.00
+    Psi: 0.56
+    kp-sig: { alg: dilithium3, sig: base64:... }
+  association:
+    beta_gt_list_hash: h:5cfe...
+    alpha: 0.50; S: 0.80; N: 0.70; Ra: 0.20; Rv: 0.20; beta: 0.90
+    Psi: 0.37
+    kp-sig: { alg: dilithium3, sig: base64:... }
+  network_embedding:
+    graph_hash: h:ab88...
+    alpha: 0.60; ...
+    Psi: 0.41
+  dynamics:
+    sim: NODE-RK4
+    odeset_hash: h:f00d...
+    val_metrics: { AUROC: 0.87 }
+    alpha: 0.40; ...
+    Psi: 0.39
+  psi_layer:
+    lambdas: { lambda1: 0.8, lambda2: 0.6 }
+    posterior_cap: enabled
+    Psi_final: 0.42
+
+outputs:
+  artifacts:
+    curves_pdf_hash: h:cafe7654
+    model_card_md_hash: h:1234abcd
+  bundle_signature:
+    kp-sig: { alg: dilithium3, pub: base64:..., sig: base64:... }

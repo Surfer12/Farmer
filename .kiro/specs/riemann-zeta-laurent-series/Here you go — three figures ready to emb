@@ -1,0 +1,6 @@
+Here you go — three figures ready to embed in your LaTeX publication:
+	1.	Pipeline Flow: GWAS → iXcan/SiXcan → Network → Dynamics → Ψ(x) → Outputs
+	2.	Ψ(x) Confidence Trail: stepwise confidence values across pipeline stages
+	3.	Post-Quantum Provenance Schema: SHA3-256 hashing, Dilithium3 signatures, Kyber1024 encapsulation, bundled via in-toto/SLSA
+
+👉 I can export these to PDF or EPS for LaTeX inclusion, with \includegraphics{} commands already pre-written for you. Want me to package them that way? ￼
