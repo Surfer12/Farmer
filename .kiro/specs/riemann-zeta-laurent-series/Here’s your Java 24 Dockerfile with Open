@@ -1,0 +1,36 @@
+Here’s your Java 24 Dockerfile with OpenSSL 3, Python 3, and Bouncy Castle PQC jars pre-wired for SHAKE256-512 hashing and Dilithium3/Kyber operations:
+	•	Download Dockerfile
+
+Build & run
+
+# Build (override BC jar URLs if you want newer versions)
+docker build -t ixcan-pqc:java24 .
+
+# Run interactively
+docker run --rm -it -v "$PWD":/app ixcan-pqc:java24 bash
+
+# Inside the container, regenerate provenance
+./rerun.sh -c provenance.config -m manifest.yaml -o provenance_out
+
+What’s inside
+	•	Base: eclipse-temurin:24-jdk-jammy (Java 24 + Ubuntu Jammy)
+	•	Tools: openssl (3.x), python3, curl, ca-certificates
+	•	PQC libs (downloaded at build time via ARGs):
+	•	bcprov-jdk18on
+	•	bcpqc-jdk18on
+	•	bcpkix-jdk18on
+	•	Runtime CLASSPATH exports BC providers automatically
+
+Notes
+	•	If your environment blocks outbound downloads, mirror the BC jars internally and pass build args:
+
+docker build \
+  --build-arg BC_PROV_URL=https://mirror.example/bcprov.jar \
+  --build-arg BC_PQC_URL=https://mirror.example/bcpqc.jar \
+  --build-arg BC_PKIX_URL=https://mirror.example/bcpkix.jar \
+  -t ixcan-pqc:java24 .
+
+
+	•	You can also mount your own provenance.config / manifest.yaml at runtime with -v.
+
+Want a Makefile and a docker-compose.yml to fully script builds and runs? ￼

@@ -1,0 +1,44 @@
+You’ve got the Laurent expansion exactly right. Here’s the clean statement, plus the key facts most people forget (definitions, convergence, values, and the Hurwitz generalization):
+
+The Laurent expansion at s = 1
+
+\boxed{\;\zeta(s)=\frac{1}{s-1}+\sum_{n=0}^{\infty}\frac{(-1)^n\,\gamma_n}{n!}\,(s-1)^n\;}
+\qquad(\gamma_0\equiv \gamma\ \text{is Euler–Mascheroni})
+
+So written out:
+\zeta(s)=\frac{1}{s-1}+\gamma-\gamma_1(s-1)+\frac{\gamma_2}{2}(s-1)^2-\frac{\gamma_3}{6}(s-1)^3+\cdots
+
+What the coefficients are
+
+The (Stieltjes) constants \gamma_n can be defined by the limit
+\boxed{\;\gamma_n=\lim_{m\to\infty}\left(\sum_{k=1}^{m}\frac{(\log k)^n}{k}-\frac{(\log m)^{n+1}}{n+1}\right)\;}
+and they’re exactly the Taylor coefficients of \zeta(s)-\frac{1}{s-1} at s=1:
+\gamma_n=(-1)^n\,\left.\frac{d^n}{ds^n}\Big(\zeta(s)-\tfrac{1}{s-1}\Big)\right|_{s=1}.
+
+Convergence radius (often misstated)
+
+\zeta(s) is meromorphic on \mathbb{C} with a single simple pole at s=1. Hence the analytic part
+\zeta(s)-\frac{1}{s-1} is entire, so its Taylor series about s=1 has infinite radius of convergence.
+Equivalently, the Laurent series above converges for all s\neq 1. (It may converge slowly when |s-1| is large.)
+
+First few numerical values (for orientation)
+
+\gamma_0=\gamma\approx 0.5772156649,\quad
+\gamma_1\approx -0.0728158455,\quad
+\gamma_2\approx -0.0096903632,\quad
+\gamma_3\approx 0.0020538344.
+(Signs alternate in no simple pattern beyond the factor (-1)^n already built into the series.)
+
+Quick usage near s=1
+
+Let s=1+\varepsilon with |\varepsilon|\ll 1:
+\zeta(1+\varepsilon)=\frac{1}{\varepsilon}+\gamma-\gamma_1\,\varepsilon+\frac{\gamma_2}{2}\varepsilon^2-\frac{\gamma_3}{6}\varepsilon^3+O(\varepsilon^4).
+Truncating after the \varepsilon or \varepsilon^2 term is typically accurate for small |\varepsilon|.
+
+Hurwitz generalization (worth knowing)
+
+For the Hurwitz zeta \zeta(s,a) (with a\not\in \{0,-1,-2,\dots\}):
+\boxed{\;\zeta(s,a)=\frac{1}{s-1}+\sum_{n=0}^{\infty}\frac{(-1)^n\,\gamma_n(a)}{n!}\,(s-1)^n\,,\qquad \gamma_n(1)=\gamma_n\;}
+These \gamma_n(a) are the generalized Stieltjes constants, recovering the classical ones at a=1.
+
+If you want, I can drop a tiny LaTeX box into your paper with this expansion, the limit definition, and a footnote listing the first constants—ready to paste.

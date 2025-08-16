@@ -1,0 +1,5 @@
+
+7) One-line claims (ready for the paper)
+	•	Primitive (Reverse Koopman Lipschitz). On compact invariant sets with bi-Lipschitz forward map, the inverse Koopman operator is Lipschitz; polynomial/DMD approximants inherit continuity, yielding bounded inversion error with explicit constants \frac{\kappa_r}{c}(\tau_r+\delta_\lambda+\delta_\varphi).
+	•	Variational regularity. The energy \mathcal{E} is strictly convex in \partial_t\Psi and coercive in \mathcal{D}{v_m}\Psi,\mathcal{D}{v_s}\Psi, stabilizing inverse reconstructions against chaotic amplification.
+	•	RSPO. A reverse-stepping PSO with coercive regularization converges under standard PSO stability envelopes and the Lipschitz bound above.
