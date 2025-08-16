@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only
 import SwiftUI
 
 struct ContentView: View {
@@ -53,6 +54,21 @@ struct ContentView: View {
                     Text(viewModel.reynoldsDisplayString)
                         .monospacedDigit()
                 }
+            }
+
+            HStack(spacing: 12) {
+                Button("Laminar (10°)") { viewModel.setLaminar() }
+                Button("Turbulent (20°)") { viewModel.setTurbulent() }
+            }
+
+            VStack(spacing: 6) {
+                Text("Ψ Score: " + String(format: "%.3f", viewModel.psiScore))
+                    .font(.headline)
+                HStack {
+                    Text("α")
+                    Slider(value: Binding(get: { viewModel.psiParameters.alpha }, set: { viewModel.psiParameters.alpha = $0 }), in: 0...1, step: 0.05)
+                }
+                .padding(.horizontal)
             }
 
             HStack(spacing: 12) {

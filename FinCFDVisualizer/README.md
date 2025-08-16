@@ -2,12 +2,13 @@
 
 A SwiftUI iOS/macOS app for real-time 3D visualization of CFD-derived fin performance for the Vector 3/2 Blackstix+ fin set, integrating:
 
-- SceneKit 3D rendering of side and center fins with dynamic pressure maps
+- SceneKit 3D rendering of side and center fins with dynamic pressure maps and particle flow
 - Core ML surrogate model predictions for lift/drag vs. AoA, rake, and Re (k-ω SST approximations assumed)
 - Combine-based data flow for real-time updates
 - CoreMotion IMU for turn angle/AoA estimation
 - CoreBluetooth (placeholder pipeline) for external pressure sensors
 - HealthKit HRV (SDNN) as a cognitive load metric to correlate rider flow state
+- Ψ(x) hybrid confidence score combining visualization clarity (S) and ML confidence (N), regularized by cognitive/efficiency penalties with tunable α, λ₁, λ₂, β
 
 ## Requirements
 - Xcode 15+
@@ -19,13 +20,14 @@ A SwiftUI iOS/macOS app for real-time 3D visualization of CFD-derived fin perfor
 - `FinCFDVisualizerApp.swift`: SwiftUI app entry
 - `Views/ContentView.swift`: Main UI
 - `Views/FinSceneView.swift`: Cross-platform SceneKit view wrapper
-- `Visualization/FinVisualizer.swift`: SceneKit scene, fin geometry, pressure mapping
-- `ViewModels/FinViewModel.swift`: Combine-based orchestrator
+- `Visualization/FinVisualizer.swift`: SceneKit scene, fin geometry, pressure mapping, particle flow
+- `ViewModels/FinViewModel.swift`: Combine-based orchestrator + Ψ computation
 - `ML/FinPredictor.swift`: Core ML wrapper with physics fallback
 - `Sensors/SensorManager.swift`: IMU (iOS) and placeholder BLE pressure pipeline
 - `Cognitive/CognitiveTracker.swift`: HealthKit HRV
 - `Utilities/PlatformTypes.swift`: Cross-platform color/image typedefs and helpers
 - `Utilities/PressureColorMap.swift`: Heatmap generation for pressure maps
+- `Utilities/PsiModel.swift`: Ψ(x) computation and parameters
 
 ## Setup in Xcode
 1) Create a new SwiftUI iOS app (optionally add a macOS target).
@@ -58,3 +60,4 @@ macOS target: SceneKit visualization is supported. HealthKit/IMU/BLE are stubbed
 - Implement your BLE pressure sensor service/characteristic UUIDs in `SensorManager`.
 - Add ARKit overlays for in-water augmented visualization.
 - Move heatmap generation to a Metal shader for higher performance on large textures.
+- Use HRV and reaction time history to modulate `riskCognitive` in Ψ parameters dynamically.
