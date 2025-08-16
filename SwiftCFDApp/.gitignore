@@ -1,0 +1,10 @@
+# Xcode
+DerivedData/
+*.xcuserstate
+*.xcworkspace/xcuserdata/
+
+# CoreML compiled
+*.mlmodelc/
+
+# macOS
+.DS_Store
