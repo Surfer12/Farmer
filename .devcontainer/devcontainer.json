@@ -1,0 +1,31 @@
+{
+  // SPDX-License-Identifier: LicenseRef-Internal-Use-Only
+  //
+  // Dev Container config for Farmer Project (Internal Use Only)
+  //
+  // © 2025 Ryan David Oates. Confidential — Internal Use Only
+  "name": "Farmer DevContainer",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "."
+  },
+  "settings": {
+    "terminal.integrated.defaultProfile.linux": "bash"
+  },
+  "extensions": [
+    "ms-python.python",
+    "ms-toolsai.jupyter",
+    "redhat.java",
+    "vscodevim.vim",
+    "vadimcn.vscode-lldb",
+    "swift-lang.swift",
+    "james-yu.latex-workshop",
+    "ms-vscode.cpptools",
+    "GitHub.copilot",
+    "cursor.cursor-vscode"
+  ],
+  "postCreateCommand": "pixi install || true; pip3 install -r requirements.txt || true",
+  "remoteUser": "devuser",
+  // Internal-use only: Do not distribute this configuration outside the collaboration.
+  "features": {}
+}
