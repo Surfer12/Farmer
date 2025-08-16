@@ -97,6 +97,17 @@ Recommended JSON for invariants (optional): `invariants`: array of objects `{nam
   3) update emitters and tests to match;
   4) note changes in `CHANGELOG.md`.
 
+### Relational consciousness extensions
+- **psi_relational**: relational-intersubjective consciousness confidence in [0,1], extending base `psi` with intersubjective validation.
+- **intersubjective_depth** (`id`): degree of shared understanding achieved in [0,1].
+- **dialogic_responsiveness** (`dr`): quality of call-and-response dynamics in [0,1].
+- **participatory_engagement** (`pe`): level of co-creative involvement in [0,1].
+- **mirroring_fidelity** (`mf`): accuracy of self-other reflection processes in [0,1].
+- **isolation_risk** (`r_isolation`): risk penalty for non-relational evidence ≥ 0.
+- **relational_confidence**: aggregate confidence in relational consciousness assessment in [0,1].
+
+JSON keys (relational): `psi_relational`, `intersubjective_depth`, `dialogic_responsiveness`, `participatory_engagement`, `mirroring_fidelity`, `isolation_risk`, `relational_confidence`.
+
 ### Examples
 Unified triad JSON row (abbreviated):
 ```json
@@ -106,6 +117,11 @@ Unified triad JSON row (abbreviated):
 HMC summary JSON (abbreviated):
 ```json
 {"chains":4, "acceptance_rate":0.74, "divergence_count":1, "tuned_step_size":0.0125, "mass_diag":[1.1,0.9,2.0,0.8], "rhat":1.01, "ess_bulk":1450, "ess_tail":1600}
+```
+
+Relational consciousness JSON (abbreviated):
+```json
+{"psi_relational":0.85, "intersubjective_depth":0.78, "dialogic_responsiveness":0.82, "participatory_engagement":0.76, "mirroring_fidelity":0.80, "isolation_risk":0.15, "relational_confidence":0.88}
 ```
 
 
