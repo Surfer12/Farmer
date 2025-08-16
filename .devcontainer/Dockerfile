@@ -26,21 +26,33 @@ RUN apt-get update && apt-get install -y \
     sudo \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Swift (latest stable)
-RUN wget -qO- https://swift.org/builds/swift-5.9.2-release/ubuntu2204/swift-5.9.2-RELEASE/swift-5.9.2-RELEASE-ubuntu22.04.tar.gz | tar xz -C /usr/local --strip-components=1
+# Install Swift (latest stable) — robust download with arch detection and retries
+RUN set -eux; \
+    ARCH="$(dpkg --print-architecture)"; \
+    case "$ARCH" in \
+      amd64)  DIST_DIR="ubuntu2204"; SWIFT_TARBALL="swift-5.9.2-RELEASE-ubuntu22.04.tar.gz" ;; \
+      arm64)  DIST_DIR="ubuntu2204-aarch64"; SWIFT_TARBALL="swift-5.9.2-RELEASE-ubuntu22.04-aarch64.tar.gz" ;; \
+      *) echo "Unsupported architecture: $ARCH" && exit 1 ;; \
+    esac; \
+    SWIFT_URL="https://swift.org/builds/swift-5.9.2-release/${DIST_DIR}/swift-5.9.2-RELEASE/${SWIFT_TARBALL}"; \
+    curl -fL --retry 5 --retry-delay 3 --retry-connrefused -o /tmp/swift.tar.gz "$SWIFT_URL"; \
+    tar -tzf /tmp/swift.tar.gz >/dev/null; \
+    tar -xzf /tmp/swift.tar.gz -C /usr/local --strip-components=1; \
+    rm -f /tmp/swift.tar.gz
 ENV PATH="/usr/local/bin:$PATH"
 
 # Install pixi (Python env manager)
 RUN curl -fsSL https://pixi.sh/install.sh | bash
 ENV PATH="/root/.pixi/bin:$PATH"
 
-# Upgrade pip and install Python requirements if present
-COPY requirements.txt /tmp/requirements.txt
-RUN pip3 install --upgrade pip && \
-    if [ -f /tmp/requirements.txt ]; then pip3 install -r /tmp/requirements.txt; fi
+# Python deps will be installed in postCreate to speed up base image builds
 
-# Set JAVA_HOME for Java 21
-ENV JAVA_HOME="/usr/lib/jvm/java-21-openjdk-amd64"
+# Set JAVA_HOME for Java 21 (arch-agnostic)
+RUN set -eux; \
+    JAVAC_PATH="$(command -v javac)"; \
+    JAVA_HOME_REAL="$(dirname "$(dirname "$(readlink -f "$JAVAC_PATH")") )"; \
+    ln -sfn "$JAVA_HOME_REAL" /usr/lib/jvm/java-21-openjdk
+ENV JAVA_HOME="/usr/lib/jvm/java-21-openjdk"
 
 # Node.js (ensure latest LTS)
 RUN npm install -g npm@latest
@@ -55,5 +67,6 @@ RUN groupadd --gid $USER_GID $USERNAME \
     && chmod 0440 /etc/sudoers.d/$USERNAME
 USER $USERNAME
 WORKDIR /workspace
+ENV PATH="/home/devuser/.local/bin:$PATH"
 
 # Internal-use only: Do not distribute this image outside the collaboration.

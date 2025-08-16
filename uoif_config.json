@@ -1,0 +1,198 @@
+{
+  "uoif_ruleset": {
+    "version": "2025-08-16",
+    "framework": "Zeta Sub-Latent Manifold Reverse Theorem Proofs",
+    
+    "source_hierarchy": {
+      "canonical": {
+        "priority": 1,
+        "sources": [
+          "grok_report-7.pdf",
+          "grok_report-9.pdf", 
+          "grok_report-6_copy.pdf"
+        ],
+        "components": {
+          "reverse_koopman_lipschitz": {
+            "source": "grok_report-7.pdf",
+            "method": "DMD-based extraction",
+            "confidence": 0.97,
+            "beta": 1.15
+          },
+          "rspo_convergence": {
+            "source": "grok_report-9.pdf",
+            "method": "swarm-DMD optimization",
+            "confidence": 0.89,
+            "beta": 1.20
+          },
+          "euler_lagrange_confidence": {
+            "source": "grok_report-6_copy.pdf",
+            "method": "variational E[Ψ]",
+            "confidence": 0.94,
+            "beta": 1.15
+          }
+        }
+      },
+      "expert_interpretive": {
+        "priority": 2,
+        "sources": ["arXiv:2504.13453v1"],
+        "focus": "swarm theory links to Koopman/DMD"
+      },
+      "historical_mirror": {
+        "priority": 3,
+        "sources": ["Prior Oates theorem notes"],
+        "usage": "context only, not canonical"
+      },
+      "community_interpretive": {
+        "priority": 4,
+        "sources": ["External DMD/RSPO papers"],
+        "usage": "supporting evidence"
+      }
+    },
+    
+    "claim_classification": {
+      "primitive": {
+        "description": "Exact derivations, lemmas, notations",
+        "examples": ["Lipschitz constant", "DMD modes", "K^-1 operator"],
+        "promotion_criteria": "verified bounds",
+        "allocation_range": [0.10, 0.20]
+      },
+      "interpretation": {
+        "description": "Convergence proofs, manifold reconstructions", 
+        "requirements": "≥1 report link",
+        "allocation_range": [0.35, 0.45]
+      },
+      "speculative": {
+        "description": "Chaos analogs, context",
+        "label": "speculative",
+        "promotion": "none"
+      }
+    },
+    
+    "scoring_weights": {
+      "primitives": {
+        "w_auth": 0.35,
+        "w_ver": 0.30,
+        "w_depth": 0.10,
+        "w_align": 0.15,
+        "w_rec": 0.07,
+        "w_noise": 0.23
+      },
+      "interpretations": {
+        "w_auth": 0.20,
+        "w_ver": 0.20,
+        "w_depth": 0.25,
+        "w_align": 0.25,
+        "w_rec": 0.05,
+        "w_noise": 0.15
+      }
+    },
+    
+    "allocation_strategies": {
+      "lipschitz_primitives": {
+        "alpha": 0.12,
+        "preference": "canonical",
+        "reliability": 0.97
+      },
+      "rspo_dmd": {
+        "alpha_range": [0.15, 0.20],
+        "gating": "data-driven",
+        "reliability_range": [0.88, 0.90]
+      },
+      "euler_lagrange": {
+        "alpha_range": [0.10, 0.15],
+        "condition": "if variational, else higher",
+        "reliability_range": [0.92, 0.95]
+      },
+      "interpretations": {
+        "alpha_range": [0.35, 0.45],
+        "requirement": "≥1 report link"
+      }
+    },
+    
+    "decision_equation": {
+      "lambda1": 0.85,
+      "lambda2": 0.15,
+      "formula": "Ψ = [α*S + (1-α)*N] * exp(-[λ1*R_authority + λ2*R_verifiability]) * P(H|E,β)",
+      "posterior_calibration": {
+        "P_H_E": [0.85, 0.90],
+        "beta_lipschitz": 1.15,
+        "beta_full_proofs": 1.20
+      }
+    },
+    
+    "promotion_triggers": {
+      "lipschitz": {
+        "condition": "verified bounds",
+        "target_confidence": 0.97,
+        "target_alpha": 0.12,
+        "target_beta": 1.15,
+        "promotion_to": "Empirically Grounded"
+      },
+      "rspo_dmd": {
+        "condition": "simulations",
+        "target_confidence": 0.98,
+        "target_alpha": 0.10,
+        "target_beta": 1.20,
+        "expectation": "≥0.75",
+        "promotion_to": "Primitive/Empirically Grounded"
+      },
+      "euler_lagrange": {
+        "condition": "variational links",
+        "promotion_method": "confidence aggregation"
+      }
+    },
+    
+    "notation_guide": {
+      "K_inverse": {
+        "symbol": "K^-1",
+        "description": "Reverse Koopman operator (inverts spectral to nonlinear flows)"
+      },
+      "RSPO": {
+        "symbol": "RSPO",
+        "description": "Reverse Swarm Particle Optimization",
+        "formula": "v_i(t-1) = v_i(t) - c1*r1*(p_i - x_i) - c2*r2*(g - x_i)"
+      },
+      "DMD": {
+        "symbol": "DMD", 
+        "description": "Dynamic Mode Decomposition, modes φ_k with λ_k for spatiotemporal extraction"
+      },
+      "consciousness_field": {
+        "symbol": "Ψ(x,m,s)",
+        "description": "Consciousness field (zeta analog)",
+        "variational": "∫ [1/2 |dΨ/dt|² + A₁|∇ₘΨ|² + μ|∇ₛΨ|²] dm ds"
+      },
+      "confidence_probability": {
+        "symbol": "C(p)",
+        "description": "Confidence probability from HB posterior",
+        "constraint": "E[C] ≥ 1-ε"
+      },
+      "lipschitz_continuity": {
+        "symbol": "Lipschitz",
+        "description": "|K^-1(f) - K^-1(g)| ≤ L|f - g| for reverse continuity"
+      }
+    },
+    
+    "coherence_checks": {
+      "string": "Primitives match report notations (e.g., K^-1 for reverse Koopman)",
+      "asset": "Include swarm/DMD analogs; consciousness field Ψ",
+      "timestamp": "Reports as of 2025; arXiv timestamps"
+    },
+    
+    "conflict_resolution": {
+      "report_vs_arxiv": "Prefer reports; cite arXiv for extensions",
+      "dmd_vs_rspo": "Present integrated; defer to convergence proofs", 
+      "mirror": "Context only; never overrides reports"
+    },
+    
+    "citation_patterns": {
+      "lipschitz_rspo_dmd": [
+        "grok_report-7.pdf (Lipschitz)",
+        "grok_report-9.pdf (RSPO/DMD)",
+        "arXiv:2504.13453v1 (swarm-Koopman)"
+      ],
+      "euler_lagrange": [
+        "grok_report-6_copy.pdf (variational Ψ)"
+      ]
+    }
+  }
+}

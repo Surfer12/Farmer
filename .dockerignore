@@ -1,0 +1,10 @@
+# Exclude everything by default to keep build context tiny
+**
+
+# Allow devcontainer assets
+!.devcontainer
+
+# Optionally allow minimal root files if needed by COPY
+!requirements.txt
+!README.md
+

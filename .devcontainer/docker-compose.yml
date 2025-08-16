@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  dev:
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+    working_dir: /workspace
+    volumes:
+      - ..:/workspace:cached
+    init: true
+    tty: true
+
+  ovms:
+    image: openvino/model_server:latest
+    profiles: ["ovms"]
+    ports:
+      - "9000:9000"   # gRPC
+      - "8001:8001"   # REST
+    restart: unless-stopped
+

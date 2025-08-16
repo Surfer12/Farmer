@@ -5,18 +5,17 @@
   //
   // © 2025 Ryan David Oates. Confidential — Internal Use Only
   "name": "Farmer DevContainer",
-  "build": {
-    "dockerfile": "@Dockerfile",
-    "context": "."
-  },
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "dev",
   "settings": {
     "terminal.integrated.defaultProfile.linux": "bash"
   },
   "extensions": [   
     "cursor.cursor-vscode"
   ],
-  "postCreateCommand": "",
+  "postCreateCommand": "bash -lc 'python3 -m pip install --user --upgrade pip && if [ -f requirements.txt ]; then python3 -m pip install --user -r requirements.txt; fi'",
   "remoteUser": "devuser",
+  "forwardPorts": [8001, 9000],
   // Internal-use only: Do not distribute this configuration outside the collaboration.
   "features": {}
 }

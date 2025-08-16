@@ -1,6 +1,3 @@
 {
-  "build": {
-    "dockerfile": ".devcontainer/Dockerfile",
-    "context": "."
-  }
+  "agentCanUpdateSnapshot": false
 }
