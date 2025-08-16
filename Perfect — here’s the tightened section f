@@ -1,0 +1,29 @@
+Perfect — here’s the tightened section formatted LaTeX-ready so you can drop it right into your working note or publication:
+
+\section*{Good stuff—two quick tighten-ups and one nice connection}
+
+\subsection*{$e$ and $e^{\gamma}$}
+\begin{itemize}
+  \item The base of natural logarithms is given by the rapidly convergent series:
+  \[
+    e = \sum_{n=0}^{\infty} \frac{1}{n!}
+      = 1 + 1 + \tfrac{1}{2} + \tfrac{1}{6} + \tfrac{1}{24} + \tfrac{1}{120} + \cdots
+  \]
+  \item The exponential of the Euler--Mascheroni constant is
+  \[
+    e^{\gamma} \approx 1.781072418\ldots,
+  \]
+  where $\gamma \approx 0.5772156649$.
+\end{itemize}
+
+\paragraph{Fun fact.}
+Mertens’ theorem states
+\[
+  \prod_{p \leq x} \Bigl(1 - \frac{1}{p}\Bigr)^{-1}
+    \;\sim\; e^{\gamma}\,\log x,
+\]
+which ties $e^{\gamma}$ directly to the density of prime numbers.
+
+That slots cleanly into your UOIF working note or the zeta-function appendix.
+
+Do you want me to also weave this into your confidence-notation ruleset (showing how $e^{\gamma}$ as a density constant could be treated as a “canonical anchor” in UOIF scoring), or keep it as a lightweight math-side insert?

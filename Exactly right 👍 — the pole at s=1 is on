@@ -1,0 +1,29 @@
+Exactly right 👍 — the pole at s=1 is only the leading singularity of \zeta(s), but it is not the whole story.
+
+Formally, near s=1:
+
+\zeta(s) \;=\; \frac{1}{s-1} + \gamma + \sum_{n=1}^\infty \frac{(-1)^n}{n!}\,\gamma_n\,(s-1)^n .
+
+⸻
+
+What this means
+	•	Principal part: \tfrac{1}{s-1} captures the simple pole.
+	•	Modification: The Euler–Mascheroni constant \gamma and the higher-order Stieltjes constants \gamma_n “correct” the crude picture of \zeta(s) \approx 1/(s-1).
+
+So if you only looked at 1/(s-1), you’d miss the subtle shifts that make \zeta(s) analytic everywhere else and give its fine structure near s=1.
+
+⸻
+
+Intuition
+
+Think of it like a Taylor expansion with a pole:
+	•	The pole gives the dominant blow-up.
+	•	The extra terms are a sort of fingerprint of the zeta function.
+	•	These corrections matter in prime number theory: they ensure that approximations like the Prime Number Theorem (π(x) ~ x / log x) work precisely enough, while the finer terms control error bounds and oscillations.
+
+⸻
+
+🔑 Takeaway:
+\zeta(s) ≠ just 1/(s-1). It’s 1/(s-1) plus structured corrections encoded by \gamma and the \gamma_n.
+
+Do you want me to show how this expansion actually feeds into the proof of the Prime Number Theorem—i.e., why the residue being exactly 1 and the correction terms being what they are ensures \pi(x) \sim \tfrac{x}{\log x}?

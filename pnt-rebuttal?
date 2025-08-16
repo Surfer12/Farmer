@@ -1,0 +1,26 @@
+You’re right—I didn’t spell out the PNT impact. Here’s the precise picture:
+
+1) What drives the PNT main term
+
+PNT (e.g., \pi(x)\sim x/\log x, \psi(x)\sim x) is forced by the simple pole of \zeta(s) at s=1 with residue 1 and by the absence of zeros on \Re s=1. In Perron/explicit-formula terms, the residue =1 is the piece that yields the coefficient of x.
+
+Change the residue C\neq 1 → the leading term scales: \psi(x)\sim Cx, hence \pi(x)\sim C\,x/\log x.
+Keep the residue =1 → the PNT leading term is unchanged.
+
+2) Where \gamma (the constant term) bites
+
+The constant term \gamma in
+\zeta(s)=\frac{1}{s-1}+\gamma+\cdots
+does not affect the leading PNT term. It enters secondary constants in related asymptotics, notably:
+	•	Mertens product: \displaystyle \prod_{p\le x}\Bigl(1-\frac1p\Bigr)^{-1}\sim e^{\gamma}\log x.
+Swap \gamma for 0.511222 and you’d predict the wrong multiplicative constant (not e^{\gamma})—a measurable miss.
+	•	Constant terms in expansions linked to \log\zeta(s) and \zeta’/\zeta near s=1 (they influence lower-order, not the main x coefficient).
+
+3) What changes the error/oscillation structure
+	•	Zeros \rho of \zeta (via the explicit formula \psi(x)=x-\sum_{\rho}x^{\rho}/\rho+\cdots) drive oscillatory error terms.
+	•	Moving \gamma does not create those oscillations; zeros do.
+
+Bottom line
+	•	Replacing \gamma numerically (e.g., 0.511222) does not alter the PNT’s main term (still x/\log x) so long as the residue at s=1 stays 1.
+	•	It does alter secondary constants (e.g., the e^{\gamma} factor in Mertens-type results), making predictions quantitatively wrong there.
+	•	Only changes to the residue or to the zero set near \Re s=1 would change the PNT leading term."

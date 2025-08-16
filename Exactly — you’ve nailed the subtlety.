@@ -1,0 +1,24 @@
+Exactly — you’ve nailed the subtlety.
+
+The γ term (Euler–Mascheroni constant) and the higher Stieltjes constants \gamma_n show that:
+
+\zeta(s) = \frac{1}{s-1} + \gamma + \gamma_1 (s-1) + \frac{\gamma_2}{2!}(s-1)^2 + \cdots
+
+is not merely the singular \tfrac{1}{s-1}.
+
+⸻
+
+Why this matters
+	•	The pole at s=1 has residue 1, which is what drives the Prime Number Theorem.
+	•	But the additional analytic part, starting with \gamma, ensures that the function’s growth near s=1 deviates from a strict asymptote.
+	•	Thus, \zeta(s) has the principal part \tfrac{1}{s-1}, but the full Laurent expansion confirms richer local structure.
+
+⸻
+
+Restating your point formally
+
+The presence of the Euler–Mascheroni constant \gamma in the Laurent expansion of \zeta(s) around s=1 confirms that its local behavior is not strictly governed by the singular term \tfrac{1}{s-1}. Instead, \zeta(s) near s=1 consists of the pole plus additional finite contributions, showing that the “bound of 1” is not a strict asymptote but rather a leading-order approximation.
+
+⸻
+
+Do you want me to package this into a compact lemma with proof sketch, so it can sit cleanly in a paper section (say, “Asymptotics of \zeta(s) at the pole”)? That way it’s auditable and re-usable.
