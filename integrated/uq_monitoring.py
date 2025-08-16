@@ -285,7 +285,11 @@ class UQProductionMonitor:
 
         # Fit drift monitors on reference features (use PCA if high-dimensional)
         if features.shape[1] > 10:
-            from sklearn.decomposition import PCA
+            try:
+                from sklearn.decomposition import PCA
+            except ImportError:
+                PCA = None
+                return {'drift_detected': False, 'reason': 'PCA not available'}
 
             pca = PCA(n_components=min(10, features.shape[1]))
             features_reduced = pca.fit_transform(features)
@@ -466,8 +470,8 @@ class UQProductionMonitor:
                     timestamp=timestamp,
                     alert_type="coverage_drift",
                     metric_name="Coverage",
-                    current_value=current_coverage,
-                    threshold=self.reference_coverage,
+                    current_value=float(current_coverage),
+                    threshold=float(self.reference_coverage) if self.reference_coverage is not None else 0.0,
                     severity="medium",
                     message=f"Prediction interval coverage drift (Current: {current_coverage:.3f}, Reference: {self.reference_coverage:.3f})",
                 )
@@ -509,8 +513,8 @@ class UQProductionMonitor:
             input_drift_score=max_psi,
             prediction_drift_score=pred_psi,
             calibration_error=current_ece,
-            coverage_rate=current_coverage,
-            avg_uncertainty=current_uncertainty,
+            coverage_rate=float(current_coverage) if current_coverage is not None else 0.0,
+            avg_uncertainty=float(avg_uncertainty),
             prediction_count=len(self.prediction_buffer),
             abstention_rate=0.0,  # Would need to track abstentions separately
         )

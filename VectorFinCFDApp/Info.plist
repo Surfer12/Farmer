@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>$(DEVELOPMENT_LANGUAGE)</string>
+    <key>CFBundleDisplayName</key>
+    <string>Vector Fin CFD</string>
+    <key>CFBundleExecutable</key>
+    <string>$(EXECUTABLE_NAME)</string>
+    <key>CFBundleIdentifier</key>
+    <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleName</key>
+    <string>$(PRODUCT_NAME)</string>
+    <key>CFBundlePackageType</key>
+    <string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.0</string>
+    <key>CFBundleVersion</key>
+    <string>1</string>
+    <key>LSRequiresIPhoneOS</key>
+    <true/>
+    <key>UIApplicationSceneManifest</key>
+    <dict>
+        <key>UIApplicationSupportsMultipleScenes</key>
+        <false/>
+        <key>UISceneConfigurations</key>
+        <dict>
+            <key>UIWindowSceneSessionRoleApplication</key>
+            <array>
+                <dict>
+                    <key>UISceneConfigurationName</key>
+                    <string>Default Configuration</string>
+                    <key>UISceneDelegateClassName</key>
+                    <string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
+                </dict>
+            </array>
+        </dict>
+    </dict>
+    <key>UIApplicationSupportsIndirectInputEvents</key>
+    <true/>
+    <key>UILaunchScreen</key>
+    <dict>
+        <key>UIColorName</key>
+        <string>AccentColor</string>
+        <key>UIImageName</key>
+        <string>LaunchImage</string>
+    </dict>
+    <key>UISupportedInterfaceOrientations</key>
+    <array>
+        <string>UIInterfaceOrientationPortrait</string>
+        <string>UIInterfaceOrientationLandscapeLeft</string>
+        <string>UIInterfaceOrientationLandscapeRight</string>
+    </array>
+    <key>UISupportedInterfaceOrientations~ipad</key>
+    <array>
+        <string>UIInterfaceOrientationPortrait</string>
+        <string>UIInterfaceOrientationPortraitUpsideDown</string>
+        <string>UIInterfaceOrientationLandscapeLeft</string>
+        <string>UIInterfaceOrientationLandscapeRight</string>
+    </array>
+    
+    <!-- Privacy Permissions -->
+    <key>NSHealthShareUsageDescription</key>
+    <string>This app needs access to your heart rate variability data to analyze cognitive load and flow state during surfing sessions.</string>
+    <key>NSHealthUpdateUsageDescription</key>
+    <string>This app may write workout data to HealthKit to track your surfing sessions.</string>
+    <key>NSMotionUsageDescription</key>
+    <string>This app uses motion sensors to detect fin angle of attack and board orientation for CFD analysis.</string>
+    <key>NSBluetoothAlwaysUsageDescription</key>
+    <string>This app connects to Bluetooth pressure sensors on your fins to measure real-time hydrodynamic forces.</string>
+    <key>NSBluetoothPeripheralUsageDescription</key>
+    <string>This app connects to Bluetooth pressure sensors to collect fin performance data.</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>Location data helps correlate wave conditions with fin performance metrics.</string>
+    
+    <!-- Required Device Capabilities -->
+    <key>UIRequiredDeviceCapabilities</key>
+    <array>
+        <string>accelerometer</string>
+        <string>gyroscope</string>
+        <string>magnetometer</string>
+        <string>bluetooth-le</string>
+    </array>
+    
+    <!-- Background Modes -->
+    <key>UIBackgroundModes</key>
+    <array>
+        <string>bluetooth-central</string>
+        <string>processing</string>
+    </array>
+    
+    <!-- App Transport Security -->
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsArbitraryLoads</key>
+        <false/>
+        <key>NSAllowsLocalNetworking</key>
+        <true/>
+    </dict>
+    
+    <!-- Metal Performance -->
+    <key>MTLGPUFamilyApple1</key>
+    <true/>
+    <key>MTLGPUFamilyApple2</key>
+    <true/>
+    <key>MTLGPUFamilyApple3</key>
+    <true/>
+    <key>MTLGPUFamilyApple4</key>
+    <true/>
+    <key>MTLGPUFamilyApple5</key>
+    <true/>
+    <key>MTLGPUFamilyApple6</key>
+    <true/>
+    <key>MTLGPUFamilyApple7</key>
+    <true/>
+    <key>MTLGPUFamilyApple8</key>
+    <true/>
+    
+    <!-- Core ML Configuration -->
+    <key>NSSupportsLiveActivities</key>
+    <false/>
+    
+    <!-- App Category -->
+    <key>LSApplicationCategoryType</key>
+    <string>public.app-category.sports</string>
+    
+    <!-- Minimum iOS Version -->
+    <key>MinimumOSVersion</key>
+    <string>17.0</string>
+</dict>
+</plist>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>Vector Fin CFD</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>$(PRODUCT_NAME)</string>
+	<key>CFBundlePackageType</key>
+	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<false/>
+		<key>UISceneConfigurations</key>
+		<dict>
+			<key>UIWindowSceneSessionRoleApplication</key>
+			<array>
+				<dict>
+					<key>UISceneConfigurationName</key>
+					<string>Default Configuration</string>
+					<key>UISceneDelegateClassName</key>
+					<string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
+				</dict>
+			</array>
+		</dict>
+	</dict>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+		<string>armv7</string>
+	</array>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>This app uses Bluetooth to connect to fin pressure sensors for real-time performance monitoring.</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>This app connects to Bluetooth pressure sensors to monitor fin performance.</string>
+	<key>NSHealthShareUsageDescription</key>
+	<string>This app accesses your heart rate variability data to optimize your surfing performance and flow state.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>This app may update your health data to track performance improvements over time.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>This app uses device motion to track your turn angles and surfing technique for performance analysis.</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>SF-Pro-Display-Regular.otf</string>
+		<string>SF-Pro-Display-Medium.otf</string>
+		<string>SF-Pro-Display-Bold.otf</string>
+	</array>
+	<key>UIStatusBarStyle</key>
+	<string>UIStatusBarStyleDefault</string>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<false/>
+</dict>
+</plist>
