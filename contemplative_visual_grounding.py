@@ -81,7 +81,11 @@ class ContemplativeVisualGrounder:
             'passing_threshold': 0.1,
             'observer_weight': 0.3,
             'cultural_sensitivity': True,
-            'accessibility_modes': ['visual', 'auditory', 'tactile']
+            'accessibility_modes': ['visual', 'auditory', 'tactile'],
+            'visual_grounding': {
+                'frame_difference_threshold': 10, # Threshold for frame difference
+                'contour_area_minimum': 50 # Minimum area for a contour to be considered a phenomenon
+            }
         }
     
     def compute_contemplative_psi(self, 
@@ -222,6 +226,81 @@ class ContemplativeVisualGrounder:
         impermanence_map = np.power(impermanence_map, 0.8)  # Slight compression to enhance mid-range
         
         return impermanence_map
+    
+    def _quantify_uncertainty_bounded(self, 
+                                     temporal_gradients: Dict[str, np.ndarray],
+                                     impermanence_map: np.ndarray,
+                                     observer_feedback: Optional[List[ObserverFeedback]] = None) -> np.ndarray:
+        """
+        Bounded uncertainty quantification for contemplative insights
+        
+        Implements multiplicative uncertainty composition ensuring [0,1] bounds
+        while reflecting the contemplative understanding of impermanence
+        """
+        # Base epistemic uncertainty from temporal gradient variability
+        magnitude = temporal_gradients['magnitude']
+        gradient_variance = np.var(magnitude)
+        epistemic_uncertainty = np.tanh(gradient_variance / (np.mean(magnitude) + 1e-8))
+        
+        # Aleatoric uncertainty from impermanence (inherent randomness of arising/passing)
+        # Higher impermanence implies higher inherent uncertainty
+        aleatoric_uncertainty = impermanence_map
+        
+        # Observer uncertainty from external validation (when available)
+        observer_uncertainty = np.ones_like(magnitude) * 0.5  # Default neutral uncertainty
+        
+        if observer_feedback:
+            # Aggregate observer uncertainty using multiplicative composition
+            observer_confidences = [fb.validation_score for fb in observer_feedback]
+            if observer_confidences:
+                # Convert confidence to uncertainty and bound it
+                mean_confidence = np.mean(observer_confidences)
+                observer_uncertainty = observer_uncertainty * (1.0 - mean_confidence)
+        
+        # Multiplicative uncertainty composition (preserves [0,1] bounds)
+        # Following the proven multiplicative Ψ framework approach
+        total_uncertainty = epistemic_uncertainty * aleatoric_uncertainty * observer_uncertainty
+        
+        # Ensure bounded output [0,1]
+        total_uncertainty = np.clip(total_uncertainty, 0.0, 1.0)
+        
+        # Apply contemplative principle: higher impermanence should increase uncertainty
+        # This reflects the Buddhist understanding that transient phenomena are inherently uncertain
+        impermanence_factor = 0.5 + 0.5 * impermanence_map  # Scale to [0.5, 1.0]
+        total_uncertainty = total_uncertainty * impermanence_factor
+        
+        return total_uncertainty
+    
+    def _compute_contemplative_confidence(self,
+                                        uncertainty: np.ndarray,
+                                        observer_validation: float = 0.5,
+                                        stage_four_threshold: float = 0.70) -> np.ndarray:
+        """
+        Compute contemplative confidence using multiplicative Ψ framework
+        
+        Integrates uncertainty with observer validation to produce bounded confidence
+        that reflects stage-four insight maturity
+        """
+        # Base confidence from inverse uncertainty (multiplicative inversion)
+        base_confidence = 1.0 - uncertainty
+        
+        # Observer validation factor (multiplicative scaling)
+        observer_factor = 0.5 + 0.5 * observer_validation  # Maps [0,1] to [0.5,1.0]
+        
+        # Stage-four insight factor (higher threshold for mature insight)
+        stage_factor = np.where(
+            base_confidence >= stage_four_threshold,
+            1.0,  # Full confidence for mature insights
+            base_confidence / stage_four_threshold  # Scaled confidence for developing insights
+        )
+        
+        # Multiplicative composition (preserves bounds)
+        contemplative_confidence = base_confidence * observer_factor * stage_factor
+        
+        # Ensure [0,1] bounds
+        contemplative_confidence = np.clip(contemplative_confidence, 0.0, 1.0)
+        
+        return contemplative_confidence
     
     def _segment_transient_features(self, 
                                    temporal_gradients: Dict[str, np.ndarray],
@@ -596,6 +675,363 @@ class ContemplativeVisualGrounder:
         validation_results["observer_integration"] = len(self.observer_network) > 0
         
         return validation_results
+
+class InclusiveObserverNetwork:
+    """
+    Inclusive Observer Network for stage-four validation
+    
+    Implements distributed peer observation with cultural adaptivity,
+    accessibility support, and expertise recognition for universal participation
+    """
+    
+    def __init__(self, config: Dict[str, Any]):
+        self.config = config
+        self.observers = {}  # observer_id -> observer profile
+        self.cultural_adapters = self._initialize_cultural_adapters()
+        self.accessibility_modules = self._initialize_accessibility_modules()
+        self.expertise_validators = {}
+        
+    def _initialize_cultural_adapters(self) -> Dict[str, Dict]:
+        """Initialize cultural adaptation protocols"""
+        return {
+            'theravada': {
+                'terminology_mapping': {
+                    'arising': 'udaya',
+                    'passing': 'vaya', 
+                    'impermanence': 'anicca',
+                    'observation': 'vipassanā'
+                },
+                'validation_style': 'gentle_inquiry',
+                'feedback_format': 'dhamma_based'
+            },
+            'zen': {
+                'terminology_mapping': {
+                    'arising': 'appearance',
+                    'passing': 'disappearance',
+                    'impermanence': 'mujo',
+                    'observation': 'shikan-taza'
+                },
+                'validation_style': 'direct_pointing',
+                'feedback_format': 'immediate_correction'
+            },
+            'vipassana': {
+                'terminology_mapping': {
+                    'arising': 'arising',
+                    'passing': 'passing',
+                    'impermanence': 'changing',
+                    'observation': 'noting'
+                },
+                'validation_style': 'systematic_noting',
+                'feedback_format': 'precise_description'
+            },
+            'secular': {
+                'terminology_mapping': {
+                    'arising': 'emergence',
+                    'passing': 'dissolution',
+                    'impermanence': 'transience',
+                    'observation': 'mindful_attention'
+                },
+                'validation_style': 'scientific_inquiry',
+                'feedback_format': 'empirical_description'
+            }
+        }
+    
+    def _initialize_accessibility_modules(self) -> Dict[str, Any]:
+        """Initialize multi-modal accessibility support"""
+        return {
+            'visual': {
+                'high_contrast_mode': True,
+                'zoom_support': True,
+                'color_blind_adaptation': True
+            },
+            'auditory': {
+                'text_to_speech': True,
+                'frequency_adaptation': [200, 600],  # Hz range
+                'volume_control': True,
+                'spatial_audio': True
+            },
+            'tactile': {
+                'haptic_feedback': True,
+                'intensity_range': [0, 100],
+                'duration_range': [100, 500],  # milliseconds
+                'pattern_library': ['pulse', 'vibration', 'tap']
+            },
+            'cognitive': {
+                'simplified_language': True,
+                'concept_scaffolding': True,
+                'memory_aids': True,
+                'attention_guidance': True
+            }
+        }
+    
+    def register_observer(self, 
+                         observer_id: str,
+                         profile: Dict[str, Any]) -> bool:
+        """
+        Register new observer with inclusive profiling
+        
+        Supports diverse backgrounds, expertise levels, and accessibility needs
+        """
+        # Validate and normalize profile
+        normalized_profile = {
+            'id': observer_id,
+            'cultural_context': profile.get('cultural_context', 'secular'),
+            'expertise_level': np.clip(profile.get('expertise_level', 0.5), 0.0, 1.0),
+            'accessibility_needs': profile.get('accessibility_needs', []),
+            'preferred_modalities': profile.get('preferred_modalities', ['visual']),
+            'language': profile.get('language', 'english'),
+            'contemplative_background': profile.get('contemplative_background', []),
+            'validation_style': profile.get('validation_style', 'supportive'),
+            'availability_schedule': profile.get('availability_schedule', 'flexible'),
+            'peer_matching_preferences': profile.get('peer_matching_preferences', {})
+        }
+        
+        self.observers[observer_id] = normalized_profile
+        return True
+    
+    def request_observation(self,
+                           phenomenon: VisualPhenomenon,
+                           requester_context: Dict[str, Any],
+                           urgency: float = 0.5) -> List[ObserverFeedback]:
+        """
+        Request observation from inclusive observer network
+        
+        Implements intelligent observer matching based on:
+        - Cultural compatibility
+        - Expertise complementarity  
+        - Accessibility needs
+        - Availability
+        """
+        # Find compatible observers
+        compatible_observers = self._find_compatible_observers(
+            requester_context, phenomenon, urgency
+        )
+        
+        # Adapt presentation for each observer
+        adapted_requests = []
+        for observer_id in compatible_observers:
+            observer = self.observers[observer_id]
+            adapted_request = self._adapt_observation_request(
+                phenomenon, observer, requester_context
+            )
+            adapted_requests.append((observer_id, adapted_request))
+        
+        # Collect feedback (simulated for now - would be real-time in production)
+        feedback_list = []
+        for observer_id, request in adapted_requests:
+            feedback = self._simulate_observer_feedback(observer_id, request, phenomenon)
+            feedback_list.append(feedback)
+        
+        return feedback_list
+    
+    def _find_compatible_observers(self,
+                                  requester_context: Dict[str, Any],
+                                  phenomenon: VisualPhenomenon,
+                                  urgency: float) -> List[str]:
+        """
+        Find observers compatible with requester context and phenomenon
+        
+        Uses multiplicative scoring to ensure bounded compatibility measures
+        """
+        compatibility_scores = {}
+        
+        for observer_id, observer in self.observers.items():
+            # Cultural compatibility (multiplicative factor)
+            cultural_compatibility = self._compute_cultural_compatibility(
+                requester_context.get('cultural_context', 'secular'),
+                observer['cultural_context']
+            )
+            
+            # Expertise complementarity (multiplicative factor)
+            expertise_compatibility = self._compute_expertise_compatibility(
+                requester_context.get('expertise_level', 0.5),
+                observer['expertise_level']
+            )
+            
+            # Accessibility compatibility (multiplicative factor)
+            accessibility_compatibility = self._compute_accessibility_compatibility(
+                requester_context.get('accessibility_needs', []),
+                observer['accessibility_needs']
+            )
+            
+            # Phenomenon relevance (multiplicative factor)
+            phenomenon_relevance = self._compute_phenomenon_relevance(
+                phenomenon, observer
+            )
+            
+            # Multiplicative composition preserves [0,1] bounds
+            total_compatibility = (cultural_compatibility * 
+                                 expertise_compatibility * 
+                                 accessibility_compatibility * 
+                                 phenomenon_relevance)
+            
+            compatibility_scores[observer_id] = total_compatibility
+        
+        # Sort by compatibility and return top matches
+        sorted_observers = sorted(
+            compatibility_scores.items(), 
+            key=lambda x: x[1], 
+            reverse=True
+        )
+        
+        # Return top N observers based on urgency
+        max_observers = int(urgency * len(self.observers)) + 1
+        return [obs_id for obs_id, _ in sorted_observers[:max_observers]]
+    
+    def _compute_cultural_compatibility(self, 
+                                      requester_culture: str,
+                                      observer_culture: str) -> float:
+        """Compute cultural compatibility using multiplicative similarity"""
+        if requester_culture == observer_culture:
+            return 1.0
+        
+        # Cross-cultural compatibility matrix (multiplicative factors)
+        compatibility_matrix = {
+            ('theravada', 'vipassana'): 0.9,
+            ('zen', 'secular'): 0.7,
+            ('vipassana', 'secular'): 0.8,
+            ('theravada', 'zen'): 0.6,
+            # Add symmetric entries
+        }
+        
+        # Add symmetric compatibility
+        key = (requester_culture, observer_culture)
+        reverse_key = (observer_culture, requester_culture)
+        
+        return compatibility_matrix.get(key, compatibility_matrix.get(reverse_key, 0.5))
+    
+    def _compute_expertise_compatibility(self,
+                                       requester_expertise: float,
+                                       observer_expertise: float) -> float:
+        """Compute expertise complementarity (multiplicative)"""
+        # Complementarity: moderate differences are beneficial
+        expertise_diff = abs(requester_expertise - observer_expertise)
+        
+        # Optimal difference around 0.2-0.3 (teacher-student dynamic)
+        optimal_diff = 0.25
+        compatibility = 1.0 - abs(expertise_diff - optimal_diff) / (1.0 - optimal_diff)
+        
+        return np.clip(compatibility, 0.1, 1.0)  # Minimum compatibility
+    
+    def _compute_accessibility_compatibility(self,
+                                           requester_needs: List[str],
+                                           observer_needs: List[str]) -> float:
+        """Compute accessibility compatibility (multiplicative)"""
+        if not requester_needs and not observer_needs:
+            return 1.0
+        
+        # Shared accessibility understanding improves compatibility
+        shared_needs = set(requester_needs).intersection(set(observer_needs))
+        total_needs = set(requester_needs).union(set(observer_needs))
+        
+        if not total_needs:
+            return 1.0
+        
+        compatibility = len(shared_needs) / len(total_needs)
+        return max(compatibility, 0.3)  # Minimum accessibility compatibility
+    
+    def _compute_phenomenon_relevance(self,
+                                    phenomenon: VisualPhenomenon,
+                                    observer: Dict[str, Any]) -> float:
+        """Compute phenomenon relevance for observer (multiplicative)"""
+        # Base relevance from phenomenon characteristics
+        base_relevance = 0.5
+        
+        # Higher uncertainty phenomena benefit from more experienced observers
+        if phenomenon.uncertainty > 0.7 and observer['expertise_level'] > 0.7:
+            base_relevance *= 1.2
+        
+        # Arising phenomena might benefit from certain cultural perspectives
+        if phenomenon.arising_rate > 0.5:
+            if observer['cultural_context'] in ['zen', 'vipassana']:
+                base_relevance *= 1.1
+        
+        return np.clip(base_relevance, 0.1, 1.0)
+    
+    def _adapt_observation_request(self,
+                                 phenomenon: VisualPhenomenon,
+                                 observer: Dict[str, Any],
+                                 requester_context: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Adapt observation request for specific observer
+        
+        Implements cultural responsiveness and accessibility adaptation
+        """
+        cultural_context = observer['cultural_context']
+        adapter = self.cultural_adapters.get(cultural_context, self.cultural_adapters['secular'])
+        
+        # Translate terminology
+        terminology = adapter['terminology_mapping']
+        
+        adapted_request = {
+            'phenomenon_description': {
+                'location': phenomenon.region,
+                'intensity': phenomenon.intensity,
+                'arising_rate': phenomenon.arising_rate,
+                'passing_rate': phenomenon.passing_rate,
+                'uncertainty': phenomenon.uncertainty
+            },
+            'cultural_framing': {
+                'arising_term': terminology['arising'],
+                'passing_term': terminology['passing'],
+                'impermanence_term': terminology['impermanence'],
+                'observation_term': terminology['observation']
+            },
+            'validation_style': adapter['validation_style'],
+            'feedback_format': adapter['feedback_format'],
+            'accessibility_adaptations': self._generate_accessibility_adaptations(observer),
+            'peer_context': requester_context
+        }
+        
+        return adapted_request
+    
+    def _generate_accessibility_adaptations(self, observer: Dict[str, Any]) -> Dict[str, Any]:
+        """Generate accessibility adaptations for observer"""
+        adaptations = {}
+        
+        for need in observer['accessibility_needs']:
+            if need in self.accessibility_modules:
+                adaptations[need] = self.accessibility_modules[need]
+        
+        # Default adaptations for preferred modalities
+        for modality in observer['preferred_modalities']:
+            if modality in self.accessibility_modules:
+                adaptations[modality] = self.accessibility_modules[modality]
+        
+        return adaptations
+    
+    def _simulate_observer_feedback(self,
+                                  observer_id: str,
+                                  request: Dict[str, Any],
+                                  phenomenon: VisualPhenomenon) -> ObserverFeedback:
+        """
+        Simulate observer feedback (placeholder for real implementation)
+        """
+        observer = self.observers[observer_id]
+        
+        # Simulate validation score based on observer expertise and phenomenon characteristics
+        base_validation = observer['expertise_level']
+        
+        # Adjust based on phenomenon uncertainty (more uncertain = lower validation)
+        uncertainty_factor = 1.0 - 0.3 * phenomenon.uncertainty
+        
+        # Cultural context adjustment
+        cultural_bonus = 0.1 if observer['cultural_context'] in ['vipassana', 'zen'] else 0.0
+        
+        validation_score = np.clip(
+            base_validation * uncertainty_factor + cultural_bonus,
+            0.0, 1.0
+        )
+        
+        return ObserverFeedback(
+            observer_id=observer_id,
+            timestamp=datetime.now().timestamp(),
+            phenomenon_id=f"phenomenon_{hash(phenomenon.timestamp)}",
+            validation_score=validation_score,
+            cultural_context=observer['cultural_context'],
+            expertise_level=observer['expertise_level'],
+            feedback_text=f"Observed {request['cultural_framing']['arising_term']}/{request['cultural_framing']['passing_term']} phenomenon"
+        )
 
 def create_inclusive_contemplative_system(config: Optional[Dict] = None) -> ContemplativeVisualGrounder:
     """

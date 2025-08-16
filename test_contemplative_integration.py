@@ -347,6 +347,238 @@ class TestContemplativeIntegrationProperties(unittest.TestCase):
             self.assertLessEqual(insight['stage_four_psi'], 1.0)
             self.assertEqual(insight['cultural_context'], context)
 
+    def test_cultural_adaptivity_validation(self):
+        """Test cultural adaptivity across different contemplative traditions"""
+        if not CONTEMPLATIVE_IMPORTS_AVAILABLE:
+            self.skipTest("Contemplative modules not available")
+        
+        from contemplative_visual_grounding import InclusiveObserverNetwork
+        
+        # Initialize observer network
+        network = InclusiveObserverNetwork(self.grounder.config)
+        
+        # Register observers from different cultural contexts
+        cultural_observers = [
+            {
+                'id': 'theravada_monk',
+                'profile': {
+                    'cultural_context': 'theravada',
+                    'expertise_level': 0.9,
+                    'accessibility_needs': [],
+                    'preferred_modalities': ['visual', 'auditory'],
+                    'contemplative_background': ['vipassana', 'samatha']
+                }
+            },
+            {
+                'id': 'zen_practitioner', 
+                'profile': {
+                    'cultural_context': 'zen',
+                    'expertise_level': 0.8,
+                    'accessibility_needs': ['simplified_language'],
+                    'preferred_modalities': ['visual'],
+                    'contemplative_background': ['zazen', 'koan_study']
+                }
+            },
+            {
+                'id': 'secular_mindfulness_teacher',
+                'profile': {
+                    'cultural_context': 'secular',
+                    'expertise_level': 0.7,
+                    'accessibility_needs': ['cognitive'],
+                    'preferred_modalities': ['visual', 'tactile'],
+                    'contemplative_background': ['mbsr', 'mindfulness']
+                }
+            },
+            {
+                'id': 'vipassana_student',
+                'profile': {
+                    'cultural_context': 'vipassana',
+                    'expertise_level': 0.4,
+                    'accessibility_needs': ['auditory'],
+                    'preferred_modalities': ['auditory', 'visual'],
+                    'contemplative_background': ['noting_practice']
+                }
+            }
+        ]
+        
+        # Register all observers
+        for observer_data in cultural_observers:
+            success = network.register_observer(
+                observer_data['id'], 
+                observer_data['profile']
+            )
+            self.assertTrue(success, f"Failed to register {observer_data['id']}")
+        
+        # Test cultural compatibility computation
+        compatibility_tests = [
+            ('theravada', 'vipassana', 0.9),  # High compatibility
+            ('zen', 'secular', 0.7),          # Moderate compatibility  
+            ('theravada', 'zen', 0.6),        # Lower compatibility
+            ('vipassana', 'secular', 0.8),    # Good compatibility
+        ]
+        
+        for culture1, culture2, expected_min in compatibility_tests:
+            compatibility = network._compute_cultural_compatibility(culture1, culture2)
+            self.assertGreaterEqual(
+                compatibility, expected_min - 0.1, 
+                f"Cultural compatibility between {culture1} and {culture2} too low: {compatibility}"
+            )
+            self.assertLessEqual(
+                compatibility, 1.0,
+                f"Cultural compatibility exceeds bounds: {compatibility}"
+            )
+        
+        # Test terminology adaptation
+        test_phenomenon = self.sample_phenomena[0]
+        
+        for observer_data in cultural_observers:
+            observer = network.observers[observer_data['id']]
+            adapted_request = network._adapt_observation_request(
+                test_phenomenon, observer, {'cultural_context': 'secular'}
+            )
+            
+            # Verify cultural framing exists
+            self.assertIn('cultural_framing', adapted_request)
+            cultural_framing = adapted_request['cultural_framing']
+            
+            # Verify terminology mapping
+            expected_terms = {
+                'theravada': {'arising': 'udaya', 'passing': 'vaya', 'impermanence': 'anicca'},
+                'zen': {'arising': 'appearance', 'passing': 'disappearance', 'impermanence': 'mujo'},
+                'vipassana': {'arising': 'arising', 'passing': 'passing', 'impermanence': 'changing'},
+                'secular': {'arising': 'emergence', 'passing': 'dissolution', 'impermanence': 'transience'}
+            }
+            
+            culture = observer['cultural_context']
+            if culture in expected_terms:
+                for concept, expected_term in expected_terms[culture].items():
+                    actual_term = cultural_framing.get(f'{concept}_term')
+                    self.assertEqual(
+                        actual_term, expected_term,
+                        f"Incorrect terminology for {concept} in {culture}: got {actual_term}, expected {expected_term}"
+                    )
+        
+        # Test accessibility adaptations
+        accessibility_observer = {
+            'id': 'accessibility_user',
+            'profile': {
+                'cultural_context': 'secular',
+                'expertise_level': 0.3,
+                'accessibility_needs': ['visual', 'auditory', 'cognitive'],
+                'preferred_modalities': ['tactile', 'auditory']
+            }
+        }
+        
+        network.register_observer(accessibility_observer['id'], accessibility_observer['profile'])
+        observer = network.observers[accessibility_observer['id']]
+        
+        adaptations = network._generate_accessibility_adaptations(observer)
+        
+        # Verify accessibility adaptations are generated
+        expected_adaptations = ['visual', 'auditory', 'cognitive', 'tactile']
+        for adaptation in expected_adaptations:
+            self.assertIn(adaptation, adaptations, f"Missing accessibility adaptation: {adaptation}")
+        
+        # Test observer matching with cultural preferences
+        requester_contexts = [
+            {'cultural_context': 'theravada', 'expertise_level': 0.3},
+            {'cultural_context': 'zen', 'expertise_level': 0.6},
+            {'cultural_context': 'secular', 'expertise_level': 0.8}
+        ]
+        
+        for context in requester_contexts:
+            compatible_observers = network._find_compatible_observers(
+                context, test_phenomenon, urgency=0.5
+            )
+            
+            # Should find at least one compatible observer
+            self.assertGreater(
+                len(compatible_observers), 0,
+                f"No compatible observers found for context: {context}"
+            )
+            
+            # Should prioritize culturally compatible observers
+            if context['cultural_context'] == 'theravada':
+                # Should prioritize theravada and vipassana observers
+                priority_observers = ['theravada_monk', 'vipassana_student']
+                found_priority = any(obs_id in compatible_observers for obs_id in priority_observers)
+                self.assertTrue(found_priority, "Failed to prioritize culturally compatible observers")
+        
+        # Test multiplicative bounds preservation in cultural scoring
+        for observer_id, observer in network.observers.items():
+            for context in requester_contexts:
+                cultural_compat = network._compute_cultural_compatibility(
+                    context['cultural_context'], observer['cultural_context']
+                )
+                expertise_compat = network._compute_expertise_compatibility(
+                    context['expertise_level'], observer['expertise_level']
+                )
+                
+                # All compatibility scores should be bounded [0,1]
+                self.assertGreaterEqual(cultural_compat, 0.0)
+                self.assertLessEqual(cultural_compat, 1.0)
+                self.assertGreaterEqual(expertise_compat, 0.0)
+                self.assertLessEqual(expertise_compat, 1.0)
+                
+                # Multiplicative composition should preserve bounds
+                combined_score = cultural_compat * expertise_compat
+                self.assertGreaterEqual(combined_score, 0.0)
+                self.assertLessEqual(combined_score, 1.0)
+        
+        print("✓ Cultural adaptivity validation completed successfully")
+    
+    def test_multiplicative_integration_properties(self):
+        """Test mathematical properties of multiplicative integration"""
+        if not CONTEMPLATIVE_IMPORTS_AVAILABLE:
+            self.skipTest("Contemplative modules not available")
+        
+        # Test boundedness preservation
+        test_cases = [
+            {'S': 0.8, 'N': 0.6, 'alpha': 0.7, 'observer_validation': 0.9},
+            {'S': 0.1, 'N': 0.9, 'alpha': 0.2, 'observer_validation': 0.3},
+            {'S': 0.5, 'N': 0.5, 'alpha': 0.5, 'observer_validation': 0.5},
+            {'S': 1.0, 'N': 0.0, 'alpha': 1.0, 'observer_validation': 1.0},
+            {'S': 0.0, 'N': 1.0, 'alpha': 0.0, 'observer_validation': 0.0}
+        ]
+        
+        for case in test_cases:
+            psi_score = self.grounder.compute_contemplative_psi(**case)
+            
+            # Test boundedness [0,1]
+            self.assertGreaterEqual(psi_score, 0.0, f"Ψ score below bounds: {psi_score}")
+            self.assertLessEqual(psi_score, 1.0, f"Ψ score above bounds: {psi_score}")
+            
+            # Test monotonicity with observer validation
+            case_higher_validation = case.copy()
+            case_higher_validation['observer_validation'] = min(1.0, case['observer_validation'] + 0.1)
+            
+            psi_higher = self.grounder.compute_contemplative_psi(**case_higher_validation)
+            self.assertGreaterEqual(
+                psi_higher, psi_score,
+                f"Monotonicity violation: higher validation should increase Ψ"
+            )
+        
+        # Test sensitivity to parameters
+        base_case = {'S': 0.7, 'N': 0.6, 'alpha': 0.5, 'observer_validation': 0.8}
+        base_psi = self.grounder.compute_contemplative_psi(**base_case)
+        
+        # Small perturbations should produce small changes (robustness)
+        perturbation = 0.05
+        for param in ['S', 'N', 'alpha', 'observer_validation']:
+            perturbed_case = base_case.copy()
+            perturbed_case[param] = min(1.0, max(0.0, base_case[param] + perturbation))
+            
+            perturbed_psi = self.grounder.compute_contemplative_psi(**perturbed_case)
+            change_ratio = abs(perturbed_psi - base_psi) / (perturbation + 1e-8)
+            
+            # Change should be proportional (not explosive)
+            self.assertLess(
+                change_ratio, 10.0,
+                f"Excessive sensitivity to {param}: change ratio {change_ratio}"
+            )
+        
+        print("✓ Multiplicative integration properties validated")
+
 def run_contemplative_tests():
     """Run contemplative integration tests"""
     if not CONTEMPLATIVE_IMPORTS_AVAILABLE:
