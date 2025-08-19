@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only
 import Foundation
 import SceneKit
 
@@ -9,11 +10,13 @@ final class FinVisualizer {
 
     private let cameraNode = SCNNode()
     private let lightNode = SCNNode()
+    private var flowNode: SCNNode?
 
     init() {
         setupScene()
         setupCameraAndLight()
         setupFinModel()
+        setupFlow()
     }
 
     func setupScene() {
@@ -69,6 +72,21 @@ final class FinVisualizer {
         scene.rootNode.addChildNode(centerFin)
     }
 
+    private func setupFlow() {
+        let node = SCNNode()
+        let particles = SCNParticleSystem()
+        particles.birthRate = 120
+        particles.particleLifeSpan = 2.0
+        particles.particleSize = 0.035
+        particles.emissionDuration = .infinity
+        particles.emitterShape = SCNSphere(radius: 0.2)
+        particles.particleColor = PlatformColor.white
+        node.addParticleSystem(particles)
+        node.position = SCNVector3(-2.0, 0, 0)
+        scene.rootNode.addChildNode(node)
+        flowNode = node
+    }
+
     func updateAoA(degrees: Float) {
         sideFinNode?.eulerAngles.y = degreesToRadians(degrees)
         // emit a synthetic pressure map tied to AoA for demo
@@ -76,6 +94,7 @@ final class FinVisualizer {
         let height = 64
         let normalized = syntheticPressureMap(width: width, height: height, aoa: Double(degrees))
         updatePressureMapImage(width: width, height: height, normalized: normalized)
+        updateFlow(for: Double(degrees))
     }
 
     func updatePressureMap(pressureDataNormalized: [Float]) {
@@ -93,6 +112,18 @@ final class FinVisualizer {
             return
         }
         sideFinNode?.geometry?.firstMaterial?.diffuse.contents = image
+    }
+
+    private func updateFlow(for aoa: Double) {
+        guard let systems = flowNode?.particleSystems, let ps = systems.first else { return }
+        let t = min(1.0, max(0.0, aoa / 20.0))
+        ps.birthRate = CGFloat(80 + 160 * t)
+        ps.particleVelocity = CGFloat(1.0 + 2.0 * t)
+        #if os(iOS)
+        ps.particleColor = PlatformColor(hue: CGFloat(0.6 - 0.6 * t), saturation: 0.8, brightness: 1.0, alpha: 1.0)
+        #else
+        ps.particleColor = PlatformColor(calibratedHue: CGFloat(0.6 - 0.6 * t), saturation: 0.8, brightness: 1.0, alpha: 1.0)
+        #endif
     }
 
     private func syntheticPressureMap(width: Int, height: Int, aoa: Double) -> [Float] {
