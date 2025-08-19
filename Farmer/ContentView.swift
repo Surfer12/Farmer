@@ -19,15 +19,17 @@ struct ContentView: View {
     private var items: FetchedResults<Item>
 
     var body: some View {
-        NavigationView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp!, formatter: itemFormatter)")
-                    } label: {
-                        Text(item.timestamp!, formatter: itemFormatter)
+        TabView {
+            // Original Farmer functionality
+            NavigationView {
+                List {
+                    ForEach(items) { item in
+                        NavigationLink {
+                            Text("Item at \(item.timestamp!, formatter: itemFormatter)")
+                        } label: {
+                            Text(item.timestamp!, formatter: itemFormatter)
+                        }
                     }
-                }
                 .onDelete(perform: deleteItems)
             }
             .toolbar {
@@ -44,6 +46,25 @@ struct ContentView: View {
             }
             Text("Select an item")
         }
+        .tabItem {
+            Image(systemName: "list.bullet")
+            Text("Items")
+        }
+        
+        // PINN Example Tab
+        PINNExampleView()
+            .tabItem {
+                Image(systemName: "function")
+                Text("PINN Example")
+            }
+        
+        // PINN Visualization Tab
+        PINNVisualizationView()
+            .tabItem {
+                Image(systemName: "chart.line.uptrend.xyaxis")
+                Text("Visualization")
+            }
+    }
     }
 
     private func addItem() {
