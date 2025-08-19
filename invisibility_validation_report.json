@@ -1,0 +1,86 @@
+{
+  "comparison": {
+    "variant_count": 3,
+    "optimal_variant": "variant_a",
+    "variants": {
+      "variant_a": {
+        "invisibility_score": 0.7525001499937252,
+        "mcr": 0.0,
+        "recommendation": "REFINE: Minor adjustments needed for optimal invisibility",
+        "is_optimal": true
+      },
+      "variant_b": {
+        "invisibility_score": 0.680000000000033,
+        "mcr": 0.0,
+        "recommendation": "REJECT: Significant redesign required",
+        "is_optimal": false
+      },
+      "variant_c": {
+        "invisibility_score": 0.6075,
+        "mcr": 0.0,
+        "recommendation": "REJECT: Significant redesign required",
+        "is_optimal": false
+      }
+    }
+  },
+  "optimal_variant": "variant_a",
+  "detailed_reports": {
+    "variant_a": {
+      "objective_metrics": {
+        "micro_correction_rate": 0.0,
+        "jerk_rms": 70.51617231676046,
+        "spectral_smoothness": -499.27316063983204,
+        "slip_stall_events": {
+          "event_count": 0,
+          "mean_recovery_time": 0.0,
+          "recovery_time_cv": 0.0
+        }
+      },
+      "subjective_metrics": {
+        "invisibility_mean": 9.0,
+        "effortlessness_mean": 8.5,
+        "disruption_count": 0.0
+      },
+      "overall_invisibility_score": 0.7525001499937252,
+      "recommendation": "REFINE: Minor adjustments needed for optimal invisibility"
+    },
+    "variant_b": {
+      "objective_metrics": {
+        "micro_correction_rate": 0.0,
+        "jerk_rms": 147.16932178605649,
+        "spectral_smoothness": -499.27153070788603,
+        "slip_stall_events": {
+          "event_count": 0,
+          "mean_recovery_time": 0.0,
+          "recovery_time_cv": 0.0
+        }
+      },
+      "subjective_metrics": {
+        "invisibility_mean": 7.0,
+        "effortlessness_mean": 7.0,
+        "disruption_count": 2.0
+      },
+      "overall_invisibility_score": 0.680000000000033,
+      "recommendation": "REJECT: Significant redesign required"
+    },
+    "variant_c": {
+      "objective_metrics": {
+        "micro_correction_rate": 0.0,
+        "jerk_rms": 215.224995433375,
+        "spectral_smoothness": -499.27283365221757,
+        "slip_stall_events": {
+          "event_count": 0,
+          "mean_recovery_time": 0.0,
+          "recovery_time_cv": 0.0
+        }
+      },
+      "subjective_metrics": {
+        "invisibility_mean": 5.0,
+        "effortlessness_mean": 5.5,
+        "disruption_count": 5.0
+      },
+      "overall_invisibility_score": 0.6075,
+      "recommendation": "REJECT: Significant redesign required"
+    }
+  }
+}
