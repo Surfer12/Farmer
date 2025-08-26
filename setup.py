@@ -5,7 +5,8 @@ setup(
     version="0.1.0",
     description="Hybrid Symbolic-Neural Accuracy Functional Implementation",
     author="Ryan David Oates",
-    packages=find_packages(),
+    packages=["python"],
+    package_dir={"python": "python"},
     install_requires=[
         line.strip()
         for line in open("requirements.txt").readlines()
