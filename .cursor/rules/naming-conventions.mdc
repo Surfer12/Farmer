@@ -1,0 +1,46 @@
+---
+alwaysApply: true
+globs: *.java,*.swift,*.py
+description: Naming conventions and clarity guidelines
+---
+
+# Naming Conventions & Clarity
+
+## Variable and Function Naming
+- Prefer descriptive, full-word names; avoid 1-2 letter variables except in mathematical contexts or well-established conventions (i, j for loops, x, y for coordinates)
+- Functions are verbs (calculatePsi, processData, validateInput)
+- Variables are nouns (parameters, result, configuration)
+- Constants use UPPER_SNAKE_CASE (MAX_ITERATIONS, DEFAULT_TIMEOUT)
+- Classes and types use PascalCase (ModelParameters, HierarchicalBayesianModel)
+
+## API Design
+- Keep public APIs explicitly typed - no generic Object returns unless absolutely necessary
+- Use meaningful parameter names in public interfaces
+- Follow language-specific conventions:
+  - Java: camelCase for methods and variables, PascalCase for classes
+  - Python: snake_case for everything, PascalCase for classes
+  - Swift: camelCase for variables/functions, PascalCase for types
+
+## Code Readability
+- Choose variable names that convey meaning and intent
+- Avoid abbreviations unless they are well-established in the domain
+- Use consistent naming patterns throughout the codebase
+- Prefer clarity over brevity when there's a conflict
+
+## Examples
+
+```java
+// Good - descriptive and clear
+public ModelParameters recoverParameters(List<Observation> observations) {
+    double confidenceThreshold = 0.85;
+    ModelParameters bestParameters = optimizer.findOptimalParameters(observations);
+    return bestParameters;
+}
+
+// Avoid - unclear abbreviations and non-descriptive names
+public ModelParameters recP(List<Observation> o) {
+    double ct = 0.85;  // What is 'ct'?
+    ModelParameters bp = opt.fOP(o);  // Non-descriptive
+    return bp;
+}
+```

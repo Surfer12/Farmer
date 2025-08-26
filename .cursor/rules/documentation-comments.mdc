@@ -1,0 +1,87 @@
+---
+alwaysApply: true
+globs: *.java,*.swift,*.py,*.md
+description: Documentation and commenting best practices
+---
+
+# Documentation & Comments
+
+## Comment Philosophy
+- **Comment the "why," not the obvious "how"** - explain intent and rationale
+- Keep comments short and focused on insight, not rephrasing code
+- Use comments to explain business logic, assumptions, and design decisions
+- Avoid redundant comments that just restate what the code does
+
+## Code Comments
+- Focus on non-obvious business logic and algorithmic choices
+- Explain complex mathematical operations and their purpose
+- Document assumptions and constraints that aren't evident from code
+- Use single-line comments for brief explanations, block comments for complex logic
+
+## Examples
+
+```java
+// Good - Explains why and business context
+// Using evolutionary optimization because gradient-based methods
+// get stuck in local optima due to the complex, multi-modal
+// likelihood landscape of hierarchical Bayesian parameter recovery
+EvolutionaryOptimizer optimizer = new EvolutionaryOptimizer(config, priors);
+
+// Avoid - Just restates what the code does
+// Create a new evolutionary optimizer
+EvolutionaryOptimizer optimizer = new EvolutionaryOptimizer(config, priors);
+```
+
+```java
+// Good - Explains the mathematical reasoning
+// Ψ(x) = min{β·O·pen, 1} ensures bounded confidence scores
+// The min operation prevents overconfidence while β·O·pen allows
+// calibrated uncertainty expression
+double psi = Math.min(beta * evidence * penalty, 1.0);
+
+// Avoid - Just describes the operation
+// Calculate psi as the minimum of beta times evidence times penalty, or 1
+double psi = Math.min(beta * evidence * penalty, 1.0);
+```
+
+## Method and Class Documentation
+
+### JavaDoc Standards
+- Use `@param` and `@return` tags for all public methods
+- Explain parameter constraints and expected ranges
+- Document exceptions with `@throws` tags
+- Include usage examples in complex methods
+
+```java
+/**
+ * Recovers model parameters from observed Ψ scores using evolutionary optimization.
+ *
+ * <p>This method implements parameter recovery by treating the inverse problem
+ * as an optimization task, using evolutionary algorithms to explore the
+ * parameter space efficiently.</p>
+ *
+ * @param observations List of (ClaimData, observed_psi, verification_outcome) triples
+ * @return Inverse mapping result with recovered parameters and confidence
+ * @throws IllegalArgumentException if observations is null or empty
+ */
+public InverseResult recoverParameters(List<Observation> observations) {
+    // Implementation...
+}
+```
+
+## Documentation Files
+- **Update [internal/NOTATION.md](mdc:internal/NOTATION.md)** if you add/rename metrics or JSON keys
+- Keep notation references current and consistent
+- Document changes to key naming conventions in commit messages
+
+## README and Project Documentation
+- Keep README files current with code changes
+- Document architectural decisions and their rationale
+- Include examples and quick-start guides
+- Update documentation when APIs change
+
+## Code Reviews and Documentation
+- Documentation quality is part of code review criteria
+- Ensure new public APIs have proper documentation before merging
+- Consider documentation impact when making breaking changes
+- Use clear commit messages when updating documentation

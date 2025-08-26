@@ -1,0 +1,97 @@
+---
+alwaysApply: true
+globs: *.java
+description: Concurrency and thread safety guidelines
+---
+
+# Concurrency & Thread Safety
+
+## Error Handling Pattern
+- **Use guard clauses and early returns** to handle error/edge cases first
+- Validate inputs at method boundaries
+- Throw specific exceptions with meaningful messages
+- Avoid silent failures that hide bugs
+
+## Control Flow
+- **Avoid deep nesting** - keep cyclomatic complexity low (aim for < 10 per method)
+- Extract complex conditional logic into well-named methods
+- Use early returns to simplify control flow
+- Prefer polymorphism over complex if-else chains
+
+## Threading Guidelines
+- **When in doubt on threading or memory safety, prefer simple, scoped synchronization**
+- Document thread safety guarantees in class-level comments
+- Use `synchronized` blocks rather than synchronized methods when possible (more precise control)
+- Consider using `java.util.concurrent` utilities (AtomicReference, LongAdder, etc.)
+
+## Synchronization Best Practices
+
+```java
+// Good - Scoped synchronization with clear purpose
+public class ThreadSafeCounter {
+    private final Object lock = new Object();
+    private int count = 0;
+
+    public void increment() {
+        synchronized (lock) {
+            count++;  // Minimal synchronized block
+        }
+    }
+
+    public int getCount() {
+        synchronized (lock) {
+            return count;
+        }
+    }
+}
+
+// Good - Guard clauses for input validation
+public ModelParameters validateAndCreate(double s, double n, double alpha, double beta) {
+    // Guard clauses - handle errors early
+    if (s < 0.0 || s > 1.0) {
+        throw new IllegalArgumentException("S must be in [0,1], got: " + s);
+    }
+
+    if (n < 0.0 || n > 1.0) {
+        throw new IllegalArgumentException("N must be in [0,1], got: " + n);
+    }
+
+    if (alpha < 0.0 || alpha > 1.0) {
+        throw new IllegalArgumentException("alpha must be in [0,1], got: " + alpha);
+    }
+
+    if (beta <= 0.0) {
+        throw new IllegalArgumentException("beta must be > 0, got: " + beta);
+    }
+
+    return new ModelParameters(s, n, alpha, beta);
+}
+
+// Avoid - Deep nesting and complex control flow
+public void complexMethod(List<Data> data) {
+    if (data != null) {
+        for (Data item : data) {
+            if (item != null) {
+                if (item.isValid()) {
+                    if (item.getValue() > 0) {
+                        // Deep nesting makes code hard to follow
+                        processItem(item);
+                    }
+                }
+            }
+        }
+    }
+}
+```
+
+## Invariants and Documentation
+- **Document invariants** that must hold for thread safety
+- Use `// Thread safety: [description of guarantees]` comments
+- Specify whether methods are thread-safe, conditionally thread-safe, or not thread-safe
+- Document any required locking order for multiple locks
+
+## Performance Considerations
+- Avoid synchronized blocks in performance-critical sections when possible
+- Consider using `ConcurrentHashMap` for frequent read/write operations
+- Use `LongAdder` and `DoubleAdder` for high-contention counters
+- Profile before optimizing - many applications don't need complex concurrency controls

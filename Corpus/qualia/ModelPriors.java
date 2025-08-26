@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
-;
 
 /**
  * Hyperparameters for prior distributions.

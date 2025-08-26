@@ -1,0 +1,64 @@
+---
+alwaysApply: true
+globs: *.java
+description: Immutability and data structure safety guidelines
+---
+
+# Immutability & Safety
+
+## Data Structure Preferences
+- **Favor immutable data structures and records** over mutable classes when possible
+- Use `java.util` concurrent-safe collections (ConcurrentHashMap, CopyOnWriteArrayList) where needed
+- **Avoid shared mutable state** between threads unless absolutely necessary
+- Prefer unmodifiable collections (`Collections.unmodifiableList()`, `List.copyOf()`) for defensive copies
+
+## Record Usage
+- Use Java records for simple data carriers with no behavior
+- Records automatically provide immutability, proper equals/hashCode, and toString
+- Ideal for: ModelParameters, ClaimData, Observation, Configuration classes
+
+## Defensive Programming
+- Return defensive copies from getters when collections are involved
+- Validate constructor parameters and throw IllegalArgumentException for invalid values
+- Use Objects.requireNonNull() for non-null parameters in public APIs
+
+## Examples
+
+```java
+// Good - Using records for immutable data
+public record ModelParameters(
+    double S,
+    double N,
+    double alpha,
+    double beta
+) {
+    public ModelParameters {
+        if (S < 0.0 || S > 1.0) {
+            throw new IllegalArgumentException("S must be in [0,1]");
+        }
+        // ... validation for other parameters
+    }
+}
+
+// Good - Defensive copying
+public class DataProcessor {
+    private final List<String> data;
+
+    public DataProcessor(List<String> data) {
+        this.data = List.copyOf(data); // Defensive copy
+    }
+
+    public List<String> getData() {
+        return List.copyOf(data); // Return unmodifiable view
+    }
+}
+
+// Avoid - Mutable shared state
+public class SharedCache {
+    private Map<String, Object> cache = new HashMap<>(); // Shared mutable state
+
+    public void put(String key, Object value) {
+        cache.put(key, value); // Not thread-safe
+    }
+}
+```

@@ -1,0 +1,181 @@
+---
+alwaysApply: true
+globs: *.java,*.swift,*.py,*.tex,*.md
+description: SPDX licensing header requirements and guidelines
+---
+
+# Licensing Headers & SPDX
+
+## Header Requirements
+- **Add correct SPDX headers per area** - see licensing rules for specific formats
+- Code files must include appropriate SPDX license identifiers
+- Never use CC0 for code - it's only for designated non-code assets
+- Keep headers current and consistent across the codebase
+
+## SPDX Header Formats
+
+### Java Files
+```java
+// SPDX-License-Identifier: GPL-3.0-only
+// SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
+```
+
+### Swift Files
+```swift
+// SPDX-License-Identifier: GPL-3.0-only
+// SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
+```
+
+### Python Files
+```python
+# SPDX-License-Identifier: GPL-3.0-only
+# SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
+```
+
+### LaTeX Files
+```latex
+% SPDX-License-Identifier: LicenseRef-Internal-Use-Only
+```
+
+### Markdown Files
+```markdown
+SPDX-License-Identifier: GPL-3.0-only
+```
+
+## Licensing Areas
+
+### Public Code (GPL-3.0-only)
+- Source code files (.java, .swift, .py)
+- Public documentation
+- Build scripts and configuration
+- Example code and demos
+
+### Internal Use Only (LicenseRef-Internal-Use-Only)
+- Internal documentation and notes
+- LaTeX style files (.sty)
+- Audit logs and internal data
+- Development tools and scripts
+
+### CC0 (Limited Use Only)
+- Only for designated non-code assets
+- Must be explicitly scoped and annotated
+- Not for source code under any circumstances
+- Requires approval for new usage areas
+
+## Implementation Guidelines
+
+### Adding Headers to New Files
+1. **Determine the appropriate license** based on file type and intended use
+2. **Use the correct comment syntax** for the file type
+3. **Include copyright attribution** when applicable
+4. **Verify header format** matches existing files in the same directory
+
+### Header Validation
+- Run license compliance checks regularly
+- Use automated tools to verify SPDX headers
+- Include header validation in CI/CD pipelines
+- Fix any missing or incorrect headers promptly
+
+## Common Patterns
+
+```java
+// ✅ Correct - Public Java code
+// SPDX-License-Identifier: GPL-3.0-only
+// SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
+
+public class InverseHierarchicalBayesianModel {
+    // Implementation...
+}
+```
+
+```swift
+// ✅ Correct - Public Swift code
+// SPDX-License-Identifier: GPL-3.0-only
+// SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
+
+class ConsciousnessStateAnalyzer {
+    // Implementation...
+}
+```
+
+```latex
+% ✅ Correct - Internal LaTeX style file
+% SPDX-License-Identifier: LicenseRef-Internal-Use-Only
+
+\ProvidesPackage{analogy_equivalence_patterns}[2025/01/01 v1.0]
+```
+
+```markdown
+<!-- ❌ Avoid - Wrong comment syntax for Markdown -->
+<!-- SPDX-License-Identifier: GPL-3.0-only -->
+
+<!-- ✅ Correct - No comment syntax needed for Markdown -->
+SPDX-License-Identifier: GPL-3.0-only
+```
+
+## File Type Specific Rules
+
+### Source Code Files
+- Always require SPDX headers
+- Use GPL-3.0-only for public code
+- Include copyright attribution for significant contributions
+- Place headers at the very top of the file, before any other content
+
+### Documentation Files
+- Use appropriate license based on content type
+- Public documentation: GPL-3.0-only
+- Internal notes: LicenseRef-Internal-Use-Only
+- Academic papers: Follow institutional guidelines
+
+### Configuration Files
+- Include SPDX headers where supported by syntax
+- Use comments for files that don't support headers
+- Default to GPL-3.0-only unless internal-only
+
+## Automation and Tools
+
+### REUSE Compliance
+- Use [REUSE.toml](mdc:REUSE.toml) for license configuration
+- Run REUSE tools to validate compliance
+- Include REUSE checks in CI/CD pipelines
+- Document any deviations from standard patterns
+
+### Header Tools
+- Use automated tools to add missing headers
+- Scripts for batch header updates
+- IDE plugins for automatic header insertion
+- Pre-commit hooks for header validation
+
+## Maintenance
+
+### Updating Headers
+- Update copyright years when making significant changes
+- Change license identifiers only with legal review
+- Document license changes in commit messages
+- Update [internal/psi-licensing.tex](mdc:internal/psi-licensing.tex) for policy changes
+
+### License File Management
+- Keep license texts in [LICENSES/](mdc:LICENSES/) directory
+- Update [NOTICE](mdc:NOTICE) and [COPYRIGHT](mdc:COPYRIGHT) files
+- Ensure license files are included in distributions
+- Validate license compatibility for dependencies
+
+## Troubleshooting
+
+### Common Issues
+- **Missing headers**: Add appropriate SPDX header
+- **Wrong license**: Determine correct license based on file type and use
+- **Incorrect format**: Use proper comment syntax for the file type
+- **Outdated copyright**: Update copyright year for significant changes
+
+### Validation Commands
+```bash
+# Check REUSE compliance
+reuse lint
+
+# Add missing headers
+reuse addheader --license GPL-3.0-only --copyright "2025 Jumping Quail Solutions" file.java
+
+# Download license files
+reuse download --all
+```

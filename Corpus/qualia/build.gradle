@@ -1,0 +1,79 @@
+// SPDX-License-Identifier: GPL-3.0-only
+// SPDX-FileCopyrightText: 2025 Jumping Quail Solutions
+
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'com.farmer'
+version = '1.0.0'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
+repositories {
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    // Jackson for JSON processing
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.15.2'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.15.2'
+
+    // JFreeChart for visualization
+    implementation 'org.jfree:jfreechart:1.5.3'
+
+    // JUnit 5 for testing
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.9.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
+
+    // JavaFX (if needed for visualization)
+    implementation 'org.openjfx:javafx-controls:19'
+    implementation 'org.openjfx:javafx-fxml:19'
+    implementation 'org.openjfx:javafx-charts:19'
+
+    // HTTP client
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
+}
+
+application {
+    mainClass = 'qualia.JavaPenetrationTestingDemo'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+// Task to run specific demo
+task runJavaDemo(type: JavaExec) {
+    group = 'application'
+    description = 'Run the Java Penetration Testing Demo'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'qualia.JavaPenetrationTestingDemo'
+}
+
+task runInverseHB(type: JavaExec) {
+    group = 'application'
+    description = 'Run the Inverse Hierarchical Bayesian Model Demo'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'qualia.InverseHierarchicalBayesianDemo'
+}
+
+task runQualia(type: JavaExec) {
+    group = 'application'
+    description = 'Run the main Qualia application'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'qualia.Core'
+}
+
+// JavaFX configuration
+javafx {
+    version = '19'
+    modules = ['javafx.controls', 'javafx.fxml', 'javafx.charts']
+}

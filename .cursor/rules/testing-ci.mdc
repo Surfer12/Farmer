@@ -1,0 +1,161 @@
+---
+alwaysApply: true
+globs: *.java,*.swift,*.py,*.sh
+description: Testing and continuous integration guidelines
+---
+
+# Testing & CI
+
+## Testing Philosophy
+- **Run [scripts/test_qualia.sh](mdc:scripts/test_qualia.sh) before committing engine changes**
+- Keep CI green via [scripts/ci.sh](mdc:scripts/ci.sh)
+- Tests should be fast, deterministic, and comprehensive
+- Prefer integration tests for complex workflows, unit tests for isolated components
+
+## Test Categories
+
+### Unit Tests
+- Test individual methods and classes in isolation
+- Mock external dependencies and focus on logic
+- Aim for high coverage of critical paths and edge cases
+- Use descriptive test names that explain the scenario
+
+```java
+// Good test naming and structure
+@Test
+public void recoverParameters_withValidObservations_returnsExpectedResult() {
+    // Given
+    List<Observation> observations = createValidObservations();
+
+    // When
+    InverseResult result = model.recoverParameters(observations);
+
+    // Then
+    assertNotNull(result);
+    assertTrue(result.confidence() > 0.5);
+    assertNotNull(result.recoveredParameters());
+}
+
+@Test
+public void recoverParameters_withEmptyObservations_throwsException() {
+    // Given
+    List<Observation> emptyObservations = List.of();
+
+    // When & Then
+    IllegalArgumentException exception = assertThrows(
+        IllegalArgumentException.class,
+        () -> model.recoverParameters(emptyObservations)
+    );
+    assertTrue(exception.getMessage().contains("cannot be empty"));
+}
+```
+
+### Integration Tests
+- Test component interactions and data flow
+- Use real dependencies when possible, or lightweight fakes
+- Focus on end-to-end workflows and system behavior
+- Include performance assertions for critical paths
+
+### Validation Tests
+- Test against known ground truth data
+- Validate mathematical correctness of algorithms
+- Include cross-validation with different data sets
+- Performance regression tests
+
+## CI/CD Best Practices
+
+### Pre-commit Checks
+- **Always run tests before committing** - especially for engine changes
+- Ensure code compiles without warnings
+- Check for code style violations
+- Validate that new code doesn't break existing functionality
+
+### CI Pipeline
+- **Keep CI green** as the top priority for merges
+- Run comprehensive test suites on every PR
+- Include performance benchmarks to catch regressions
+- Automated dependency updates with testing
+
+## Test Organization
+
+### File Structure
+```
+src/main/java/
+├── InverseHierarchicalBayesianModel.java
+└── supporting/
+
+src/test/java/
+├── InverseHierarchicalBayesianModelTest.java
+├── EvolutionaryOptimizerTest.java
+├── StructureLearnerTest.java
+├── integration/
+│   ├── ParameterRecoveryWorkflowTest.java
+│   └── ValidationWorkflowTest.java
+└── fixtures/
+    ├── TestDataFactory.java
+    └── GroundTruthData.java
+```
+
+### Test Data Management
+- Use factories to create consistent test data
+- Separate fixture data from test logic
+- Include edge cases and boundary conditions
+- Document assumptions about test data
+
+```java
+public class TestDataFactory {
+    public static List<Observation> createValidObservations() {
+        return List.of(
+            new Observation(
+                createTestClaim(0.8, 0.9, 0.1),
+                0.75,
+                true
+            ),
+            // ... more test data
+        );
+    }
+
+    public static ModelParameters createGroundTruthParameters() {
+        return new ModelParameters(0.8, 0.6, 0.7, 1.5);
+    }
+}
+```
+
+## Performance Testing
+
+### Benchmarking
+- Include performance tests for critical algorithms
+- Set performance budgets and alert on regressions
+- Test with realistic data sizes and scenarios
+- Profile memory usage for large datasets
+
+### Memory Testing
+- Test for memory leaks in long-running processes
+- Validate memory usage patterns under load
+- Include heap dump analysis for memory issues
+
+## Debugging and Troubleshooting
+
+### Test Debugging
+- Use descriptive assertion messages
+- Include relevant context in test failures
+- Make tests easy to run individually
+- Provide clear instructions for reproducing failures
+
+### CI Debugging
+- Include detailed logging in CI pipelines
+- Capture test output and artifacts on failures
+- Provide actionable error messages
+- Make it easy to reproduce CI failures locally
+
+## Code Coverage
+- Aim for meaningful coverage, not just high percentages
+- Focus coverage on critical business logic
+- Use coverage reports to identify untested code paths
+- Don't require 100% coverage for generated code or simple accessors
+
+## Flaky Test Management
+- Identify and fix sources of test flakiness
+- Use retries sparingly and only for truly transient issues
+- Separate deterministic tests from potentially flaky integration tests
+- Monitor and track test reliability over time

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# Maven wrapper script
+if [ -f "pom.xml" ]; then
+    echo "Maven wrapper - please install Maven to use pom.xml"
+    echo "For now, use: ./compile.sh"
+    exit 1
+else
+    echo "No pom.xml found. Use ./compile.sh instead"
+    exit 1
+fi
