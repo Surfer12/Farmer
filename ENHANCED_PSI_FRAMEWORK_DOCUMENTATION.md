@@ -237,21 +237,19 @@ exp(-P_total) = exp(-0.1374) ≈ 0.872
 **Step 4**: Probability Calibration
 ```
 P = 0.79, β = 1.25
-logit(P) = log(0.79/0.21) ≈ 1.273
-adjusted_logit = 1.273 + log(1.25) ≈ 1.273 + 0.223 ≈ 1.496
-P_adj = 1/(1 + exp(-1.496)) ≈ 0.988
+# Note: β is applied in the Ψ multiplicative form; do not apply an extra P_adj here
 ```
 
 **Step 5**: Final Ψ(x)
 ```
-Ψ(x) = β × exp(-P_total) × O_hybrid × P_adj
-      = 1.25 × 0.872 × 0.791 × 0.988
-      ≈ 0.681
+Ψ(x) = min{ β × exp(-P_total) × O_hybrid, 1 }
+      = min{ 1.25 × 0.872 × 0.791, 1 }
+      ≈ 0.863
 ```
 
 **Step 6**: Interpretation
 ```
-Ψ(x) ≈ 0.68 indicates solid grasp of interconnected themes
+Ψ(x) ≈ 0.86 indicates a strong, empirically grounded grasp; near primitive tier if canonically verified
 ```
 
 ## Framework Performance
