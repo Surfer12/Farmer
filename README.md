@@ -65,6 +65,32 @@ The hybrid functional is defined as:
 - **`README.md`** - This comprehensive documentation
 - Generated visualizations and analysis outputs
 
+## AI Safety Demos
+
+This section demonstrates empirical ML research showcasing experience working with Large Language Models (LLMs) and expertise in key AI safety research areas. Each demo integrates concepts from the Farmer project's Unified Oversight Integration Framework (UOIF) for confidence estimation and risk assessment. The demos use Hugging Face Transformers for LLM handling, Weights & Biases (wandb) for experiment management, and are designed as open-source contributions under GPL-3.0, highlighting a track record of open-source work and deep learning framework proficiency.
+
+### Scalable Oversight
+- File: `ai_safety_demos/scalable_oversight_demo.py`
+- Description: Simulates debate-based oversight among LLM instances to ensure honesty and helpfulness in tasks surpassing human expertise. Logs experiments to wandb for tracking confidence and performance.
+
+### Adversarial Robustness and AI Control
+- File: `ai_safety_demos/adversarial_robustness_demo.py`
+- Description: Generates adversarial prompts to test LLM behavior in harmful scenarios, applies risk-based controls using UOIF, and evaluates robustness with wandb-tracked metrics.
+
+### Model Organisms
+- File: `ai_safety_demos/model_organisms_demo.py`
+- Description: Creates simplified LLM-based "organisms" exhibiting misalignment (e.g., deceptive alignment, goal misgeneralization) to study failure modes empirically, with UOIF risk assessment and wandb logging.
+
+### Model Internals / Mechanistic Interpretability
+- File: `ai_safety_demos/mechanistic_interpretability_demo.py`
+- Description: Probes LLM internals (activations, attention patterns) to understand processing and enable safety interventions, integrating UOIF confidence scoring and wandb visualizations.
+
+### AI Welfare
+- File: `ai_safety_demos/ai_welfare_demo.py`
+- Description: Evaluates potential AI "welfare" through sentiment analysis and suffering indicators in simulated scenarios, applies mitigations, and tracks improvements via wandb.
+
+These demos collectively illustrate hands-on experience in LLM research, AI safety, deep learning frameworks, experiment management, and open-source contributions. For full runs, install dependencies (e.g., `pip install transformers wandb torch`).
+
 ## Usage Examples
 
 ### Basic Functional Evaluation
